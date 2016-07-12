@@ -29,8 +29,8 @@
           <file leaf-file-name="IndoorMapGeneratorScript.cs" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Assets/Scripts/IndoorMapGeneratorScript.cs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="364">
-                  <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
+                <state relative-caret-position="442">
+                  <caret line="79" column="9" selection-start-line="79" selection-start-column="9" selection-end-line="79" selection-end-column="9" />
                   <folding>
                     <marker date="1468274050000" expanded="true" signature="6:32" ph="..." />
                     <marker date="1468274050000" expanded="true" signature="87:4792" ph="{...}" />
@@ -85,7 +85,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="1540" />
     <option name="y" value="-313" />
-    <option name="width" value="1440" />
+    <option name="width" value="1660" />
     <option name="height" value="987" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -305,10 +305,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1540" y="-313" width="1440" height="987" extended-state="0" />
+    <frame x="1540" y="-313" width="1660" height="987" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07590362" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.055099647" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -374,29 +374,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/IndoorMapGeneratorScript.cs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="73" column="0" selection-start-line="73" selection-start-column="0" selection-end-line="73" selection-end-column="0" />
-          <folding>
-            <marker date="1468274050000" expanded="true" signature="6:32" ph="..." />
-            <marker date="1468274050000" expanded="true" signature="87:4792" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="653:865" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="880:1037" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="1060:1066" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="1096:1258" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="1291:1917" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="1962:2781" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="3832:3930" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="3960:4242" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="4272:4472" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="4506:4554" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="4589:4635" ph="{...}" />
-            <marker date="1468274050000" expanded="true" signature="4683:4788" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.local/share/JetBrains/Shared/v06/DecompilerCache/decompiler/7C245D52-B6F5-4E26-88AC-42AD54AC9CDE/31/d13b8a1a/Bounds.cs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2002">
@@ -442,6 +419,29 @@
             <marker date="1468273218000" expanded="true" signature="6:63" ph="..." />
             <marker date="1468273218000" expanded="true" signature="160:591" ph="{...}" />
             <marker date="1468273218000" expanded="true" signature="244:587" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/IndoorMapGeneratorScript.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="442">
+          <caret line="79" column="9" selection-start-line="79" selection-start-column="9" selection-end-line="79" selection-end-column="9" />
+          <folding>
+            <marker date="1468274050000" expanded="true" signature="6:32" ph="..." />
+            <marker date="1468274050000" expanded="true" signature="87:4792" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="653:865" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="880:1037" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="1060:1066" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="1096:1258" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="1291:1917" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="1962:2781" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="3832:3930" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="3960:4242" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="4272:4472" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="4506:4554" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="4589:4635" ph="{...}" />
+            <marker date="1468274050000" expanded="true" signature="4683:4788" ph="{...}" />
           </folding>
         </state>
       </provider>
