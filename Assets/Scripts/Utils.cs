@@ -69,25 +69,40 @@ public class Utils
 		return -1f;
 	}
 
-	public static Vector3 GetOriginCornerXz(Vector3 targetPos, GameObject gameObject)
+	public static Vector3 GetTopLeftCornerXZ(Vector3 targetPos, GameObject gameObject)
 	{
-//		return new Vector3(
-//			targetPos.x - gameObject.transform.localScale.x/2f,
-//			targetPos.y,
-//			targetPos.z - gameObject.transform.localScale.z/2f);
-		return new Vector3
+		Vector3 offset = GetObjectOffsetToCenter(gameObject);
+		offset = multiply(offset, gameObject.transform.localScale);
 
+		return new Vector3(
+				targetPos.x + offset.x,
+				targetPos.y,
+				targetPos.z + offset.z);
+	}
+
+
+
+	private static Vector3 GetObjectOffsetToCenter(GameObject gameObject)
+	{
+		if (inEditor())
+		{
+			return gameObject.GetComponent<MeshFilter>().sharedMesh.bounds.extents;
+		}
+		return gameObject.GetComponent<MeshFilter>().mesh.bounds.extents;
 	}
 
 	public static Vector3 GetObjectDimensions(GameObject gameObject)
 	{
-		gameObject.GetComponent<MeshFilter>().mesh.bounds.
-
+		if (inEditor())
+		{
+			return gameObject.GetComponent<MeshFilter>().sharedMesh.bounds.size;
+		}
+		return gameObject.GetComponent<MeshFilter>().mesh.bounds.size;
 	}
 
 	public static bool DestroyAsset(GameObject asset)
 	{
-		if (Application.isEditor)
+		if (inEditor())
 		{
 			GameObject.DestroyImmediate(asset);
 			return true;
@@ -134,5 +149,20 @@ public class Utils
 		size.z *= multiplier;
 		return size;
 	}
+
+	public static Vector3 multiply(Vector3 vectorA, Vector3 vectorB)
+	{
+		vectorA.x *= vectorB.x;
+		vectorA.y *= vectorB.y;
+		vectorA.z *= vectorB.z;
+
+		return vectorA;
+	}
+
+	public static bool inEditor()
+	{
+		return Application.isEditor;
+	}
+
 
 }

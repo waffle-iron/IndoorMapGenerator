@@ -53,15 +53,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Debug.Log(className + ": " + System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 
 		floorPlaneObject = (GameObject) Instantiate(floorPlane);
-		floorPlaneObject.transform.position = Utils.GetOriginCornerXz(Vector3.zero, floorPlaneObject);
-
-		Vector3 size = Utils.GetGridRealSized3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
-		Debug.LogError("gridreal vec: " + size);
-
-		floorPlaneObject.transform.localScale = size;
-		floorPlaneObject.transform.parent = this.transform;
+		floorPlaneObject.transform.localScale = Utils.GetGridRealSized3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);;
 		floorPlaneObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+		floorPlaneObject.transform.position = Utils.GetTopLeftCornerXZ(Vector3.zero, floorPlaneObject);
 		floorPlaneObject.name = "Floor (" + gridSizeX + ", " + gridSizeZ + ")";
+		floorPlaneObject.transform.parent = this.transform;
 	}
 
 
