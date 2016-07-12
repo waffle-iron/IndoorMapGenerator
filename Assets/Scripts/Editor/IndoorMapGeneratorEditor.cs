@@ -18,16 +18,17 @@ public class IndoorMapGeneratorEditor : Editor
 
 		script.Update();
 
-		if (GUI.changed)
-		{
+//		if (GUI.changed)
+//		{
 			script.OnInputUpdate();
-		}
+//		}
 
 		if (GUILayout.Button("Create Floor Plane"))
 		{
 //			script.ClearObjects();
 			script.CreateFloorPlane();
-//			script.CreateCellularAutomataBoxes();
+			script.CreateCellularAutomataBoxes();
+			script.CreateCellularAutomataVertices();
 		}
 
   	}

@@ -80,6 +80,17 @@ public class Utils
 				targetPos.z + offset.z);
 	}
 
+	public static Vector3 GetTopLeftCornerXZ(float targetPosX, float targetPosZ, GameObject gameObject)
+	{
+		Vector3 offset = GetObjectOffsetToCenter(gameObject);
+		offset = multiply(offset, gameObject.transform.localScale);
+
+		return new Vector3(
+				targetPosX + offset.x,
+				1f,
+				targetPosZ + offset.z);
+	}
+
 
 
 	private static Vector3 GetObjectOffsetToCenter(GameObject gameObject)
@@ -150,13 +161,41 @@ public class Utils
 		return size;
 	}
 
-	public static Vector3 multiply(Vector3 vectorA, Vector3 vectorB)
+	public static Vector3 multiply(Vector3 vector, Vector3 divider)
 	{
-		vectorA.x *= vectorB.x;
-		vectorA.y *= vectorB.y;
-		vectorA.z *= vectorB.z;
+		vector.x *= divider.x;
+		vector.y *= divider.y;
+		vector.z *= divider.z;
+		return vector;
+	}
 
-		return vectorA;
+	public static Vector3 multiplyXZ(Vector3 vector, float mulXZ)
+	{
+		vector.x *= mulXZ;
+		vector.z *= mulXZ;
+		return vector;
+	}
+
+	public static Vector3 divide(Vector3 vector, Vector3 divider)
+	{
+		vector.x /= divider.x;
+		vector.y /= divider.y;
+		vector.z /= divider.z;
+		return vector;
+	}
+
+	public static Vector3 divideXZ(Vector3 vector, float divX, float divZ)
+	{
+		vector.x /= divX;
+		vector.z /= divZ;
+		return vector;
+	}
+
+	public static Vector3 divideXZ(Vector3 vector, float divXZ)
+	{
+		vector.x /= divXZ;
+		vector.z /= divXZ;
+		return vector;
 	}
 
 	public static bool inEditor()

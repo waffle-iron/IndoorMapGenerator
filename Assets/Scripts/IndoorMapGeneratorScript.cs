@@ -29,7 +29,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Debug.Log("IndoorMapGenScript: constructor", this);
 		Utils.Initialize(gridSizeX, gridSizeZ, metersInOneUnit);
 		className = this.GetType().Name;
-//		floorPlaneOriginalScale = Utils.VECTOR_INVALID_VALUE;
+
+
 	}
 
 	void Start()
@@ -53,7 +54,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Debug.Log(className + ": " + System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 
 		floorPlaneObject = (GameObject) Instantiate(floorPlane);
-		floorPlaneObject.transform.localScale = Utils.GetGridRealSized3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);;
+		floorPlaneObject.transform.localScale = Utils.GetGridRealSized3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
 		floorPlaneObject.transform.rotation = Quaternion.Euler(0, 0, 0);
 		floorPlaneObject.transform.position = Utils.GetTopLeftCornerXZ(Vector3.zero, floorPlaneObject);
 		floorPlaneObject.name = "Floor (" + gridSizeX + ", " + gridSizeZ + ")";
@@ -63,32 +64,39 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void CreateCellularAutomataBoxes()
 	{
-//		Debug.Log(className + ": " + System.Reflection.MethodBase.GetCurrentMethod().Name, this);
-//		GameObject spawned;
-//		Vector3 originalScale = gridCellPlane.transform.localScale;
-//		gridCellPlane.transform.localScale = new Vector3(
-//			originalScale.x/(float)gridSizeX,
-//			originalScale.y,
-//			originalScale.z/(float)gridSizeZ);
-//
-//		Vector3 spawnPosition = Vector3.zero;
-//		for (int x= 0; x < gridSizeX; ++x)
-//		{
-//			for (int z = 0; z < gridSizeZ; ++z)
-//			{
-//				spawned = (GameObject) Instantiate(gridCellPlane, spawnPosition, Quaternion.identity);
-//				spawned.name = "[" + x + ", " + z + "]";
-//				spawned.transform.parent = childHolderObject.transform;
-//				spawnPosition.z += 1 / (float)gridSizeZ;
-//			}
-//
-//			spawnPosition.z = 0f;
-//			spawnPosition.x += 1 / (float)gridSizeX;
-//		}
+		Debug.Log(className + ": " + System.Reflection.MethodBase.GetCurrentMethod().Name, this);
+
+		GameObject 	spawned;
+		Vector3 	spawnedScale;
+		Vector3 	spawnedPos = Vector3.zero;
+		spawnedScale = Utils.GetGridRealSized3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
+		spawnedScale = Utils.divideXZ(spawnedScale, gridSizeX, gridSizeZ);
+//		spawnedScale = Utils.multiplyXZ(spawnedScale, Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
+
+		GameObject 	gridHolder = new GameObject();
+		gridHolder.transform.parent = this.transform;
+        gridHolder.name = "grid";
+
+		for (int x = 0; x < gridSizeX; x++)
+		{
+//			spawnedPos.x = Utils.GetLength(x);
+			for (int z = 0; z < gridSizeZ; z++)
+			{
+//				spawnedPos.z = Utils.GetLength(z);
+				spawned = Instantiate(gridCellPlane);
+				spawned.transform.localScale = spawnedScale;
+				spawned.transform.position = Utils.GetTopLeftCornerXZ(Utils.GetLength(x), Utils.GetLength(z), spawned);
+				spawned.transform.parent = gridHolder.transform;
+//				Vector3 scale = spawned.transform.localScale;
+//				spawned.GetComponent<Transform>().localScale = Utils.multiplyXZ(scale, 0.75f);
+				spawned.name = "(" + x + ", " + z + ")";
+			}
+		}
+
 	}
 
-//	public void CreateCellularAutomataVertices()
-//	{
+	public void CreateCellularAutomataVertices()
+	{
 //		Debug.Log(className + ": " + System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 //
 //		GameObject spawned;
@@ -119,7 +127,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //			spawnPosition.z = 0f;
 //			spawnPosition.x += 1 / (float)gridSizeX;
 //		}
-//	}
+	}
 
 	public void CreateGridVertices()
 	{
