@@ -23,12 +23,30 @@ public class IndoorMapGeneratorEditor : Editor
 			script.OnInputUpdate();
 //		}
 
+
+		EditorGUILayout.LabelField(
+			new GUIContent(
+				"gridX: " + script.gridSizeX +
+				", gridZ: " + script.gridSizeZ +
+				", density:" + script.regionDensity
+			)
+		);
+
+		EditorGUILayout.LabelField(
+			new GUIContent(
+				"cells total: " +
+				(script.gridSizeX * script.gridSizeZ * script.regionDensity).ToString()
+			)
+		);
+
 		if (GUILayout.Button("Create Floor Plane"))
 		{
 //			script.ClearObjects();
 			script.CreateFloorPlane();
-			script.CreateCellularAutomataBoxes();
-			script.CreateCellularAutomataVertices();
+//			script.CreateGridRegions();
+			script.CreateCells();
+//			script.CreateCellularAutomataBoxes();
+//			script.CreateCellularAutomataVertices();
 		}
 
   	}

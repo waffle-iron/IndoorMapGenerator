@@ -7,35 +7,73 @@ public class Utils
 
 	public static readonly Vector3 	VECTOR_INVALID_VALUE = new Vector3(-1, -1, -1);
 	public static readonly float 	PLANE_SIZE_CORRECTION_MULTIPLIER = 0.1f;
+	public static readonly float 	VERTEX_CUE_SIZE_CORRECTION_MULTIPLIER = 0.3f;
 
 	//VARIABLES:
 	private static float 	metersInOneUnit;
+	private static float 	regionDensity;
 	private static bool 	initialized = false;
 
-	private static Vector2 	gridSizes;
-	private static Vector2 	gridRealSizes2D;
-	private static Vector3 	gridRealSizes3D;
+//	private static Vector2 	gridSizes;
+//	private static Vector2 	gridRealSizes2D;
+//	private static Vector3 	gridRealSizes3D;
+
+	public static Vector2 gridUnitSize2D;
+	public static Vector2 gridRealSize2D;
+	public static Vector2 regionRealSize2D;
+	public static Vector2 regionCellRealSize2D;
 
 
 	//CONSTRUCTION AND INITIALIZATION METHODS:
 
-	public static void Initialize(int gridSizeXVal, int gridSizeZVal, float metersInOneUnitVal)
+	public static void Initialize(int gridSizeXVal, int gridSizeZVal, int regionDensityVal, float metersInOneUnitVal)
 	{
 		initialized = true;
 		metersInOneUnit = metersInOneUnitVal;
+		regionDensity = regionDensityVal;
 
-		gridSizes = new Vector2(gridSizeXVal, gridSizeZVal);
-		gridRealSizes2D = new Vector2(GetLength(gridSizeXVal), GetLength(gridSizeZVal));
-		gridRealSizes3D = new Vector3(gridRealSizes2D.x, 1f, gridRealSizes2D.y);
+		gridUnitSize2D = new Vector2(gridSizeXVal, gridSizeZVal);
+		gridRealSize2D = multiply(gridUnitSize2D, metersInOneUnit);
+
+		regionRealSize2D = new Vector2(
+			gridRealSize2D.x / gridUnitSize2D.x,
+			gridRealSize2D.y / gridUnitSize2D.y
+		);
+
+		regionCellRealSize2D = new Vector2(
+			regionRealSize2D.x / regionDensity,
+			regionRealSize2D.y / regionDensity
+		);
+
+
+//		gridSizes = new Vector2(gridSizeXVal, gridSizeZVal);
+//		gridRealSizes2D = new Vector2(GetLength(gridSizeXVal), GetLength(gridSizeZVal));
+//		gridRealSizes3D = new Vector3(gridRealSizes2D.x, 1f, gridRealSizes2D.y);
 
 	}
 
-	public static void UpdateConstants(int gridSizeXVal, int gridSizeZVal, float metersInOneUnitVal)
+	public static void UpdateConstants(int gridSizeXVal, int gridSizeZVal, int regionDensityVal, float metersInOneUnitVal)
 	{
 		metersInOneUnit = metersInOneUnitVal;
-		gridSizes = new Vector2(gridSizeXVal, gridSizeZVal);
-        gridRealSizes2D = new Vector2(GetLength(gridSizeXVal), GetLength(gridSizeZVal));
-		gridRealSizes3D = new Vector3(gridRealSizes2D.x, 1f, gridRealSizes2D.y);
+		regionDensity = regionDensityVal;
+
+		gridUnitSize2D = new Vector2(gridSizeXVal, gridSizeZVal);
+		gridRealSize2D = multiply(gridUnitSize2D, metersInOneUnit);
+
+		regionRealSize2D = new Vector2(
+			gridRealSize2D.x / gridUnitSize2D.x,
+			gridRealSize2D.y / gridUnitSize2D.y
+		);
+
+		regionCellRealSize2D = new Vector2(
+			regionRealSize2D.x / regionDensity,
+			regionRealSize2D.y / regionDensity
+		);
+
+
+//		gridSizes = new Vector2(gridSizeXVal, gridSizeZVal);
+//        gridRealSizes2D = new Vector2(GetLength(gridSizeXVal), GetLength(gridSizeZVal));
+//		gridRealSizes3D = new Vector3(gridRealSizes2D.x, 1f, gridRealSizes2D.y);
 	}
 
 
@@ -91,15 +129,47 @@ public class Utils
 				targetPosZ + offset.z);
 	}
 
+	public static Vector3 GETTOPCOSTAMTESTETETERATESTETESTETEST(float targetPosX, float targetPosZ, GameObject gameObject)
+    	{
+
+
+//    		Vector3 offset = GetObjectOffsetToCenter(gameObject);
+		    Vector3 offset = gameObject.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh.bounds.extents;
+    		offset = multiply(offset, gameObject.transform.localScale);
+
+    		return new Vector3(
+    				targetPosX + offset.x,
+    				1f,
+    				targetPosZ + offset.z);
+    	}
+
 
 
 	private static Vector3 GetObjectOffsetToCenter(GameObject gameObject)
 	{
-		if (inEditor())
+		Mesh gameObjectMesh;
+
+		try
 		{
-			return gameObject.GetComponent<MeshFilter>().sharedMesh.bounds.extents;
+			if (inEditor())
+			{
+//			return gameObject.GetComponent<MeshFilter>().sharedMesh.bounds.extents;
+				gameObjectMesh = gameObject.GetComponent<MeshFilter>().sharedMesh;
+			}
+			else
+			{
+				gameObjectMesh = gameObject.GetComponent<MeshFilter>().mesh;
+			}
 		}
-		return gameObject.GetComponent<MeshFilter>().mesh.bounds.extents;
+		catch (MissingComponentException noMeshException)
+		{
+			Debug.Log("no mesh attached to gameobject, setting offset as 0. ");
+			return Vector3.zero;
+		}
+
+		return gameObjectMesh.bounds.extents;
+//		return gameObject.GetComponent<MeshFilter>().mesh.bounds.extents;
+
 	}
 
 	public static Vector3 GetObjectDimensions(GameObject gameObject)
@@ -143,29 +213,40 @@ public class Utils
 	}
 
 
-	public static Vector2 getGridRealSizes2D()
+	public static Vector2 GetGridRealSize2D()
 	{
-		return gridRealSizes2D;
+		return gridRealSize2D;
 	}
 
-	public static Vector3 GetGridRealSized3D()
+	public static Vector3 GetGridRealSize3D()
 	{
-		return gridRealSizes3D;
+		return new Vector3(
+				gridRealSize2D.x,
+				1f,
+				gridRealSize2D.y
+		);
 	}
 
-	public static Vector3 GetGridRealSized3D(float multiplier)
+	public static Vector3 GetGridRealSize3D(float multiplier)
 	{
-		Vector3 size = gridRealSizes3D;
+		Vector3 size = GetGridRealSize3D();
 		size.x *= multiplier;
 		size.z *= multiplier;
 		return size;
 	}
 
-	public static Vector3 multiply(Vector3 vector, Vector3 divider)
+	public static Vector3 multiply(Vector3 vector, Vector3 multiplier)
 	{
-		vector.x *= divider.x;
-		vector.y *= divider.y;
-		vector.z *= divider.z;
+		vector.x *= multiplier.x;
+		vector.y *= multiplier.y;
+		vector.z *= multiplier.z;
+		return vector;
+	}
+
+	public static Vector2 multiply(Vector2 vector, float multiplier)
+	{
+		vector.x *= multiplier;
+		vector.y *= multiplier;
 		return vector;
 	}
 

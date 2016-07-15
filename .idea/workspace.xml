@@ -23,30 +23,50 @@
     <favorites_list name="Thesis_Indoor_Map_Gen" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.55932206">
+    <splitter split-orientation="horizontal" split-proportion="0.33022922">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="IndoorMapGeneratorScript.cs" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Assets/Scripts/IndoorMapGeneratorScript.cs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="511">
-                  <caret line="79" column="43" selection-start-line="79" selection-start-column="43" selection-end-line="79" selection-end-column="43" />
+                <state relative-caret-position="1170">
+                  <caret line="90" column="59" selection-start-line="90" selection-start-column="59" selection-end-line="90" selection-end-column="59" />
                   <folding>
-                    <marker date="1468324583000" expanded="true" signature="6:32" ph="..." />
-                    <marker date="1468324583000" expanded="true" signature="87:5012" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="653:809" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="824:981" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="1004:1010" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="1040:1202" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="1235:1794" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="1839:3007" ph="{...}" />
-                    <marker date="1468324583000" expanded="false" signature="3054:4017" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="4052:4150" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="4180:4462" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="4492:4692" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="4726:4774" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="4809:4855" ph="{...}" />
-                    <marker date="1468324583000" expanded="true" signature="4903:5008" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="6:58" ph="..." />
+                    <marker date="1468514274000" expanded="true" signature="6:92" ph="..." />
+                    <marker date="1468514274000" expanded="true" signature="147:7397" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="989:1158" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="1173:1345" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="1368:1375" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="1405:1582" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="1615:2173" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="2201:3438" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="3473:4203" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="4237:4386" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="4428:4579" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="6877:7077" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="7111:7159" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="7194:7240" ph="{...}" />
+                    <marker date="1468514274000" expanded="true" signature="7288:7393" ph="{...}" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="GridCell.cs" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Assets/Scripts/GridCell.cs">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="91">
+                  <caret line="7" column="35" selection-start-line="7" selection-start-column="35" selection-end-line="7" selection-end-column="35" />
+                  <folding>
+                    <marker date="1468357210000" expanded="true" signature="6:44" ph="..." />
+                    <marker date="1468357210000" expanded="true" signature="83:606" ph="{...}" />
+                    <marker date="1468357210000" expanded="true" signature="206:212" ph="{...}" />
+                    <marker date="1468357210000" expanded="true" signature="230:236" ph="{...}" />
+                    <marker date="1468357210000" expanded="true" signature="304:386" ph="{...}" />
+                    <marker date="1468357210000" expanded="true" signature="418:448" ph="{...}" />
+                    <marker date="1468357210000" expanded="true" signature="480:510" ph="{...}" />
+                    <marker date="1468357210000" expanded="true" signature="546:604" ph="{...}" />
                   </folding>
                 </state>
               </provider>
@@ -59,8 +79,22 @@
           <file leaf-file-name="IndoorMapGeneratorEditor.cs" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/Assets/Scripts/Editor/IndoorMapGeneratorEditor.cs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="312">
-                  <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+                <state relative-caret-position="598">
+                  <caret line="46" column="33" selection-start-line="46" selection-start-column="33" selection-end-line="46" selection-end-column="33" />
+                  <folding>
+                    <marker date="1468506541000" expanded="true" signature="6:63" ph="..." />
+                    <marker date="1468506541000" expanded="true" signature="160:1032" ph="{...}" />
+                    <marker date="1468506541000" expanded="true" signature="244:1028" ph="{...}" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="EditorGUILayout.cs" pinned="false" current-in-tab="false">
+            <entry file="file://$USER_HOME$/.local/share/JetBrains/Shared/v06/DecompilerCache/decompiler/AB914476-5BDF-424C-9FDA-04FF418D1CB0/70/15b566db/EditorGUILayout.cs">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="248">
+                  <caret line="3984" column="17" selection-start-line="3984" selection-start-column="17" selection-end-line="3984" selection-end-column="17" />
                   <folding />
                 </state>
               </provider>
@@ -69,29 +103,31 @@
           <file leaf-file-name="Utils.cs" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/Assets/Scripts/Utils.cs">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1950">
-                  <caret line="175" column="22" selection-start-line="175" selection-start-column="22" selection-end-line="175" selection-end-column="22" />
+                <state relative-caret-position="455">
+                  <caret line="60" column="42" selection-start-line="60" selection-start-column="42" selection-end-line="60" selection-end-column="42" />
                   <folding>
-                    <marker date="1468323257000" expanded="true" signature="6:32" ph="..." />
-                    <marker date="1468323257000" expanded="true" signature="53:4548" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="568:851" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="950:1215" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="1305:1846" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="1931:2152" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="2254:2464" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="2538:2713" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="2780:2949" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3001:3189" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3243:3438" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3484:3516" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3561:3593" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3654:3757" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3823:3921" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="3985:4050" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="4114:4212" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="4285:4348" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="4410:4475" ph="{...}" />
-                    <marker date="1468323257000" expanded="true" signature="4507:4544" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6:32" ph="..." />
+                    <marker date="1468514557000" expanded="true" signature="53:6770" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="876:1565" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="1686:2358" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="2448:2989" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="3074:3295" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="3397:3607" ph="{...}" />
+                    <marker date="1468514557000" expanded="false" signature="3728:4084" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="4158:4729" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="4796:4965" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="5017:5205" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="5259:5454" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="5499:5530" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="5574:5658" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="5718:5825" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="5894:6001" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6068:6143" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6207:6272" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6336:6434" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6507:6570" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6632:6697" ph="{...}" />
+                    <marker date="1468514557000" expanded="true" signature="6729:6766" ph="{...}" />
                   </folding>
                 </state>
               </provider>
@@ -107,6 +143,21 @@
               </provider>
             </entry>
           </file>
+          <file leaf-file-name="GridCellEditor.cs" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/Assets/Scripts/Editor/GridCellEditor.cs">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="195">
+                  <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+                  <folding>
+                    <marker date="1468358463000" expanded="true" signature="6:44" ph="..." />
+                    <marker date="1468358463000" expanded="true" signature="6:63" ph="..." />
+                    <marker date="1468358463000" expanded="true" signature="135:504" ph="{...}" />
+                    <marker date="1468358463000" expanded="true" signature="176:501" ph="{...}" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
         </leaf>
       </split-second>
     </splitter>
@@ -114,17 +165,17 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/Assets/Scripts/GridCell.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Editor/GridCellEditor.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/Editor/IndoorMapGeneratorEditor.cs" />
-        <option value="$PROJECT_DIR$/Assets/Scripts/Utils.cs" />
         <option value="$PROJECT_DIR$/Assets/Scripts/IndoorMapGeneratorScript.cs" />
+        <option value="$PROJECT_DIR$/Assets/Scripts/Utils.cs" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1495" />
-    <option name="y" value="-358" />
-    <option name="width" value="1791" />
-    <option name="height" value="987" />
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -152,178 +203,7 @@
     </navigator>
     <panes>
       <pane id="SolutionExplorer">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp-Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assets" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp-Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assets" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Scripts" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp-Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assets" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp-Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assets" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CrossPlatformInput" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp-Editor" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assets" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assets" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Scripts" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Thesis_Indoor_Map_Gen" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Assembly-CSharp" />
-              <option name="myItemType" value="com.jetbrains.resharper.projectView.solutionExplorer.SolutionExplorerNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
+        <subPane />
       </pane>
     </panes>
   </component>
@@ -331,6 +211,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/Thesis_Indoor_Map_Gen.sln" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="FullScreen" value="true" />
   </component>
   <component name="RunManager" selected=".NET Project.Default">
     <configuration default="true" type="DotNetProject" factoryName=".NET Project">
@@ -356,6 +237,9 @@
   <component name="ShelveChangesManager" show_recycled="false">
     <option name="remove_strategy" value="false" />
   </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="561ff3a2-ec72-4e3e-b2fc-0cd89e81cf84" name="Default" comment="" />
@@ -367,13 +251,13 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1495" y="-358" width="1791" height="987" extended-state="0" />
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.07035176" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.11103152" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.08714597" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Errors in solution" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295129" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.09305211" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -404,7 +288,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="2" />
+      <option name="time" value="6" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -452,63 +336,116 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Editor/IndoorMapGeneratorEditor.cs">
+    <entry file="file://$USER_HOME$/.local/share/JetBrains/Shared/v06/DecompilerCache/decompiler/7C245D52-B6F5-4E26-88AC-42AD54AC9CDE/2c/74dfdcb7/MeshFilter.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+        <state relative-caret-position="299">
+          <caret line="23" column="16" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="16" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Utils.cs">
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/GridCell.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1950">
-          <caret line="175" column="22" selection-start-line="175" selection-start-column="22" selection-end-line="175" selection-end-column="22" />
+        <state relative-caret-position="91">
+          <caret line="7" column="35" selection-start-line="7" selection-start-column="35" selection-end-line="7" selection-end-column="35" />
           <folding>
-            <marker date="1468323257000" expanded="true" signature="6:32" ph="..." />
-            <marker date="1468323257000" expanded="true" signature="53:4548" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="568:851" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="950:1215" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="1305:1846" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="1931:2152" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="2254:2464" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="2538:2713" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="2780:2949" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3001:3189" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3243:3438" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3484:3516" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3561:3593" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3654:3757" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3823:3921" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="3985:4050" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="4114:4212" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="4285:4348" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="4410:4475" ph="{...}" />
-            <marker date="1468323257000" expanded="true" signature="4507:4544" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="6:44" ph="..." />
+            <marker date="1468357210000" expanded="true" signature="83:606" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="206:212" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="230:236" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="304:386" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="418:448" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="480:510" ph="{...}" />
+            <marker date="1468357210000" expanded="true" signature="546:604" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Editor/GridCellEditor.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding>
+            <marker date="1468358463000" expanded="true" signature="6:44" ph="..." />
+            <marker date="1468358463000" expanded="true" signature="6:63" ph="..." />
+            <marker date="1468358463000" expanded="true" signature="135:504" ph="{...}" />
+            <marker date="1468358463000" expanded="true" signature="176:501" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.local/share/JetBrains/Shared/v06/DecompilerCache/decompiler/AB914476-5BDF-424C-9FDA-04FF418D1CB0/70/15b566db/EditorGUILayout.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="3984" column="17" selection-start-line="3984" selection-start-column="17" selection-end-line="3984" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Editor/IndoorMapGeneratorEditor.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="598">
+          <caret line="46" column="33" selection-start-line="46" selection-start-column="33" selection-end-line="46" selection-end-column="33" />
+          <folding>
+            <marker date="1468506541000" expanded="true" signature="6:63" ph="..." />
+            <marker date="1468506541000" expanded="true" signature="160:1032" ph="{...}" />
+            <marker date="1468506541000" expanded="true" signature="244:1028" ph="{...}" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Assets/Scripts/IndoorMapGeneratorScript.cs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="511">
-          <caret line="79" column="43" selection-start-line="79" selection-start-column="43" selection-end-line="79" selection-end-column="43" />
+        <state relative-caret-position="1170">
+          <caret line="90" column="59" selection-start-line="90" selection-start-column="59" selection-end-line="90" selection-end-column="59" />
           <folding>
-            <marker date="1468324583000" expanded="true" signature="6:32" ph="..." />
-            <marker date="1468324583000" expanded="true" signature="87:5012" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="653:809" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="824:981" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="1004:1010" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="1040:1202" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="1235:1794" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="1839:3007" ph="{...}" />
-            <marker date="1468324583000" expanded="false" signature="3054:4017" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="4052:4150" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="4180:4462" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="4492:4692" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="4726:4774" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="4809:4855" ph="{...}" />
-            <marker date="1468324583000" expanded="true" signature="4903:5008" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="6:58" ph="..." />
+            <marker date="1468514274000" expanded="true" signature="6:92" ph="..." />
+            <marker date="1468514274000" expanded="true" signature="147:7397" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="989:1158" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="1173:1345" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="1368:1375" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="1405:1582" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="1615:2173" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="2201:3438" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="3473:4203" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="4237:4386" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="4428:4579" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="6877:7077" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="7111:7159" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="7194:7240" ph="{...}" />
+            <marker date="1468514274000" expanded="true" signature="7288:7393" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Assets/Scripts/Utils.cs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="455">
+          <caret line="60" column="42" selection-start-line="60" selection-start-column="42" selection-end-line="60" selection-end-column="42" />
+          <folding>
+            <marker date="1468514557000" expanded="true" signature="6:32" ph="..." />
+            <marker date="1468514557000" expanded="true" signature="53:6770" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="876:1565" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="1686:2358" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="2448:2989" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="3074:3295" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="3397:3607" ph="{...}" />
+            <marker date="1468514557000" expanded="false" signature="3728:4084" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="4158:4729" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="4796:4965" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="5017:5205" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="5259:5454" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="5499:5530" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="5574:5658" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="5718:5825" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="5894:6001" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="6068:6143" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="6207:6272" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="6336:6434" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="6507:6570" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="6632:6697" ph="{...}" />
+            <marker date="1468514557000" expanded="true" signature="6729:6766" ph="{...}" />
           </folding>
         </state>
       </provider>
