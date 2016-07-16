@@ -11,7 +11,7 @@ public class GridRegionEditor : Editor
 	public override void OnInspectorGUI()
 	{
 		base.OnInspectorGUI();
-		
+
 		if (script == null)
 		{
 			script = (GridRegionScript) target;

@@ -40,12 +40,14 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	{
 		Debug.Log("IndoorMapGenScript: constructor", this);
 		Utils.Initialize(gridSizeX, gridSizeZ, regionDensity, metersInOneUnit);
+		UtilsMath.Initialize();
 	}
 
 	void Start()
 	{
 		Debug.Log(System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 		Utils.Initialize(gridSizeX, gridSizeZ, regionDensity, metersInOneUnit);
+		UtilsMath.Initialize();
 	}
 
 	public void Update()
@@ -101,19 +103,38 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 	}
 
-	public void CreatePointsOfInterest(int amount)
+	public void CreatePointsOfInterest()
 	{
 		Random random = new Random();
 		int listLength = gridRegionsList.Count;
-		if (listLength != (gridSizeX * gridSizeZ) - 1)
+
+		if (listLength != (gridSizeX * gridSizeZ))
 		{
 			Debug.LogError("list length (" + listLength + "!= grid unit dims (" + ((gridSizeX * gridSizeZ) -1) + ")" );
 		}
-		for (int a = 0; a < amount; a++)
+
+		foreach (GridRegionScript region in gridRegionsList)
 		{
-			gridRegionsList.ElementAt(random.Next(0, listLength)).SetRegionState(true);
+			region.SetRegionState(false);
 		}
+
+		LinkedList<int> randomUniqueNums = UtilsMath.GetUniqueRandomNumbers(pointsOfInterest, 0, listLength, true);
+		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums));
+
+		for (int n = 0; n < randomUniqueNums.Count; ++n)
+		{
+			gridRegionsList.ElementAt(randomUniqueNums.ElementAt(n)).SetRegionState(true);
+		}
+
+
+//		for (int a = 0; a < amount; a++)
+//		{
+//			gridRegionsList.ElementAt(random.Next(0, listLength)).SetRegionState(true);
+//		}
 	}
+
+
+
 
 
 

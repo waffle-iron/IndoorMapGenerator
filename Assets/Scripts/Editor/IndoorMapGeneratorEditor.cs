@@ -52,7 +52,7 @@ public class IndoorMapGeneratorEditor : Editor
 
 		if (GUILayout.Button("POIs"))
 		{
-			script.CreatePointsOfInterest(script.pointsOfInterest);
+			script.CreatePointsOfInterest();
 		}
 
   	}

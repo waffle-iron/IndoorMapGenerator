@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 
@@ -79,6 +81,18 @@ public class Utils
 
 
 	//UTILITY METHODS:
+
+	public static String PrintList(LinkedList<int> list)
+	{
+		StringBuilder builder = new StringBuilder();
+		foreach (int element in list)
+		{
+			builder.Append(element);
+			builder.Append(" ");
+		}
+
+		return builder.ToString();
+	}
 
 	public static float GetLength(float valueWithoutMeasurementUnit)
 	{
