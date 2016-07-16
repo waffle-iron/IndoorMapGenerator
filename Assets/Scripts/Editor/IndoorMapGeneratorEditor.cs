@@ -43,10 +43,16 @@ public class IndoorMapGeneratorEditor : Editor
 		{
 //			script.ClearObjects();
 			script.CreateFloorPlane();
+			script.CreateRegions();
 //			script.CreateGridRegions();
-			script.CreateCells();
+//			script.CreateCells();
 //			script.CreateCellularAutomataBoxes();
 //			script.CreateCellularAutomataVertices();
+		}
+
+		if (GUILayout.Button("POIs"))
+		{
+			script.CreatePointsOfInterest(script.pointsOfInterest);
 		}
 
   	}
