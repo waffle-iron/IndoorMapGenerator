@@ -26,15 +26,17 @@ public class GridRegionScript : MonoBehaviour
 	{
 		//todo: make Utility method to choose between referencing
 		//sharedMaterial vs material
-		Material mat = this.GetComponent<Renderer>().sharedMaterial;
+//		Material mat = this.GetComponent<Renderer>().sharedMaterial;
 
 		if (regionOn)
 		{
-			mat = materialOn;
+//			mat = materialOn;
+			this.GetComponent<Renderer>().sharedMaterial = materialOn;
 		}
 		else
 		{
-			mat = materialOff;
+//			mat = materialOff;
+			this.GetComponent<Renderer>().sharedMaterial = materialOff;
 		}
 	}
 
