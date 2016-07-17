@@ -50,6 +50,7 @@ public class IndoorMapGeneratorEditor : Editor
 //			script.CreateCellularAutomataVertices();
 		}
 
+
 		if (GUILayout.Button("POIs"))
 		{
 			script.CreatePointsOfInterest();

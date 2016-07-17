@@ -90,7 +90,28 @@ public class Utils
 			builder.Append(element);
 			builder.Append(" ");
 		}
+		return builder.ToString();
+	}
 
+	public static String PrintList(List<int> list)
+	{
+		StringBuilder builder = new StringBuilder();
+		foreach (int element in list)
+		{
+			builder.Append(element);
+			builder.Append(" ");
+		}
+		return builder.ToString();
+	}
+
+	public static String PrintList(int[] list)
+	{
+		StringBuilder builder = new StringBuilder();
+		foreach (int element in list)
+		{
+			builder.Append(element);
+			builder.Append(" ");
+		}
 		return builder.ToString();
 	}
 

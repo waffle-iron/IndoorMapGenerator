@@ -3,7 +3,6 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditorInternal;
 using Random = System.Random;
 
 public class IndoorMapGeneratorScript : MonoBehaviour
@@ -15,23 +14,19 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public int 				regionDensity = 5;
 	public int 				pointsOfInterest = 10;
 
-
 	//prefabs:
 	public GameObject 		floorPlanePrefab;
 	public GridRegionScript	gridRegionPrefab;
-//	public GameObject 	GridCellPlanePrefab;
-//	public GameObject 	GridCellVertexPrefab;
-//	public  	gridRegionPrefab;
 
 	//holders:
 	private GameObject 		gridRegionsHolder;
 
-
 	//instantiated GameObjects:
-	private GameObject floorPlaneObject;
+	private GameObject 		floorPlaneObject;
 
 
-	private LinkedList<GridRegionScript> gridRegionsList = new LinkedList<GridRegionScript>();
+//	private LinkedList<GridRegionScript> gridRegionsList = new LinkedList<GridRegionScript>();
+	private GridRegionScript[,] gridRegionsArray;
 
 	private String methodName;
 
@@ -73,11 +68,15 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		floorPlaneObject.transform.parent = this.transform;
 	}
 
+	//todo: regions (this method and CreatePointsOfInterest()) are calibrated to be n x n.
+	//investigate and fix dat
 	public void CreateRegions()
 	{
 		Debug.Log(System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 
-		gridRegionsList.Clear();
+		gridRegionsArray = new GridRegionScript[gridSizeX, gridSizeZ];
+//		gridRegionsList.Clear();
+
 		gridRegionsHolder = new GameObject();
 		gridRegionsHolder.name = "Grid Regions";
 		gridRegionsHolder.transform.parent = this.transform;
@@ -98,7 +97,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				spawned.transform.position = Utils.GetTopLeftCornerXZ(Utils.GetLength(x), Utils.GetLength(z), spawned.gameObject);
 				spawned.transform.name = "(" + x + ", " + z + ")";
 				spawned.transform.parent = gridRegionsHolder.transform;
-				gridRegionsList.AddLast(spawned);
+
+				gridRegionsArray[x, z] = spawned;
+//				gridRegionsList.AddLast(spawned);
 			}
 		}
 	}
@@ -106,31 +107,51 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public void CreatePointsOfInterest()
 	{
 		Random random = new Random();
-		int listLength = gridRegionsList.Count;
 
-		if (listLength != (gridSizeX * gridSizeZ))
-		{
-			Debug.LogError("list length (" + listLength + "!= grid unit dims (" + ((gridSizeX * gridSizeZ) -1) + ")" );
-		}
-
-		foreach (GridRegionScript region in gridRegionsList)
-		{
-			region.SetRegionState(false);
-		}
-
-		LinkedList<int> randomUniqueNums = UtilsMath.GetUniqueRandomNumbers(pointsOfInterest, 0, listLength, true);
-		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums));
-
-		for (int n = 0; n < randomUniqueNums.Count; ++n)
-		{
-			gridRegionsList.ElementAt(randomUniqueNums.ElementAt(n)).SetRegionState(true);
-		}
-
-
-//		for (int a = 0; a < amount; a++)
+//		int listLength = gridRegionsList.Count;
+//
+//		if (listLength != (gridSizeX * gridSizeZ))
 //		{
-//			gridRegionsList.ElementAt(random.Next(0, listLength)).SetRegionState(true);
+//			Debug.LogError("list length (" + listLength + "!= grid unit dims (" + ((gridSizeX * gridSizeZ) -1) + ")" );
 //		}
+
+//		foreach (GridRegionScript region in gridRegionsList)
+//		{
+//			region.SetRegionState(false);
+//		}
+
+		for (int x = 0; x < gridRegionsArray.GetLength(0); ++x)
+		{
+			for (int z = 0; z < gridRegionsArray.GetLength(1); ++z)
+			{
+				gridRegionsArray[x,z].SetRegionState(false);
+			}
+		}
+
+		int[] randomUniqueNums = UtilsMath.GetUniqueRandomNumbers(pointsOfInterest, 0, gridRegionsArray.GetLength(0) * gridRegionsArray.GetLength(1), true);
+
+		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums.ToList()));
+
+		//BUG: 0X0 IS ALWAYS (sometimes) ON!
+
+		int row;
+		int column;
+		for (int l = 0; l < randomUniqueNums.Length; ++l)
+		{
+			row = Mathf.FloorToInt(randomUniqueNums[l] / (float)gridSizeX);
+			column = randomUniqueNums[l] - (row * gridSizeX);
+			gridRegionsArray[row, column].SetRegionState(true);
+		}
+
+//		for (int n = 0; n < randomUniqueNums.Count; ++n)
+//		{
+//			gridRegionsList.ElementAt(randomUniqueNums.ElementAt(n)).SetRegionState(true);
+//		}
+	}
+
+	public void CreateEntryPoint()
+	{
+		
 	}
 
 
