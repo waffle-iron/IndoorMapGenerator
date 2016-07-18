@@ -56,6 +56,13 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreatePointsOfInterest();
 		}
 
+		if (GUILayout.Button("entry/exit nodes"))
+		if (GUILayout.Button("entry/exit nodes"))
+		{
+			script.CreateEntryPoint();
+			script.CreateEndPoint();
+		}
+
   	}
 
 

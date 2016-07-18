@@ -27,6 +27,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 //	private LinkedList<GridRegionScript> gridRegionsList = new LinkedList<GridRegionScript>();
 	private GridRegionScript[,] gridRegionsArray;
+	private Vector2 			pointEntry;
+	private Vector2 			pointEnd;
+
 
 	private String methodName;
 
@@ -151,8 +154,70 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void CreateEntryPoint()
 	{
-		
+		pointEntry = new Vector2(
+			Mathf.FloorToInt(gridSizeX * 0.3f),
+			Mathf.FloorToInt(gridSizeZ * 0.3f)
+		);
+
+		pointEntry.x += new Random().Next(-gridSizeX / 3, gridSizeX / 5);
+		pointEntry.y += new Random().Next(-gridSizeZ / 3, gridSizeZ / 5);
+		pointEntry.x = Mathf.Max(0, pointEntry.x);
+		pointEntry.y = Mathf.Max(0, pointEntry.y);
+
+		Debug.LogError("endpoint: x:" + pointEntry.x + ", z:" + pointEntry.y);
+		gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionState(true);
+		gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetCustomColour(Color.green, 75);
 	}
+
+	public void CreateEndPoint()
+	{
+
+		pointEnd = new Vector2(
+			Mathf.FloorToInt(gridSizeX * 0.9f),
+			Mathf.FloorToInt(gridSizeZ * 0.9f)
+		);
+
+		pointEnd.x += new Random().Next(-gridSizeX / 5, gridSizeX / 7);
+		pointEnd.y += new Random().Next(-gridSizeZ / 5, gridSizeZ / 7);
+		pointEnd.x = Mathf.Min(gridSizeX, pointEnd.x);
+		pointEnd.y = Mathf.Min(gridSizeZ, pointEnd.y);
+
+		Debug.LogError("endpoint: x:" + pointEnd.x + ", z:" + pointEnd.y);
+		gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetRegionState(true);
+		gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetCustomColour(Color.red, 75);
+	}
+
+	//this is what is should look like
+//	public void CreateEntryPoint()
+//	{
+//		float 	centerToCornerDistance;
+//		float 	startingPointDistanceToCenter;
+//		int 	vectorAngle;
+//		centerToCornerDistance = Mathf.Pow(gridSizeX / 2, 2) * Mathf.Pow(gridSizeZ / 2, 2);
+//		centerToCornerDistance = Mathf.Sqrt(centerToCornerDistance);
+//
+//		float 	desiredDistanceCrossingPoint = centerToCornerDistance - (centerToCornerDistance * 0.40f);
+//
+//
+//		Random random = new Random();
+//		int randNum = random.Next(0, 100);
+//		if (randNum <= 70)
+//		{
+//			//choose spot from "desired" units segment
+//			startingPointDistanceToCenter = Mathf.Lerp(desiredDistanceCrossingPoint, centerToCornerDistance, Mathf.InverseLerp(0, 100, randNum));
+//		}
+//		else
+//		{
+//			startingPointDistanceToCenter = Mathf.Lerp(0, desiredDistanceCrossingPoint, Mathf.InverseLerp(0, 100, randNum));
+//			++startingPointDistanceToCenter;
+//		}
+//
+//		vectorAngle = 45;
+//		vectorAngle += random.Next(-20, 20);
+//
+//		Debug.LogError("centerToCorner:" + centerToCornerDistance + ", crossPoint:" + desiredDistanceCrossingPoint);
+//		Debug.LogError("randNum:" + randNum + ", startDist:" + startingPointDistanceToCenter);
+//	}
 
 
 

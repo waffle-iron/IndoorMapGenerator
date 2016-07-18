@@ -22,7 +22,7 @@ public class GridRegionScript : MonoBehaviour
 	
 	}
 
-	private void updateStateColour()
+	private void UpdateStateColour()
 	{
 		//todo: make Utility method to choose between referencing
 		//sharedMaterial vs material
@@ -30,20 +30,35 @@ public class GridRegionScript : MonoBehaviour
 
 		if (regionOn)
 		{
-//			mat = materialOn;
 			this.GetComponent<Renderer>().sharedMaterial = materialOn;
 		}
 		else
 		{
-//			mat = materialOff;
 			this.GetComponent<Renderer>().sharedMaterial = materialOff;
 		}
+	}
+
+	public void SetCustomColour(Color colour)
+	{
+		SetCustomColour(colour, 50);
+	}
+
+	public void SetCustomColour(Color colour, int influencePercentage)
+	{
+		Material material = new Material(this.GetComponent<Renderer>().sharedMaterial);
+		material.color = colour;
+		this.GetComponent<Renderer>().sharedMaterial = material;
+//			Color.Lerp(
+//				this.GetComponent<Renderer>().sharedMaterial.color,
+//				colour,
+//				influencePercentage / 100
+//		);
 	}
 
 	public void SetRegionState(bool regionOn)
 	{
 		this.regionOn = regionOn;
-		updateStateColour();
+		UpdateStateColour();
 	}
 
 	public void SetRegionUnitCoords(Vector2 unitCoordinates)
@@ -60,7 +75,7 @@ public class GridRegionScript : MonoBehaviour
 	public bool SwitchRegionState()
 	{
 		regionOn = !regionOn;
-		updateStateColour();
+		UpdateStateColour();
 		return regionOn;
 	}
 
