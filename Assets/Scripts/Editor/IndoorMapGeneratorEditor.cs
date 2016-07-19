@@ -57,10 +57,14 @@ public class IndoorMapGeneratorEditor : Editor
 		}
 
 		if (GUILayout.Button("entry/exit nodes"))
-		if (GUILayout.Button("entry/exit nodes"))
 		{
 			script.CreateEntryPoint();
 			script.CreateEndPoint();
+		}
+
+		if (GUILayout.Button("bresenham"))
+		{
+			script.CreatePathEntryEnd();
 		}
 
   	}

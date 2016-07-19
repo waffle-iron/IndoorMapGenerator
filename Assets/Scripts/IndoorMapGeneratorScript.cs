@@ -27,9 +27,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 //	private LinkedList<GridRegionScript> gridRegionsList = new LinkedList<GridRegionScript>();
 	private GridRegionScript[,] gridRegionsArray;
-	private Vector2 			pointEntry;
-	private Vector2 			pointEnd;
-
+	private Vector2 			pointEntry = Utils.VECTOR2_INVALID_VALUE;
+	private Vector2 			pointEnd = Utils.VECTOR2_INVALID_VALUE;
 
 	private String methodName;
 
@@ -154,17 +153,23 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void CreateEntryPoint()
 	{
+		Random random = new Random();
+		if (pointEntry != Utils.VECTOR2_INVALID_VALUE)
+		{
+			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionState(false);
+		}
+
 		pointEntry = new Vector2(
 			Mathf.FloorToInt(gridSizeX * 0.3f),
 			Mathf.FloorToInt(gridSizeZ * 0.3f)
 		);
 
-		pointEntry.x += new Random().Next(-gridSizeX / 3, gridSizeX / 5);
-		pointEntry.y += new Random().Next(-gridSizeZ / 3, gridSizeZ / 5);
+		pointEntry.x += random.Next(-gridSizeX / 3, gridSizeX / 5);
+		pointEntry.y += random.Next(-gridSizeZ / 3, gridSizeZ / 5);
 		pointEntry.x = Mathf.Max(0, pointEntry.x);
 		pointEntry.y = Mathf.Max(0, pointEntry.y);
 
-		Debug.LogError("endpoint: x:" + pointEntry.x + ", z:" + pointEntry.y);
+		Debug.LogError("entrypoint: x:" + pointEntry.x + ", z:" + pointEntry.y);
 		gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionState(true);
 		gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetCustomColour(Color.green, 75);
 	}
@@ -172,19 +177,47 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public void CreateEndPoint()
 	{
 
+		Random random = new Random();
+
+//		if (pointEnd != Utils.VECTOR2_INVALID_VALUE)
+//		{
+//			gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetRegionState(false);
+//		}
+
 		pointEnd = new Vector2(
 			Mathf.FloorToInt(gridSizeX * 0.9f),
 			Mathf.FloorToInt(gridSizeZ * 0.9f)
 		);
-
-		pointEnd.x += new Random().Next(-gridSizeX / 5, gridSizeX / 7);
-		pointEnd.y += new Random().Next(-gridSizeZ / 5, gridSizeZ / 7);
-		pointEnd.x = Mathf.Min(gridSizeX, pointEnd.x);
-		pointEnd.y = Mathf.Min(gridSizeZ, pointEnd.y);
+		try
+		{
+			pointEnd.x += random.Next(-gridSizeX / 4, gridSizeX / 4);
+			pointEnd.y += random.Next(-gridSizeZ / 4, gridSizeZ / 4);
+			pointEnd.x = Mathf.Min(gridSizeX - 1, pointEnd.x);
+			pointEnd.y = Mathf.Min(gridSizeZ - 1, pointEnd.y);
+		}
+		catch (IndexOutOfRangeException indexOutOfRangeException)
+		{
+			Debug.LogException(indexOutOfRangeException);
+			Debug.LogError("out of range: " + "(" + pointEnd.x + ", " + pointEnd.y + ").");
+		}
 
 		Debug.LogError("endpoint: x:" + pointEnd.x + ", z:" + pointEnd.y);
 		gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetRegionState(true);
 		gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetCustomColour(Color.red, 75);
+	}
+
+	public void CreatePathEntryEnd()
+	{
+		List<Vector2> path = UtilsMath.BresenhamAlgorithmInt(pointEntry, pointEnd);
+		String str = "bresenham: ";
+
+		foreach (Vector2 tile in path)
+		{
+			str += "[" + tile.x + "," + tile.y + "], ";
+			gridRegionsArray[(int)tile.x, (int)tile.y].SetRegionState(true);
+		}
+		Debug.Log(str);
+
 	}
 
 	//this is what is should look like

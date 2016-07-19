@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class Utils
 {
-
-	public static readonly Vector3 	VECTOR_INVALID_VALUE = new Vector3(-1, -1, -1);
+	public static readonly Vector2 	VECTOR2_INVALID_VALUE = new Vector2(-1, -1);
+	public static readonly Vector3 	VECTOR3_INVALID_VALUE = new Vector3(-1, -1, -1);
 	public static readonly float 	PLANE_SIZE_CORRECTION_MULTIPLIER = 0.1f;
 	public static readonly float 	VERTEX_CUE_SIZE_CORRECTION_MULTIPLIER = 0.3f;
 
