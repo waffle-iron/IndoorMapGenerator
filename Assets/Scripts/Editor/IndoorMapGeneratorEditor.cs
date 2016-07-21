@@ -7,8 +7,30 @@ public class IndoorMapGeneratorEditor : Editor
 {
 	private IndoorMapGeneratorScript script;
 
+
 	public override void OnInspectorGUI()
 	{
+		//'outsource' it to another class
+		GUIStyle label = new GUIStyle(GUI.skin.label);
+
+		GUIStyle bold = new GUIStyle(GUI.skin.label);
+		bold.fontStyle = FontStyle.Bold;
+
+		GUIStyle left = new GUIStyle(GUI.skin.label);
+		left.alignment = TextAnchor.MiddleLeft;
+		left.fontStyle = FontStyle.Bold;
+
+		GUIStyle right = new GUIStyle(GUI.skin.label);
+		right.alignment = TextAnchor.MiddleRight;
+
+
+		GUIStyle center = new GUIStyle(GUI.skin.label);
+        center.alignment = TextAnchor.UpperCenter;
+        center.fontStyle = FontStyle.Italic;
+
+		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
+		EditorGUILayout.LabelField("variables:", center);
+
 		base.OnInspectorGUI();
 
 		if (script == null)
@@ -17,39 +39,16 @@ public class IndoorMapGeneratorEditor : Editor
 		}
 
 		script.Update();
-
-//		if (GUI.changed)
-//		{
-			script.OnInputUpdate();
-//		}
+		script.OnInputUpdate();
 
 
-		EditorGUILayout.LabelField(
-			new GUIContent(
-				"gridX: " + script.gridSizeX +
-				", gridZ: " + script.gridSizeZ +
-				", density:" + script.regionDensity
-			)
-		);
-
-		EditorGUILayout.LabelField(
-			new GUIContent(
-				"cells total: " +
-				(script.gridSizeX * script.gridSizeZ * script.regionDensity).ToString()
-			)
-		);
+		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
 
 		if (GUILayout.Button("Create Floor Plane"))
 		{
-//			script.ClearObjects();
 			script.CreateFloorPlane();
 			script.CreateRegions();
-//			script.CreateGridRegions();
-//			script.CreateCells();
-//			script.CreateCellularAutomataBoxes();
-//			script.CreateCellularAutomataVertices();
 		}
-
 
 		if (GUILayout.Button("POIs"))
 		{
@@ -66,6 +65,25 @@ public class IndoorMapGeneratorEditor : Editor
 		{
 			script.CreatePathEntryEnd();
 		}
+
+
+		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
+		EditorGUILayout.LabelField("details:", center);
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("grid unit dimensions:"), right);
+		GUILayout.Label(new GUIContent("(" + script.gridSizeX + ", " + script.gridSizeZ + ")"), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("grid real dimensions:"), right);
+		GUILayout.Label(new GUIContent("(" + Utils.GetGridRealSize2D().x + ", " + Utils.GetGridRealSize2D().y + ")"), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("cells total:"), right);
+		GUILayout.Label(new GUIContent((script.gridSizeX * script.gridSizeZ * script.regionDensity).ToString()), left);
+		EditorGUILayout.EndHorizontal();
 
   	}
 
