@@ -70,19 +70,31 @@ public class IndoorMapGeneratorEditor : Editor
 		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
 		EditorGUILayout.LabelField("details:", center);
 
+		Vector2 vec = Utils.GetGridUnitSize2D();
 		EditorGUILayout.BeginHorizontal();
 		GUILayout.Label(new GUIContent("grid unit dimensions:"), right);
-		GUILayout.Label(new GUIContent("(" + script.gridSizeX + ", " + script.gridSizeZ + ")"), left);
+		GUILayout.Label(new GUIContent("(" + vec.x + ", " + vec.y + ")"), left);
 		EditorGUILayout.EndHorizontal();
 
+		vec = Utils.GetGridRealSize2D();
 		EditorGUILayout.BeginHorizontal();
 		GUILayout.Label(new GUIContent("grid real dimensions:"), right);
-		GUILayout.Label(new GUIContent("(" + Utils.GetGridRealSize2D().x + ", " + Utils.GetGridRealSize2D().y + ")"), left);
+		GUILayout.Label(new GUIContent("(" + vec.x + ", " + vec.y + ")"), left);
 		EditorGUILayout.EndHorizontal();
 
 		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label(new GUIContent("cells total:"), right);
-		GUILayout.Label(new GUIContent((script.gridSizeX * script.gridSizeZ * script.regionDensity).ToString()), left);
+		GUILayout.Label(new GUIContent("total regions:"), right);
+		GUILayout.Label(new GUIContent(Utils.GetTotalRegions().ToString()), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("total cells:"), right);
+		GUILayout.Label(new GUIContent(Utils.GetTotalCells().ToString()), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("min POI radius:"), right);
+		GUILayout.Label(new GUIContent("~" + Utils.GetMinPOIRadius().ToString() + "%"), left);
 		EditorGUILayout.EndHorizontal();
 
   	}

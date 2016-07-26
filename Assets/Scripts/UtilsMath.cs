@@ -75,7 +75,10 @@ public class UtilsMath
 		for (int i = 0; i < longerCalculationSide; ++i)
 		{
 			tileInLine.Set(x, y);
-			line.Add(tileInLine);
+			if (x != lineStart.x && y != lineEnd.y)
+			{
+				line.Add(tileInLine);
+			}
 
 			if (sidesInversion)
 			{
@@ -100,13 +103,33 @@ public class UtilsMath
 				gradientAccumulation -= longerCalculationSide;
 			}
 
-
 		}
 		return line;
 	}
 
+	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
+	{
+		List<Vector2> list = new List<Vector2>();
+		Vector2 listElement = new Vector2();
+
+		for (int x = -circleRadius; x <= circleRadius; ++x)
+		{
+			for (int y = -circleRadius; y <= circleRadius; ++y)
+			{
+				if (Mathf.Pow(x, 2) * Mathf.Pow(y, 2) <= Mathf.Pow(circleRadius, 2))
+				{
+					listElement.Set(x, y);
+					list.Add(listElement);
+				}
+			}
+		}
+
+		return list;
+	}
+
 	//todo: refactor to hashmap or whatever
 	// (now, cost of checking for existing number is O(n))
+	//FIXME: if count == 0, sometimes app crashes.
 	public static int[] GetUniqueRandomNumbers(int count, int rangeMinInclusive, int rangeMaxNonInclusive, bool sortAsc)
 	{
 		int[] uniqueNums = new int[count];

@@ -20,10 +20,13 @@ public class Utils
 //	private static Vector2 	gridRealSizes2D;
 //	private static Vector3 	gridRealSizes3D;
 
-	public static Vector2 gridUnitSize2D;
-	public static Vector2 gridRealSize2D;
-	public static Vector2 regionRealSize2D;
-	public static Vector2 regionCellRealSize2D;
+	private static Vector2 	gridUnitSize2D;
+	private static Vector2 	gridRealSize2D;
+	private static Vector2 	regionRealSize2D;
+	private static Vector2 	regionCellRealSize2D;
+	private static int 		totalCells;
+	private static int 		totalRegions;
+	private static int 		minPOIRadius;
 
 
 	//CONSTRUCTION AND INITIALIZATION METHODS:
@@ -31,27 +34,7 @@ public class Utils
 	public static void Initialize(int gridSizeXVal, int gridSizeZVal, int regionDensityVal, float metersInOneUnitVal)
 	{
 		initialized = true;
-		metersInOneUnit = metersInOneUnitVal;
-		regionDensity = regionDensityVal;
-
-		gridUnitSize2D = new Vector2(gridSizeXVal, gridSizeZVal);
-		gridRealSize2D = multiply(gridUnitSize2D, metersInOneUnit);
-
-		regionRealSize2D = new Vector2(
-			gridRealSize2D.x / gridUnitSize2D.x,
-			gridRealSize2D.y / gridUnitSize2D.y
-		);
-
-		regionCellRealSize2D = new Vector2(
-			regionRealSize2D.x / regionDensity,
-			regionRealSize2D.y / regionDensity
-		);
-
-
-//		gridSizes = new Vector2(gridSizeXVal, gridSizeZVal);
-//		gridRealSizes2D = new Vector2(GetLength(gridSizeXVal), GetLength(gridSizeZVal));
-//		gridRealSizes3D = new Vector3(gridRealSizes2D.x, 1f, gridRealSizes2D.y);
-
+		UpdateConstants(gridSizeXVal, gridSizeZVal, regionDensityVal, metersInOneUnitVal);
 	}
 
 	public static void UpdateConstants(int gridSizeXVal, int gridSizeZVal, int regionDensityVal, float metersInOneUnitVal)
@@ -72,10 +55,9 @@ public class Utils
 			regionRealSize2D.y / regionDensity
 		);
 
-
-//		gridSizes = new Vector2(gridSizeXVal, gridSizeZVal);
-//        gridRealSizes2D = new Vector2(GetLength(gridSizeXVal), GetLength(gridSizeZVal));
-//		gridRealSizes3D = new Vector3(gridRealSizes2D.x, 1f, gridRealSizes2D.y);
+		totalRegions = (int)(gridUnitSize2D.x * gridUnitSize2D.y);
+        totalCells = totalRegions * (int)regionDensity;
+		minPOIRadius = (int)((1 / (float) gridUnitSize2D.x) * 100f);
 	}
 
 
@@ -270,6 +252,11 @@ public class Utils
 		return size;
 	}
 
+	public static Vector2 GetGridUnitSize2D()
+	{
+		return gridUnitSize2D;
+	}
+
 	public static Vector3 multiply(Vector3 vector, Vector3 multiplier)
 	{
 		vector.x *= multiplier.x;
@@ -319,5 +306,19 @@ public class Utils
 		return Application.isEditor;
 	}
 
+	public static int GetTotalRegions()
+	{
+		return totalRegions;
+	}
+
+	public static int GetTotalCells()
+	{
+		return totalCells;
+	}
+
+	public static int GetMinPOIRadius()
+	{
+		return minPOIRadius;
+	}
 
 }
