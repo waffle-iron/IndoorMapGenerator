@@ -64,7 +64,23 @@ public class Utils
 
 	//UTILITY METHODS:
 
+	public static int RandomRangeMiddleVal(int min, int max)
+	{
+		return UnityEngine.Random.Range(min, max) - (int)((max - min) / 2f);
+	}
+
 	public static String PrintList(LinkedList<int> list)
+	{
+		StringBuilder builder = new StringBuilder();
+		foreach (int element in list)
+		{
+			builder.Append(element);
+			builder.Append(" ");
+		}
+		return builder.ToString();
+	}
+
+	public static String PrintList(List<int> list)
 	{
 		StringBuilder builder = new StringBuilder();
 		foreach (int element in list)

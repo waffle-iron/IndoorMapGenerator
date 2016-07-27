@@ -106,15 +106,15 @@ public class UtilsMath
 		}
 		return line;
 	}
-
-	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
+	
+	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius)
 	{
 		List<Vector2> list = new List<Vector2>();
 		Vector2 listElement = new Vector2();
 
-		for (int x = -circleRadius; x <= circleRadius; ++x)
+		for (int x = midPointX - circleRadius; x <= midPointX + circleRadius; ++x)
 		{
-			for (int y = -circleRadius; y <= circleRadius; ++y)
+			for (int y = midPointZ - circleRadius; y <= midPointZ + circleRadius; ++y)
 			{
 				if (Mathf.Pow(x, 2) * Mathf.Pow(y, 2) <= Mathf.Pow(circleRadius, 2))
 				{
@@ -126,6 +126,31 @@ public class UtilsMath
 
 		return list;
 	}
+
+	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ)
+	{
+		List<Vector2> coords = CreateMidPointCircle(midPointX, midPointZ, circleRadius);
+		foreach (Vector2 coord in coords)
+		{
+			if (coord.x < min || coord.x >= maxX || coord.y < min || coord.y >= maxZ)
+			{
+				coords.Remove(coord);
+			}
+		}
+
+		return coords;
+	}
+
+	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
+	{
+		return CreateMidPointCircle((int)midPoint.x, (int)midPoint.y, circleRadius);
+	}
+
+	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius, int min, int maxX, int maxZ)
+	{
+		return CreateMidPointCircle((int) midPoint.x, (int) midPoint.y, circleRadius, min, maxX, maxZ);
+	}
+
 
 	//todo: refactor to hashmap or whatever
 	// (now, cost of checking for existing number is O(n))
