@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 using UnityEditor;
 
 [CustomEditor(typeof(IndoorMapGeneratorScript))]
@@ -52,7 +53,7 @@ public class IndoorMapGeneratorEditor : Editor
 
 		if (GUILayout.Button("POIs"))
 		{
-			script.CreatePointsOfInterest();
+			script.CreatePointsOfInterest_test();
 		}
 
 		if (GUILayout.Button("entry/exit nodes"))
@@ -64,6 +65,18 @@ public class IndoorMapGeneratorEditor : Editor
 		if (GUILayout.Button("bresenham"))
 		{
 			script.CreatePathEntryEnd();
+		}
+
+		if (GUILayout.Button("circletest"))
+		{
+//			Vector2 gridUnitSize = Utils.GetGridUnitSize2D();
+			string s = Utils.PrintList(
+				UtilsMath.CreateMidPointCircle(
+					5,
+					5,
+					3)
+			);
+			Debug.LogError("[5,5]=>" + s);
 		}
 
 

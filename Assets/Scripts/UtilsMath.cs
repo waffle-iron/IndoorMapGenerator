@@ -116,7 +116,8 @@ public class UtilsMath
 		{
 			for (int y = midPointZ - circleRadius; y <= midPointZ + circleRadius; ++y)
 			{
-				if (Mathf.Pow(x, 2) * Mathf.Pow(y, 2) <= Mathf.Pow(circleRadius, 2))
+				listElement = UtilsMath.VectorsDifference(midPointX, midPointZ, x, y);
+				if (Mathf.Pow(listElement.x, 2) + Mathf.Pow(listElement.y, 2) <= Mathf.Pow(circleRadius, 2))
 				{
 					listElement.Set(x, y);
 					list.Add(listElement);
@@ -130,27 +131,40 @@ public class UtilsMath
 	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ)
 	{
 		List<Vector2> coords = CreateMidPointCircle(midPointX, midPointZ, circleRadius);
-		foreach (Vector2 coord in coords)
+		Vector2 coord;
+		for (int c = 0; c < coords.Count; c++)
 		{
+			coord = coords.ElementAt(c);
 			if (coord.x < min || coord.x >= maxX || coord.y < min || coord.y >= maxZ)
 			{
-				coords.Remove(coord);
+				coords.RemoveAt(c);
+				--c;
 			}
 		}
 
 		return coords;
 	}
 
-	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
+//
+//	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
+//	{
+//		return CreateMidPointCircle((int)midPoint.x, (int)midPoint.y, circleRadius);
+//	}
+//
+//	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius, int min, int maxX, int maxZ)
+//	{
+//		return CreateMidPointCircle((int) midPoint.x, (int) midPoint.y, circleRadius, min, maxX, maxZ);
+//	}
+
+	public static Vector2 VectorsDifference(float vecAX, float vecAY, float vecBX, float vecBY)
 	{
-		return CreateMidPointCircle((int)midPoint.x, (int)midPoint.y, circleRadius);
+		return new Vector2(Mathf.Abs(vecAX - vecBX), Mathf.Abs(vecAY - vecBY));
 	}
 
-	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius, int min, int maxX, int maxZ)
+	public static Vector2 VectorsDifference(Vector2 vectorA, Vector2 vectorB)
 	{
-		return CreateMidPointCircle((int) midPoint.x, (int) midPoint.y, circleRadius, min, maxX, maxZ);
+		return VectorsDifference(vectorA.x, vectorA.y, vectorB.x, vectorB.y);
 	}
-
 
 	//todo: refactor to hashmap or whatever
 	// (now, cost of checking for existing number is O(n))

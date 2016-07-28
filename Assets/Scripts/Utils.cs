@@ -66,7 +66,9 @@ public class Utils
 
 	public static int RandomRangeMiddleVal(int min, int max)
 	{
-		return UnityEngine.Random.Range(min, max) - (int)((max - min) / 2f);
+		//todo: figure out, why this stuff below didnt work.
+//		return UnityEngine.Random.Range(min, max) - (int)((max - min) / 2f);
+		return UnityEngine.Random.Range(min, max);
 	}
 
 	public static String PrintList(LinkedList<int> list)
@@ -80,12 +82,12 @@ public class Utils
 		return builder.ToString();
 	}
 
-	public static String PrintList(List<int> list)
+	public static String PrintList(List<Vector2> list)
 	{
 		StringBuilder builder = new StringBuilder();
-		foreach (int element in list)
+		foreach (Vector2 element in list)
 		{
-			builder.Append(element);
+			builder.Append("(" + element.x + "," + element.y + ")");
 			builder.Append(" ");
 		}
 		return builder.ToString();

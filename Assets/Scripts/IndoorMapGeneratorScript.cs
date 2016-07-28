@@ -129,7 +129,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		//calculate total number of POIs
 		totalPOIs = (int)(gridSizeX * gridSizeZ * poiPercentage / 100f);
 		totalPOIsKey = Mathf.CeilToInt(totalPOIs * (keyPoiPerc / 100f));
-		totalPOIsKey = Utils.RandomRangeMiddleVal(0, keyPoiRndOffset);
+
+//		String deb = "key1: " + totalPOIsKey;
+//		totalPOIsKey = Utils.RandomRangeMiddleVal(0, keyPoiRndOffset);
+//		Debug.LogError(deb + ", key2: " + totalPOIsKey);
+
 		totalPOIsNonKey = totalPOIs - totalPOIsKey;
 
 		keyPoiSizeVal = Mathf.Clamp(
@@ -141,6 +145,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
         		Mathf.Min(gridSizeX, gridSizeZ) * (int)(nonKeyPoiSizePerc / 100f),
         		Utils.GetMinPOIRadius(),
         		Mathf.Min(gridSizeX, gridSizeZ));
+
+		Debug.Log("totalPOIs: " + totalPOIs + "(KEY: " + totalPOIsKey + ", NONKEY: " + totalPOIsNonKey + ")");
 
 //		Debug.LogError(keyPoiSizeVal + ", " + nonKeyPoiSizeVal);
 
@@ -159,6 +165,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			row = Mathf.FloorToInt(randomUniqueNums[l] / (float)gridSizeX);
 			column = randomUniqueNums[l] - (row * gridSizeX);
 
+			int radius = keyPoiSizeVal * Utils.RandomRangeMiddleVal(0, keyPoiRndOffset);
+
+
 			List<Vector2> coords = UtilsMath.CreateMidPointCircle(
 				row,
 				column,
@@ -167,7 +176,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				gridSizeX,
 				gridSizeZ);
 
-			Utils.PrintList(coords);
+			Debug.Log("R: " + radius + "/" + Utils.PrintList(coords));
+
+
 
 			foreach (Vector2 coord in coords)
 			{
@@ -186,6 +197,77 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //			gridRegionsArray[row, column].SetRegionState(true);
 //		}
 	}
+
+	public void CreatePointsOfInterest_test()
+	{
+		Random random = new Random();
+
+//		CleanGridRegionsOff();
+
+		//calculate total number of POIs
+		totalPOIs = 3;
+		totalPOIsKey = 2;
+		totalPOIsNonKey = totalPOIs - totalPOIsKey;
+
+		keyPoiSizeVal = Mathf.Clamp(
+				Mathf.Min(gridSizeX, gridSizeZ) * (int)(keyPoiSizePerc / 100f),
+				Utils.GetMinPOIRadius(),
+				Mathf.Min(gridSizeX, gridSizeZ));
+
+		nonKeyPoiSizeVal = Mathf.Clamp(
+				Mathf.Min(gridSizeX, gridSizeZ) * (int)(nonKeyPoiSizePerc / 100f),
+				Utils.GetMinPOIRadius(),
+				Mathf.Min(gridSizeX, gridSizeZ));
+
+		Debug.Log("totalPOIs: " + totalPOIs + "(KEY: " + totalPOIsKey + ", NONKEY: " + totalPOIsNonKey + ")");
+
+//		Debug.LogError(keyPoiSizeVal + ", " + nonKeyPoiSizeVal);
+
+//		int[] randomUniqueNums = {560};
+
+//		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums.ToList()));
+
+		//BUG: 0X0 IS ALWAYS (sometimes) ON!
+
+		int row;
+		int column;
+
+		//create KEY points of interest
+		for (int l = 0; l < 1; ++l)
+		{
+			row = 10;
+			column = 10;
+
+			int radius = 5;
+
+
+			List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+				row,
+				column,
+				radius);
+
+			Debug.Log("R: " + radius + ", L: " + l + " / " + Utils.PrintList(coords));
+
+
+
+			foreach (Vector2 coord in coords)
+			{
+				gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+				gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.yellow);
+			}
+
+
+		}
+
+//		//create NON-KEY points of interest
+//		for (int l = totalPOIsKey; l < totalPOIs; ++l)
+//		{
+//			row = Mathf.FloorToInt(randomUniqueNums[l] / (float)gridSizeX);
+//			column = randomUniqueNums[l] - (row * gridSizeX);
+//			gridRegionsArray[row, column].SetRegionState(true);
+//		}
+	}
+
 
 	public void CreateEntryPoint()
 	{
