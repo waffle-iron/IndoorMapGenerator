@@ -330,7 +330,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
 		}
 
-		nonKeyPoisList.AddFirst(gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y]);
+//		nonKeyPoisList.AddFirst(gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y]);
 	}
 
 	public void CreatePathEntryEnd()
@@ -348,13 +348,19 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void ConnectKeyPois()
 	{
-		GridRegionScript actualNode;
+		GridRegionScript actualNode = keyPoisList.ElementAt(0);
+		GridRegionScript chosenNode;
 		float[] keyPoisDistances = new float[keyPoisList.Count];
+		float minimumDistanceRangeLower;
+		float minimumDistanceRangeUpper;
+
+
+		float distanceMaxOffsetPercent = 25 / 100f; //0.20f
 
 
 		for (int n = 0; n < keyPoisList.Count - 1; ++n)
 		{
-			actualNode = keyPoisList.ElementAt(n);
+//			actualNode = keyPoisList.ElementAt(n);
 
 			for (int i = 0; i < keyPoisList.Count; ++i)
 			{
@@ -364,8 +370,48 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 						keyPoisList.ElementAt(i).GetRegionUnitCoords()
 					));
 
+				//debug only, should be rewritten asap
+				if (keyPoisDistances[i] == 0)
+					keyPoisDistances[i] = 10000000;
 			}
 
+			minimumDistanceRangeLower = keyPoisDistances.Min();
+			minimumDistanceRangeUpper = minimumDistanceRangeLower * (1f + distanceMaxOffsetPercent);
+
+			List<int> qualifiedMinimumDistances = new List<int>();
+
+			for (int d = 0; d < keyPoisDistances.Length; ++d)
+			{
+				if (keyPoisDistances[d] >= minimumDistanceRangeLower
+				    && keyPoisDistances[d] <= minimumDistanceRangeUpper)
+				{
+					qualifiedMinimumDistances.Add(d);
+				}
+			}
+
+
+			chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(UnityEngine.Random.Range(0, qualifiedMinimumDistances.Count)));
+			int count = 0;
+			while (chosenNode.GetConnectedEdgesCount() > 0)
+			{
+				chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(UnityEngine.Random.Range(0, qualifiedMinimumDistances.Count)));
+				++count;
+				if (count > 3)
+					break;
+			}
+			chosenNode.ConnectedEdgesCountIncrement();
+			Debug.LogError("(" + n + "): node " + actualNode.GetRegionUnitCoords() + " <----> " + "node " + chosenNode.GetRegionUnitCoords());
+
+			//increment region's connectedTo val
+			//check if connection >0
+			//connect actual -> chosennode
+
+			actualNode = chosenNode;
+			if (actualNode.GetConnectedEdgesCount() > 1)
+			{
+				Debug.LogError("ERROR: ACTUAL NODE (chosen) WAS TRAVERSED BEFORE");
+				return;
+			}
 		}
 
 
