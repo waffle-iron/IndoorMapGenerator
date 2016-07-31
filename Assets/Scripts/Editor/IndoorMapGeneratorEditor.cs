@@ -67,6 +67,12 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreatePathEntryEnd();
 		}
 
+
+		if (GUILayout.Button("connect key POIs"))
+		{
+			script.ConnectKeyPois();
+		}
+
 		if (GUILayout.Button("circletest"))
 		{
 			int min = 0; int max = 10;

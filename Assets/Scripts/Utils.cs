@@ -122,6 +122,17 @@ public class Utils
 		return builder.ToString();
 	}
 
+	public static String PrintList(List<float> list)
+	{
+		StringBuilder builder = new StringBuilder();
+		foreach (float element in list)
+		{
+			builder.Append(element);
+			builder.Append(" ");
+		}
+		return builder.ToString();
+	}
+
 	public static String PrintList(int[] list)
 	{
 		StringBuilder builder = new StringBuilder();

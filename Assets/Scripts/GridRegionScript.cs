@@ -6,6 +6,7 @@ public class GridRegionScript : MonoBehaviour
 
 	private bool regionOn = false;
 	private Vector2 regionUnitCoordinates = new Vector2(-1f, -1f);
+	private int connectedEdgesCount = 0;
 
 	public Material materialOn;
 	public Material materialOff;
@@ -89,6 +90,20 @@ public class GridRegionScript : MonoBehaviour
 		return regionUnitCoordinates;
 	}
 
+	public int GetConnectedEdgesCount()
+	{
+		return connectedEdgesCount;
+	}
 
+	public int ConnectedEdgesCountIncrement(int value)
+	{
+		connectedEdgesCount += value;
+		return connectedEdgesCount;
+	}
+
+	public int ConnectedEdgesCountIncrement()
+	{
+		return ConnectedEdgesCountIncrement(1);
+	}
 
 }

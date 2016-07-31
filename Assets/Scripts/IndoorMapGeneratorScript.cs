@@ -45,8 +45,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	private int 				keyPoiSizeVal;
 	private int 				nonKeyPoiSizeVal;
 
-	private List<Vector2> 		keyPoiMiddlePoints = new List<Vector2>();
-	private List<Vector2> 		nonKeyPoiMiddlePoints = new List<Vector2>();
+	private LinkedList<GridRegionScript> keyPoisList = new LinkedList<GridRegionScript>();
+	private LinkedList<GridRegionScript> nonKeyPoisList = new LinkedList<GridRegionScript>();
 
 	//todo: delete that? its not needed anyway
 	private String 				methodName;
@@ -196,7 +196,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				UnityEngine.Random.Range(0.0f, 0.8f)
 			);
 
-			keyPoiMiddlePoints.Add(new Vector2(row, column));
+			keyPoisList.AddLast(gridRegionsArray[row, column]);
 
 			int radius = keyPoiSizeVal;
 			radius += Utils.RandomRangeMiddleVal(0, Mathf.FloorToInt(radius * keyPoiSizeRndOffset/100f));
@@ -229,7 +229,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				UnityEngine.Random.Range(0.25f, 0.5f)
 			);
 
-			nonKeyPoiMiddlePoints.Add(new Vector2(row, column));
+			nonKeyPoisList.AddLast(gridRegionsArray[row, column]);
 
 			int radius = nonKeyPoiSizeVal;
 			radius += Utils.RandomRangeMiddleVal(0, Mathf.FloorToInt(radius * nonKeyPoiSizeRndOffset/100f));
@@ -266,8 +266,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			Mathf.FloorToInt(gridSizeZ * 0.3f)
 		);
 
-		//todo: think of algorithm
-
+		//todo: think of algorithm for this
 		pointEntry.x += random.Next(-gridSizeX / 3, gridSizeX / 5);
 		pointEntry.y += random.Next(-gridSizeZ / 3, gridSizeZ / 5);
 		pointEntry.x = Mathf.Max(0, pointEntry.x);
@@ -287,7 +286,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
 		}
 
-
+		keyPoisList.AddFirst(gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y]);
 	}
 
 	public void CreateEndPoint()
@@ -331,6 +330,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
 		}
 
+		nonKeyPoisList.AddFirst(gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y]);
 	}
 
 	public void CreatePathEntryEnd()
@@ -344,6 +344,30 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			gridRegionsArray[(int)tile.x, (int)tile.y].SetRegionState(true);
 		}
 		Debug.Log(str);
+	}
+
+	public void ConnectKeyPois()
+	{
+		GridRegionScript actualNode;
+		float[] keyPoisDistances = new float[keyPoisList.Count];
+
+
+		for (int n = 0; n < keyPoisList.Count - 1; ++n)
+		{
+			actualNode = keyPoisList.ElementAt(n);
+
+			for (int i = 0; i < keyPoisList.Count; ++i)
+			{
+				keyPoisDistances[i] = UtilsMath.VectorLengthToFloat(
+					UtilsMath.VectorsDifference(
+						actualNode.GetRegionUnitCoords(),
+						keyPoisList.ElementAt(i).GetRegionUnitCoords()
+					));
+
+			}
+
+		}
+
 
 	}
 

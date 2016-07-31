@@ -145,6 +145,21 @@ public class UtilsMath
 		return coords;
 	}
 
+	public static double VectorLength(Vector2 vector)
+	{
+		return Math.Sqrt(Math.Pow(vector.x, 2) + Math.Pow(vector.y, 2));
+	}
+
+	public static float VectorLengthToFloat(Vector2 vector)
+	{
+		return (float)VectorLength(vector);
+	}
+
+	public static float VectorLengthToInt(Vector2 vector)
+	{
+		return Mathf.RoundToInt(VectorLengthToFloat(vector));
+	}
+
 //
 //	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
 //	{
