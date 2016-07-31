@@ -102,21 +102,24 @@ public class IndoorMapGeneratorEditor : Editor
 		EditorGUILayout.EndHorizontal();
 
 		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label(new GUIContent("key POIs:"), right);
+		GUILayout.Label(new GUIContent("key POI count:"), right);
 		GUILayout.Label(new GUIContent(	"~" + script.GetTotalPOIsKey() +
 										" (" + (script.GetTotalPOIsKey()- Mathf.FloorToInt(script.GetTotalPOIsKey() * (script.keyPoiRndOffset/100f))) +
 		                               	"-" + (script.GetTotalPOIsKey() + Mathf.FloorToInt(script.GetTotalPOIsKey() * (script.keyPoiRndOffset/100f))) + ")"
 										), left);
 		EditorGUILayout.EndHorizontal();
+
 		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label(new GUIContent("key POI size (base):"), right);
-		GUILayout.Label(new GUIContent(script.GetKeyPoiSizeVal().ToString()), left);
+		GUILayout.Label(new GUIContent("nonkey POI count:"), right);
+		GUILayout.Label(new GUIContent(	"~" + script.GetTotalPOIsNonKey()), left);
 		EditorGUILayout.EndHorizontal();
 
-
 		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label(new GUIContent("non key POIs:"), right);
-		GUILayout.Label(new GUIContent(	"~" + script.GetTotalPOIsNonKey()), left);
+		GUILayout.Label(new GUIContent("key POI size:"), right);
+		GUILayout.Label(new GUIContent(	"~" + script.GetKeyPoiSizeVal() +
+										" (" + (script.GetKeyPoiSizeVal() - Mathf.FloorToInt(script.GetKeyPoiSizeVal() * (script.keyPoiSizeRndOffset/100f))) +
+		                               	"-"  + (script.GetKeyPoiSizeVal() + Mathf.FloorToInt(script.GetKeyPoiSizeVal() * (script.keyPoiSizeRndOffset/100f))) + ")"
+										), left);
 		EditorGUILayout.EndHorizontal();
 
 		EditorGUILayout.BeginHorizontal();

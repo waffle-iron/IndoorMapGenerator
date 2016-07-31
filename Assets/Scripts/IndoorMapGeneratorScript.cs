@@ -18,7 +18,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	[Range(1, 100)]public int 	keyPoiRndOffset = 10;
 	[Range(1, 50) ]public int 	keyPoiSizePerc = 25;
-	[Range(1, 50) ]public int 	keyPoiSizeRndOffset = 10;
+	[Range(1, 200)]public int 	keyPoiSizeRndOffset = 10;
 
 	[Range(1, 50) ]public int 	nonKeyPoiSizePerc = 1;
 	[Range(1, 50) ]public int 	nonKeyPoiSizeRndOffset = 10;
@@ -45,19 +45,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	private int 				keyPoiSizeVal;
 	private int 				nonKeyPoiSizeVal;
 
-
-	public int GetTotalPOIs(){ return totalPOIs; }
-	public int GetTotalPOIsKey(){ return totalPOIsKey; }
-	public int GetTotalPOIsNonKey(){ return totalPOIsNonKey; }
-	public int GetKeyPoiSizeVal(){ return keyPoiSizeVal; }
-	public int GetNonKeyPoiSizeVal(){ return nonKeyPoiSizeVal; }
-
-
+	private List<Vector2> 		keyPoiMiddlePoints = new List<Vector2>();
+	private List<Vector2> 		nonKeyPoiMiddlePoints = new List<Vector2>();
 
 	//todo: delete that? its not needed anyway
 	private String 				methodName;
-
-
 
 
 
@@ -204,6 +196,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				UnityEngine.Random.Range(0.0f, 0.8f)
 			);
 
+			keyPoiMiddlePoints.Add(new Vector2(row, column));
+
 			int radius = keyPoiSizeVal;
 			radius += Utils.RandomRangeMiddleVal(0, Mathf.FloorToInt(radius * keyPoiSizeRndOffset/100f));
 
@@ -229,12 +223,13 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		{
 			row = Mathf.FloorToInt(randomUniqueNums[l] / (float)gridSizeX);
 			column = randomUniqueNums[l] - (row * gridSizeX);
-
 			colour = new Color(
 				1f,
 				UnityEngine.Random.Range(0f, 0.3f),
 				UnityEngine.Random.Range(0.25f, 0.5f)
 			);
+
+			nonKeyPoiMiddlePoints.Add(new Vector2(row, column));
 
 			int radius = nonKeyPoiSizeVal;
 			radius += Utils.RandomRangeMiddleVal(0, Mathf.FloorToInt(radius * nonKeyPoiSizeRndOffset/100f));
@@ -271,14 +266,28 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			Mathf.FloorToInt(gridSizeZ * 0.3f)
 		);
 
+		//todo: think of algorithm
+
 		pointEntry.x += random.Next(-gridSizeX / 3, gridSizeX / 5);
 		pointEntry.y += random.Next(-gridSizeZ / 3, gridSizeZ / 5);
 		pointEntry.x = Mathf.Max(0, pointEntry.x);
 		pointEntry.y = Mathf.Max(0, pointEntry.y);
 
-		Debug.LogError("entrypoint: x:" + pointEntry.x + ", z:" + pointEntry.y);
-		gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionState(true);
-		gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetCustomColour(Color.green, 75);
+		List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+				(int)pointEntry.x,
+				(int)pointEntry.y,
+				Math.Min(1,keyPoiSizeVal-1),
+				0,
+				gridSizeX,
+				gridSizeZ);
+
+		foreach (Vector2 coord in coords)
+		{
+			gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
+		}
+
+
 	}
 
 	public void CreateEndPoint()
@@ -308,9 +317,20 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			Debug.LogError("out of range: " + "(" + pointEnd.x + ", " + pointEnd.y + ").");
 		}
 
-		Debug.LogError("endpoint: x:" + pointEnd.x + ", z:" + pointEnd.y);
-		gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetRegionState(true);
-		gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y].SetCustomColour(Color.red, 75);
+		List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+				(int)pointEnd.x,
+				(int)pointEnd.y,
+				keyPoiSizeVal+1,
+				0,
+				gridSizeX,
+				gridSizeZ);
+
+		foreach (Vector2 coord in coords)
+		{
+			gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
+		}
+
 	}
 
 	public void CreatePathEntryEnd()
@@ -348,6 +368,12 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	{
 		Utils.DestroyAsset(floorPlaneObject);
 	}
+
+	public int GetTotalPOIs(){ return totalPOIs; }
+	public int GetTotalPOIsKey(){ return totalPOIsKey; }
+	public int GetTotalPOIsNonKey(){ return totalPOIsNonKey; }
+	public int GetKeyPoiSizeVal(){ return keyPoiSizeVal; }
+	public int GetNonKeyPoiSizeVal(){ return nonKeyPoiSizeVal; }
 
 
 	//input validation method
