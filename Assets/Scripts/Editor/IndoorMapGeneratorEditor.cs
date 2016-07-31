@@ -53,7 +53,7 @@ public class IndoorMapGeneratorEditor : Editor
 
 		if (GUILayout.Button("POIs"))
 		{
-			script.CreatePointsOfInterest_test();
+			script.CreatePointsOfInterest();
 		}
 
 		if (GUILayout.Button("entry/exit nodes"))
@@ -69,14 +69,26 @@ public class IndoorMapGeneratorEditor : Editor
 
 		if (GUILayout.Button("circletest"))
 		{
-//			Vector2 gridUnitSize = Utils.GetGridUnitSize2D();
-			string s = Utils.PrintList(
-				UtilsMath.CreateMidPointCircle(
-					5,
-					5,
-					3)
-			);
-			Debug.LogError("[5,5]=>" + s);
+			int min = 0; int max = 10;
+			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 20;
+			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 4;
+			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 5;
+            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 5; max = 10;
+            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 0;
+           	Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 1;
+            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 1;
+			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 0; max = 1;
+            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			min = 1; max = 1;
+			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
 		}
 
 
@@ -85,7 +97,35 @@ public class IndoorMapGeneratorEditor : Editor
 
 		Vector2 vec = Utils.GetGridUnitSize2D();
 		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label(new GUIContent("grid unit dimensions:"), right);
+		GUILayout.Label(new GUIContent("total POIs:"), right);
+		GUILayout.Label(new GUIContent(script.GetTotalPOIs().ToString()), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("key POIs:"), right);
+		GUILayout.Label(new GUIContent(	"~" + script.GetTotalPOIsKey() +
+										" (" + (script.GetTotalPOIsKey()- Mathf.FloorToInt(script.GetTotalPOIsKey() * (script.keyPoiRndOffset/100f))) +
+		                               	"-" + (script.GetTotalPOIsKey() + Mathf.FloorToInt(script.GetTotalPOIsKey() * (script.keyPoiRndOffset/100f))) + ")"
+										), left);
+		EditorGUILayout.EndHorizontal();
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("key POI size (base):"), right);
+		GUILayout.Label(new GUIContent(script.GetKeyPoiSizeVal().ToString()), left);
+		EditorGUILayout.EndHorizontal();
+
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("non key POIs:"), right);
+		GUILayout.Label(new GUIContent(	"~" + script.GetTotalPOIsNonKey()), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("non key POI size (base):"), right);
+		GUILayout.Label(new GUIContent(script.GetNonKeyPoiSizeVal().ToString()), left);
+		EditorGUILayout.EndHorizontal();
+
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label(new GUIContent("grid real dimensions:"), right);
 		GUILayout.Label(new GUIContent("(" + vec.x + ", " + vec.y + ")"), left);
 		EditorGUILayout.EndHorizontal();
 

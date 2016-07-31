@@ -27,6 +27,11 @@ public class Utils
 	private static int 		totalCells;
 	private static int 		totalRegions;
 	private static int 		minPOIRadius;
+	public static int 		totalPOIs;
+	public static int 		totalPOIsKey;
+	public static int 		totalPOIsNonKey;
+	public static int 		keyPoiSizeVal;
+	public static int 		nonKeyPoiSizeVal;
 
 
 	//CONSTRUCTION AND INITIALIZATION METHODS:
@@ -57,7 +62,13 @@ public class Utils
 
 		totalRegions = (int)(gridUnitSize2D.x * gridUnitSize2D.y);
         totalCells = totalRegions * (int)regionDensity;
-		minPOIRadius = (int)((1 / (float) gridUnitSize2D.x) * 100f);
+
+		//todo: ?
+//		minPOIRadius = (int)((1 / (float) gridUnitSize2D.x) * 100f);
+		minPOIRadius = 1; //lol
+
+
+
 	}
 
 
@@ -66,9 +77,16 @@ public class Utils
 
 	public static int RandomRangeMiddleVal(int min, int max)
 	{
-		//todo: figure out, why this stuff below didnt work.
-//		return UnityEngine.Random.Range(min, max) - (int)((max - min) / 2f);
-		return UnityEngine.Random.Range(min, max);
+		if (min > max)
+		{
+			max += min;
+			min = max - min;
+			max -= min;
+		}
+
+		int delta = max - min;
+		delta /= 2;
+		return UnityEngine.Random.Range(min-delta, min+delta);
 	}
 
 	public static String PrintList(LinkedList<int> list)
