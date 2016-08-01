@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -174,11 +175,13 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		CalculateValues();
 
 
-		Debug.Log("POISizeKEY: " + keyPoiSizeVal + ", POISizeNONKEY:" + nonKeyPoiSizeVal);
+		Debug.LogError("COUNT: totalPois: " + totalPOIs + ", keyPois: " + totalPOIsKey + ", nonKeyPois: " + totalPOIsNonKey);
+		Debug.Log("SIZES: keyPoi: " + keyPoiSizeVal + ", nonKeyPoi:" + nonKeyPoiSizeVal);
+
 
 		int[] randomUniqueNums = UtilsMath.GetUniqueRandomNumbers(totalPOIs, 0, gridRegionsArray.GetLength(0) * gridRegionsArray.GetLength(1), true);
 
-		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums.ToList()));
+//		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums.ToList()));
 
 		//BUG: 0X0 IS ALWAYS (sometimes) ON!
 		int row;
@@ -209,7 +212,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				gridSizeX,
 				gridSizeZ);
 
-			Debug.Log("KEY (" + l + "), R: " + radius);
+//			Debug.Log("KEY (" + l + "), R: " + radius);
 
 			foreach (Vector2 coord in coords)
 			{
@@ -242,7 +245,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				gridSizeX,
 				gridSizeZ);
 
-			Debug.Log("nonkey (" + l + "), R: " + radius);
+//			Debug.Log("nonkey (" + l + "), R: " + radius);
 
 			foreach (Vector2 coord in coords)
 			{
@@ -331,6 +334,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 
 //		nonKeyPoisList.AddFirst(gridRegionsArray[(int)pointEnd.x, (int)pointEnd.y]);
+		Debug.LogError("entry: " + pointEntry);
+		Debug.LogError("end: " + pointEnd);
 	}
 
 	public void CreatePathEntryEnd()
@@ -346,76 +351,228 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Debug.Log(str);
 	}
 
+
 	public void ConnectKeyPois()
 	{
-		GridRegionScript actualNode = keyPoisList.ElementAt(0);
-		GridRegionScript chosenNode;
-		float[] keyPoisDistances = new float[keyPoisList.Count];
+		//temporary variables definition
+		GridRegionScript actualNode;
+		GridRegionScript newNode;
+		List<GridRegionScript> candidateNodesList = new List<GridRegionScript>();
+		List<float> nodesDistancesList = new List<float>();
 		float minimumDistanceRangeLower;
 		float minimumDistanceRangeUpper;
+		bool firstIterPassed = false;
+
+		Vector2 secondPoi = Utils.VECTOR2_INVALID_VALUE;
 
 
-		float distanceMaxOffsetPercent = 25 / 100f; //0.20f
+		//algorithm variables (input)
+		float distanceMaxOffsetPercent = 20 / 100f; //0.20f;
 
 
-		for (int n = 0; n < keyPoisList.Count - 1; ++n)
+		actualNode = keyPoisList.ElementAt(0);
+		actualNode.ConnectedEdgesCountIncrement();
+
+		for (int iteration = 0; iteration < 30; ++iteration)
 		{
-//			actualNode = keyPoisList.ElementAt(n);
 
-			for (int i = 0; i < keyPoisList.Count; ++i)
+			//clearing and setting new temporary stuff on new loop iteration
+			candidateNodesList = new List<GridRegionScript>(keyPoisList);
+			nodesDistancesList = new List<float>();
+
+			//removing actual node from calculations (of distance etc)
+			bool isRemoved = candidateNodesList.Remove(actualNode);
+//			Debug.LogError("removed: " + isRemoved.ToString());
+
+			//creating list of distances from actual node to every other node
+			foreach (var node in candidateNodesList)
 			{
-				keyPoisDistances[i] = UtilsMath.VectorLengthToFloat(
-					UtilsMath.VectorsDifference(
-						actualNode.GetRegionUnitCoords(),
-						keyPoisList.ElementAt(i).GetRegionUnitCoords()
-					));
-
-				//debug only, should be rewritten asap
-				if (keyPoisDistances[i] == 0)
-					keyPoisDistances[i] = 10000000;
+				nodesDistancesList.Add(
+					UtilsMath.VectorLengthToFloat(
+						UtilsMath.VectorsDifference(
+							actualNode.GetRegionUnitCoords(),
+							node.GetRegionUnitCoords())));
 			}
 
-			minimumDistanceRangeLower = keyPoisDistances.Min();
+			//calculating proper range of distances from actual node
+			minimumDistanceRangeLower = Utils.Min(nodesDistancesList);
 			minimumDistanceRangeUpper = minimumDistanceRangeLower * (1f + distanceMaxOffsetPercent);
 
-			List<int> qualifiedMinimumDistances = new List<int>();
-
-			for (int d = 0; d < keyPoisDistances.Length; ++d)
+			float distance;
+			//removing nodes that are too far away from actual
+			for (int d = 0; d < nodesDistancesList.Count; ++d)
 			{
-				if (keyPoisDistances[d] >= minimumDistanceRangeLower
-				    && keyPoisDistances[d] <= minimumDistanceRangeUpper)
+				distance = nodesDistancesList.ElementAt(d);
+				if (!(distance >= minimumDistanceRangeLower && distance <= minimumDistanceRangeUpper))
 				{
-					qualifiedMinimumDistances.Add(d);
+					candidateNodesList.RemoveAt(d);
+					nodesDistancesList.RemoveAt(d);
 				}
 			}
 
 
-			chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(UnityEngine.Random.Range(0, qualifiedMinimumDistances.Count)));
-			int count = 0;
-			while (chosenNode.GetConnectedEdgesCount() > 0)
+			Debug.Log("[" + iteration + "] node " + actualNode.GetRegionUnitCoords() + " ::before: " + Utils.PrintList(candidateNodesList));
+
+			//DEBUG ONLY?
+			//removing nodes that were traversed before
+//			foreach (var node in candidateNodesList)
+			for (int n = 0; n < candidateNodesList.Count; ++n)
 			{
-				chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(UnityEngine.Random.Range(0, qualifiedMinimumDistances.Count)));
-				++count;
-				if (count > 3)
-					break;
+				if (candidateNodesList.ElementAt(n).GetConnectedEdgesCount() > 0)
+				{
+//					candidateNodesList.Remove(node);
+					candidateNodesList.RemoveAt(n);
+					n = -1;
+				}
 			}
-			chosenNode.ConnectedEdgesCountIncrement();
-			Debug.LogError("(" + n + "): node " + actualNode.GetRegionUnitCoords() + " <----> " + "node " + chosenNode.GetRegionUnitCoords());
 
-			//increment region's connectedTo val
-			//check if connection >0
-			//connect actual -> chosennode
+			Debug.Log("[" + iteration + "] node " + actualNode.GetRegionUnitCoords() + " ::after: " + Utils.PrintList(candidateNodesList));
 
-			actualNode = chosenNode;
-			if (actualNode.GetConnectedEdgesCount() > 1)
+//		Debug.LogError();
+
+			if (candidateNodesList.Count == 0)
 			{
-				Debug.LogError("ERROR: ACTUAL NODE (chosen) WAS TRAVERSED BEFORE");
+				Debug.LogError("ERROR: no more candiate nodes available");
+				CreateFinalConnections(secondPoi, actualNode.GetRegionUnitCoords());
+//				List<Vector2> coordsFinal = UtilsMath.BresenhamAlgorithmInt(
+////											actualNode.GetRegionUnitCoords(),
+////											pointEnd);
+	//			foreach (Vector2 coord in coordsFinal)
+	//			{
+	//				gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+	//				gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.red);
+	//			}
 				return;
 			}
+			else
+			{
+//				Debug.LogError("CANDIDATES: count: " + candidateNodesList.Count);
+				newNode = candidateNodesList.ElementAt(0);
+			}
+
+			Debug.Log("[" + iteration + "] node " + actualNode.GetRegionUnitCoords() + " <-----> " + "node " + newNode.GetRegionUnitCoords());
+
+			if (newNode.GetConnectedEdgesCount() > 0)
+			{
+				Debug.LogError("ERROR: selected node has been traversed before");
+				return;
+			}
+
+			//drawing line between nodes
+			List<Vector2> coords = UtilsMath.BresenhamAlgorithmInt(
+											actualNode.GetRegionUnitCoords(),
+											newNode.GetRegionUnitCoords());
+
+			foreach (Vector2 coord in coords)
+			{
+				gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionState(true);
+				gridRegionsArray[(int) coord.x, (int) coord.y].SetCustomColour(new Color(0.95f, 0.25f, 0.20f, 1.00f));
+			}
+			firstIterPassed = true;
+
+			actualNode = newNode;
+			actualNode.ConnectedEdgesCountIncrement();
+			if (secondPoi == Utils.VECTOR2_INVALID_VALUE)
+			{
+				secondPoi = actualNode.GetRegionUnitCoords();
+			}
+//			Debug.LogError("node " + actualNode.GetRegionUnitCoords() + " incremented, now: " + actualNode.ConnectedEdgesCountIncrement());
+
 		}
 
-
 	}
+
+	private void CreateFinalConnections(Vector2 secondPoi, Vector2 finalPoi)
+	{
+		List<Vector2> coords;
+		coords = UtilsMath.BresenhamAlgorithmInt(pointEntry, secondPoi);
+		coords.AddRange(UtilsMath.BresenhamAlgorithmInt(finalPoi, pointEnd));
+
+		foreach (Vector2 coord in coords)
+		{
+			gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionState(true);
+			gridRegionsArray[(int) coord.x, (int) coord.y].SetCustomColour(Color.red);
+		}
+	}
+
+//	public void ConnectKeyPois()
+//	{
+//		GridRegionScript actualNode = keyPoisList.ElementAt(0);
+//		GridRegionScript chosenNode;
+//		float[] keyPoisDistances = new float[keyPoisList.Count];
+//		float minimumDistanceRangeLower;
+//		float minimumDistanceRangeUpper;
+//
+//
+//		float distanceMaxOffsetPercent = 25 / 100f; //0.20f
+//
+//
+//		for (int n = 0; n < keyPoisList.Count - 1; ++n)
+//		{
+////			actualNode = keyPoisList.ElementAt(n);
+//
+//			for (int i = 0; i < keyPoisList.Count; ++i)
+//			{
+//				keyPoisDistances[i] = UtilsMath.VectorLengthToFloat(
+//					UtilsMath.VectorsDifference(
+//						actualNode.GetRegionUnitCoords(),
+//						keyPoisList.ElementAt(i).GetRegionUnitCoords()
+//					));
+//
+//				//debug only, should be rewritten asap
+//				if (keyPoisDistances[i] == 0)
+//					keyPoisDistances[i] = 10000000;
+//			}
+//
+//			minimumDistanceRangeLower = keyPoisDistances.Min();
+//			minimumDistanceRangeUpper = minimumDistanceRangeLower * (1f + distanceMaxOffsetPercent);
+//
+//			List<int> qualifiedMinimumDistances = new List<int>();
+//
+//			for (int d = 0; d < keyPoisDistances.Length; ++d)
+//			{
+//				if (keyPoisDistances[d] >= minimumDistanceRangeLower
+//				    && keyPoisDistances[d] <= minimumDistanceRangeUpper
+//					&& keyPoisList.ElementAt(d).GetConnectedEdgesCount() == 0)
+//				{
+//					qualifiedMinimumDistances.Add(d);
+//				}
+//			}
+//
+//			if (qualifiedMinimumDistances.Count == 0)
+//			{
+//				Debug.LogError("ERROR: end of qualified distances");
+//				return;
+//			}
+//			else
+//			{
+//				chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(0));
+//			}
+////			chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(UnityEngine.Random.Range(0, qualifiedMinimumDistances.Count)));
+////			int count = 0;
+////			while (chosenNode.GetConnectedEdgesCount() > 0)
+////			{
+////				chosenNode = keyPoisList.ElementAt(qualifiedMinimumDistances.ElementAt(UnityEngine.Random.Range(0, qualifiedMinimumDistances.Count)));
+////				++count;
+////				if (count > 3)
+////					break;
+////			}
+//
+//			chosenNode.ConnectedEdgesCountIncrement();
+//			Debug.LogError("(" + n + "): node " + actualNode.GetRegionUnitCoords() + " <----> " + "node " + chosenNode.GetRegionUnitCoords());
+//
+//			//increment region's connectedTo val
+//			//check if connection >0
+//			//connect actual -> chosennode
+//
+//			actualNode = chosenNode;
+//			if (actualNode.GetConnectedEdgesCount() > 1)
+//			{
+//				Debug.LogError("ERROR: ACTUAL NODE (chosen) WAS TRAVERSED BEFORE");
+//				return;
+//			}
+//		}
+//	}
 
 	private void CleanGridRegionsOff()
 	{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -75,6 +76,11 @@ public class Utils
 
 	//UTILITY METHODS:
 
+	public static float Min(List<float> list)
+	{
+		return list.Select((t, i) => list.ElementAt(i)).Concat(new[] {float.MaxValue}).Min();
+	}
+
 
 
 	public static int RandomRangeMiddleVal(int min, int max)
@@ -89,6 +95,18 @@ public class Utils
 		int delta = max - min;
 		delta /= 2;
 		return UnityEngine.Random.Range(min-delta, min+delta);
+	}
+
+	public static String PrintList(List<GridRegionScript> list)
+	{
+		StringBuilder builder = new StringBuilder();
+		foreach (GridRegionScript element in list)
+		{
+			Vector2 coords = element.GetRegionUnitCoords();
+			builder.Append("(" + coords.x + "," + coords.y + ")[" + element.GetConnectedEdgesCount() + "]");
+			builder.Append(" ");
+		}
+		return builder.ToString();
 	}
 
 	public static String PrintList(LinkedList<int> list)
