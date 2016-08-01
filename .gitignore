@@ -1,8 +1,11 @@
-# =============== #
+﻿# =============== #
 # Unity generated #
 # =============== #
 Temp/
 Library/
+.idea/*
+.idea/workspace.xml
+/idea/*
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -49,6 +52,7 @@ ExportedObj/
 *.pidb
 *.booproj
 *.svd
+*.iml
 
 
 # Unity3D generated meta files
