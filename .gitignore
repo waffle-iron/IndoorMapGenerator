@@ -21,6 +21,8 @@ obj/
 *.user
 *.unityproj
 *.booproj
+*.cs.meta
+*.meta
 
 # ============ #
 # OS generated #
