@@ -115,7 +115,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 
 		objectHolder = new GameObject ();
-		objectHolder.name = "IndoorMapGen map"
+		objectHolder.name = "IndoorMapGen map";
 
 		floorPlaneObject = (GameObject) Instantiate(floorPlanePrefab);
 		floorPlaneObject.transform.localScale = Utils.GetGridRealSize3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
