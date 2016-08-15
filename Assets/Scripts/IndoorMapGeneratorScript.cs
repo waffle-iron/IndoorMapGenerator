@@ -24,6 +24,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 50) ]public int 	nonKeyPoiSizePerc = 1;
 	[Range(1, 50) ]public int 	nonKeyPoiSizeRndOffset = 10;
 
+	private GameObject 			objectHolder;
 
 	//prefabs:
 	public GameObject 		floorPlanePrefab;
@@ -112,12 +113,16 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	{
 		Debug.Log(System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 
+
+		objectHolder = new GameObject ();
+		objectHolder.name = "IndoorMapGen map"
+
 		floorPlaneObject = (GameObject) Instantiate(floorPlanePrefab);
 		floorPlaneObject.transform.localScale = Utils.GetGridRealSize3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
 		floorPlaneObject.transform.rotation = Quaternion.Euler(0, 0, 0);
 		floorPlaneObject.transform.position = Utils.GetTopLeftCornerXZ(Vector3.zero, floorPlaneObject);
 		floorPlaneObject.name = "Floor (" + gridSizeX + ", " + gridSizeZ + ")";
-		floorPlaneObject.transform.parent = this.transform;
+		floorPlaneObject.transform.parent = objectHolder.transform;
 	}
 
 	//todo: regions (this method and CreatePointsOfInterest()) are calibrated to be n x n.
@@ -131,7 +136,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		gridRegionsHolder = new GameObject();
 		gridRegionsHolder.name = "Grid Regions";
-		gridRegionsHolder.transform.parent = this.transform;
+		gridRegionsHolder.transform.parent = objectHolder.transform;
 
 
 		GridRegionScript 	spawned;
@@ -158,7 +163,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void CreatePointsOfInterest()
 	{
-		Random random = new Random();
+//		Random random = new Random();
 
 		//so this is copy-paste of CleanGridRegionsOff() method, but it will produce
 		//InvalidArgumentException when is called from here by name.
