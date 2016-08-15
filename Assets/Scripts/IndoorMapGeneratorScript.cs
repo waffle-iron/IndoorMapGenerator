@@ -64,7 +64,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Debug.Log("IndoorMapGenScript: constructor", this);
 		Utils.Initialize(gridSizeX, gridSizeZ, regionDensity, metersInOneUnit);
 		UtilsMath.Initialize();
-		CalculateValues();
+//		CalculateValues();
 	}
 
 	void Start()
@@ -103,7 +103,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void OnInputUpdate()
 	{
-		Debug.Log(System.Reflection.MethodBase.GetCurrentMethod().Name, this);
+//		Debug.Log(System.Reflection.MethodBase.GetCurrentMethod().Name, this);
 		Utils.UpdateConstants(gridSizeX, gridSizeZ, regionDensity, metersInOneUnit);
 		CalculateValues();
 	}

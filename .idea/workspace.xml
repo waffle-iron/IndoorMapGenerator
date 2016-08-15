@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="561ff3a2-ec72-4e3e-b2fc-0cd89e81cf84" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Assets/Materials/GridCellMaterial.mat" afterPath="$PROJECT_DIR$/Assets/Materials/GridCellMaterial.mat" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Assets/test.unity" afterPath="$PROJECT_DIR$/Assets/test.unity" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Thesis_Indoor_Map_Gen.sln.iml" afterPath="$PROJECT_DIR$/Thesis_Indoor_Map_Gen.sln.iml" />
     </list>
     <ignored path="Thesis_Indoor_Map_Gen.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -506,7 +502,14 @@
       <option name="project" value="LOCAL" />
       <updated>1470054775581</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="scene, material update + new .gitignore">
+      <created>1470055045079</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1470055045079</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -558,7 +561,8 @@
     <MESSAGE value="connecting key pois: graph nodes distance&#10;" />
     <MESSAGE value="traversal algo (1 visit only variant) - needs tweaks (last if triggering to early)&#10;" />
     <MESSAGE value="Custom Travelling Salesman Algorithm doneeee &lt;3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Custom Travelling Salesman Algorithm doneeee &lt;3" />
+    <MESSAGE value="scene, material update + new .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="scene, material update + new .gitignore" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
