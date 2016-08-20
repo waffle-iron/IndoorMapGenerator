@@ -176,9 +176,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		//iterating over every region on the map
 		GridCellScript spawned;
 		Vector3 spawnedScale = gridRegionsArray[0,0].gameObject.transform.localScale;
-		spawnedScale = Utils.divideXZ (spawnedScale, regionDensity);
-		spawnedScale.x /= regionDensity;
-		spawnedScale.z /= regionDensity;
+//		spawnedScale = Utils.divideXZ (spawnedScale, regionDensity);
+		spawnedScale.x /= (float)regionDensity;
+		spawnedScale.z /= (float)regionDensity;
 		Vector2 	spawnedPosition;
 		bool regionTraversable;
 
@@ -217,7 +217,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //
 //			}
 //		}
-
 	}
 
 

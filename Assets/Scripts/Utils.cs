@@ -224,7 +224,7 @@ public class Utils
 
 		Vector3 point = gameObject.transform.position;
 		point.x -= offset.x;
-		point.y -= offset.y;
+		point.z -= offset.z;
 
 		return point;
 	}
