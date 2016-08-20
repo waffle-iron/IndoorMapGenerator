@@ -244,7 +244,7 @@ public class Utils
 
 
 
-	private static Vector3 GetObjectOffsetToCenter(GameObject gameObject)
+	public static Vector3 GetObjectOffsetToCenter(GameObject gameObject)
 	{
 		Mesh gameObjectMesh;
 
