@@ -31,7 +31,7 @@ public class GridRegionEditor : Editor
 					"Region type: "
 				),
 				new GUIContent(
-					script.IsRegionOn() ? "On" : "Off"
+				script.IsRegionTraversable() ? "On" : "Off"
 				));
 
 	}

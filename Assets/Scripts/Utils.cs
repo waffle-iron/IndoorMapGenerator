@@ -191,6 +191,10 @@ public class Utils
 		return -1f;
 	}
 
+	public static Vector3 GetTopLeftCornerXZ(GameObject gameObject) {
+		return GetTopLeftCornerXZ (0f, 0f, gameObject);
+	}
+
 	public static Vector3 GetTopLeftCornerXZ(Vector3 targetPos, GameObject gameObject)
 	{
 		Vector3 offset = GetObjectOffsetToCenter(gameObject);
@@ -207,25 +211,36 @@ public class Utils
 		Vector3 offset = GetObjectOffsetToCenter(gameObject);
 		offset = multiply(offset, gameObject.transform.localScale);
 
+		//TODO this (y=1f) is bad (sometimes you'd want to have y=0f), should be fixd, i guess
+		return new Vector3(
+			targetPosX + offset.x,
+			1f,
+			targetPosZ + offset.z);
+	}
+
+	public static Vector3 GetBottomLeftCornerXZ(GameObject gameObject) {
+		Vector3 offset = GetObjectOffsetToCenter (gameObject);
+		offset = multiply (offset, gameObject.transform.localScale);
+
+		Vector3 point = gameObject.transform.position;
+		point.x -= offset.x;
+		point.y -= offset.y;
+
+		return point;
+	}
+
+	public static Vector3 GETTOPCOSTAMTESTETETERATESTETESTETEST(float targetPosX, float targetPosZ, GameObject gameObject)
+	{
+		
+//    		Vector3 offset = GetObjectOffsetToCenter(gameObject);
+	    Vector3 offset = gameObject.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh.bounds.extents;
+		offset = multiply(offset, gameObject.transform.localScale);
+
 		return new Vector3(
 				targetPosX + offset.x,
 				1f,
 				targetPosZ + offset.z);
 	}
-
-	public static Vector3 GETTOPCOSTAMTESTETETERATESTETESTETEST(float targetPosX, float targetPosZ, GameObject gameObject)
-    	{
-
-
-//    		Vector3 offset = GetObjectOffsetToCenter(gameObject);
-		    Vector3 offset = gameObject.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh.bounds.extents;
-    		offset = multiply(offset, gameObject.transform.localScale);
-
-    		return new Vector3(
-    				targetPosX + offset.x,
-    				1f,
-    				targetPosZ + offset.z);
-    	}
 
 
 

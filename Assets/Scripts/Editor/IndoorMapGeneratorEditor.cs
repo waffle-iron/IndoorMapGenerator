@@ -73,6 +73,11 @@ public class IndoorMapGeneratorEditor : Editor
 			script.ConnectKeyPois();
 		}
 
+		if (GUILayout.Button("Create Cells")) 
+		{
+			script.CreateCells ();
+		}
+
 		if (GUILayout.Button("circletest"))
 		{
 			int min = 0; int max = 10;

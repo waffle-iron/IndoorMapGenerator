@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
+using System.Runtime.Remoting.Messaging;
+using System.Runtime.InteropServices;
 
 public class IndoorMapGeneratorScript : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public float 				metersInOneUnit = 1;
 	public int 					regionDensity = 5;
 
-	[Range(1, 25)]public int 	poiPercentage = 10;
+	[Range(1, 25) ]public int 	poiPercentage = 10;
 	[Range(1, 100)]public int 	keyPoiPerc = 50;
 
 	[Range(1, 100)]public int 	keyPoiRndOffset = 10;
@@ -25,18 +27,23 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 50) ]public int 	nonKeyPoiSizeRndOffset = 10;
 
 	private GameObject 			objectHolder;
+	private GameObject 			graphObjectHolder;
 
 	//prefabs:
 	public GameObject 		floorPlanePrefab;
 	public GridRegionScript	gridRegionPrefab;
+	public GridCellScript 	gridCellPrefab;
 
 	//holders:
 	private GameObject 		gridRegionsHolder;
+	private GameObject 		gridCellsHolder;
 
 	//instantiated GameObjects:
 	private GameObject 		floorPlaneObject;
 
 	private GridRegionScript[,] gridRegionsArray;
+	private GridCellScript[,] 	gridCellsArray;
+
 	private Vector2 			pointEntry = Utils.VECTOR2_INVALID_VALUE;
 	private Vector2 			pointEnd = Utils.VECTOR2_INVALID_VALUE;
 
@@ -54,10 +61,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	private String 				methodName;
 
 
-
 	//todo: make controller - model infrastructure
-
-
 
 
 	public IndoorMapGeneratorScript()
@@ -130,7 +134,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public void CreateRegions()
 	{
 		Debug.Log(System.Reflection.MethodBase.GetCurrentMethod().Name, this);
-
 		gridRegionsArray = new GridRegionScript[gridSizeX, gridSizeZ];
 //		gridRegionsList.Clear();
 
@@ -140,7 +143,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 
 		GridRegionScript 	spawned;
-		Vector3 spawnedScale;
+		Vector3 			spawnedScale;
 		spawnedScale = Utils.GetGridRealSize3D(Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
 		spawnedScale = Utils.divideXZ(spawnedScale, gridSizeX, gridSizeZ);
 		for (int x = 0; x < gridSizeX; x++)
@@ -148,7 +151,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			for (int z = 0; z < gridSizeZ; z++)
 			{
 				spawned = Instantiate(gridRegionPrefab.gameObject).GetComponent<GridRegionScript>();
-				spawned.SetRegionState(false);
+				spawned.SetRegionTraversable(false);
 				spawned.SetRegionUnitCoords(x, z);
 				spawned.transform.localScale = spawnedScale;
 				spawned.transform.position = Utils.GetTopLeftCornerXZ(Utils.GetLength(x), Utils.GetLength(z), spawned.gameObject);
@@ -161,6 +164,63 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 	}
 
+	public void CreateCells() 
+	{
+		//creating holder (for gameobjects)
+		//creating array of references to cells
+		gridCellsArray = new GridCellScript[gridSizeX * regionDensity, gridSizeZ * regionDensity];
+		gridCellsHolder = new GameObject ();
+		gridCellsHolder.name = "cells (" + gridCellsArray.GetLength(0) + "," + gridCellsArray.GetLength(1) + ")";
+		gridCellsHolder.transform.parent = objectHolder.transform;
+
+		//iterating over every region on the map
+		GridCellScript spawned;
+		Vector3 spawnedScale = gridRegionsArray[0,0].gameObject.transform.localScale;
+		spawnedScale = Utils.divideXZ (spawnedScale, regionDensity);
+		spawnedScale.x /= regionDensity;
+		spawnedScale.z /= regionDensity;
+		Vector2 	spawnedPosition;
+		bool regionTraversable;
+
+		Debug.Log ("region (1,1): pos: " +  gridRegionsArray[1,1].gameObject.transform.position + ", utilspos: " + Utils.GetBottomLeftCornerXZ(gridRegionsArray[1,1].gameObject));
+		Debug.Log ("region (1,2): pos: " +  gridRegionsArray[1,2].gameObject.transform.position + ", utilspos: " + Utils.GetBottomLeftCornerXZ(gridRegionsArray[1,2].gameObject));
+		Debug.Log ("region (1,3): pos: " +  gridRegionsArray[1,3].gameObject.transform.position + ", utilspos: " + Utils.GetBottomLeftCornerXZ(gridRegionsArray[1,3].gameObject));
+		Debug.Log ("regdens: " + regionDensity + " ,scalereg: " + gridRegionsArray[0,0].gameObject.transform.localScale + ", scalecell: " + spawnedScale);
+
+//		for (int x = 0; x < gridSizeX; ++x) {
+//			for (int z = 0; z < gridSizeZ; ++z) {
+//
+//				regionTraversable = gridRegionsArray [x, z].IsRegionTraversable();
+//				//creating cells requires iterating (regionDens x regionDens) for every region
+//				//and creating cells accordingly
+//				for (int dx = 0; dx < regionDensity; ++dx) {
+//					for (int dz = 0; dz <regionDensity; ++dz) {
+//
+//						spawned = Instantiate (gridCellPrefab.gameObject).GetComponent<GridCellScript> ();
+//						spawned.cellUnitCoordinates = new Vector2 (x * regionDensity + dx, z * regionDensity + dz);
+//						spawned.name = "cell (" + spawned.cellUnitCoordinates.x + "," + spawned.cellUnitCoordinates.y + ")";
+//						spawned.transform.parent = gridCellsHolder.transform;
+//						spawned.transform.localScale = spawnedScale;
+//						spawned.transform.position = gridRegionsArray[x, z].gameObject.
+//
+//
+//						if (regionTraversable) {
+//							spawned.traversable = true;
+//						} else {
+//							spawned.traversable = false;
+//						}
+//						spawned.ChangeTraversableColour ();
+//
+//					}
+//				}
+//
+//
+//			}
+//		}
+
+	}
+
+
 	public void CreatePointsOfInterest()
 	{
 //		Random random = new Random();
@@ -172,22 +232,17 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		{
 			for (int z = 0; z < gridRegionsArray.GetLength(1); ++z)
 			{
-				gridRegionsArray[x,z].SetRegionState(false);
+				gridRegionsArray[x,z].SetRegionTraversable(false);
 			}
 		}
 
 		//calculate total number of POIs
 		CalculateValues();
-
-
 		Debug.LogError("COUNT: totalPois: " + totalPOIs + ", keyPois: " + totalPOIsKey + ", nonKeyPois: " + totalPOIsNonKey);
 		Debug.Log("SIZES: keyPoi: " + keyPoiSizeVal + ", nonKeyPoi:" + nonKeyPoiSizeVal);
 
 
 		int[] randomUniqueNums = UtilsMath.GetUniqueRandomNumbers(totalPOIs, 0, gridRegionsArray.GetLength(0) * gridRegionsArray.GetLength(1), true);
-
-//		Debug.Log("nums: " + Utils.PrintList(randomUniqueNums.ToList()));
-
 		//BUG: 0X0 IS ALWAYS (sometimes) ON!
 		int row;
 		int column;
@@ -201,8 +256,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			colour = new Color(
 				UnityEngine.Random.Range(0.0f, 0.8f),
 				1f,
-				UnityEngine.Random.Range(0.0f, 0.8f)
-			);
+				UnityEngine.Random.Range(0.0f, 0.8f));
 
 			keyPoisList.AddLast(gridRegionsArray[row, column]);
 
@@ -217,11 +271,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				gridSizeX,
 				gridSizeZ);
 
-//			Debug.Log("KEY (" + l + "), R: " + radius);
-
 			foreach (Vector2 coord in coords)
 			{
-				gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+				gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionTraversable(true);
 				gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(colour);
 			}
 		}
@@ -234,8 +286,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			colour = new Color(
 				1f,
 				UnityEngine.Random.Range(0f, 0.3f),
-				UnityEngine.Random.Range(0.25f, 0.5f)
-			);
+				UnityEngine.Random.Range(0.25f, 0.5f));
 
 			nonKeyPoisList.AddLast(gridRegionsArray[row, column]);
 
@@ -250,11 +301,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				gridSizeX,
 				gridSizeZ);
 
-//			Debug.Log("nonkey (" + l + "), R: " + radius);
-
 			foreach (Vector2 coord in coords)
 			{
-				gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+				gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionTraversable(true);
 				gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(colour);
 			}
 
@@ -266,7 +315,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Random random = new Random();
 		if (pointEntry != Utils.VECTOR2_INVALID_VALUE)
 		{
-			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionState(false);
+			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionTraversable(false);
 		}
 
 		pointEntry = new Vector2(
@@ -290,7 +339,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		foreach (Vector2 coord in coords)
 		{
-			gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+			gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionTraversable(true);
 			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
 		}
 
@@ -334,7 +383,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		foreach (Vector2 coord in coords)
 		{
-			gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionState(true);
+			gridRegionsArray[(int)coord.x, (int)coord.y].SetRegionTraversable(true);
 			gridRegionsArray[(int)coord.x, (int)coord.y].SetCustomColour(Color.black);
 		}
 
@@ -351,12 +400,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		foreach (Vector2 tile in path)
 		{
 			str += "[" + tile.x + "," + tile.y + "], ";
-			gridRegionsArray[(int)tile.x, (int)tile.y].SetRegionState(true);
+			gridRegionsArray[(int)tile.x, (int)tile.y].SetRegionTraversable(true);
 		}
 		Debug.Log(str);
 	}
-
-
+		
 	public void ConnectKeyPois()
 	{
 		//temporary variables definition
@@ -470,7 +518,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 			foreach (Vector2 coord in coords)
 			{
-				gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionState(true);
+				gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionTraversable(true);
 				gridRegionsArray[(int) coord.x, (int) coord.y].SetCustomColour(new Color(0.95f, 0.25f, 0.20f, 1.00f));
 			}
 			firstIterPassed = true;
@@ -487,6 +535,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	}
 
+
 	private void CreateFinalConnections(Vector2 secondPoi, Vector2 finalPoi)
 	{
 		List<Vector2> coords;
@@ -495,7 +544,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		foreach (Vector2 coord in coords)
 		{
-			gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionState(true);
+			gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionTraversable(true);
 			gridRegionsArray[(int) coord.x, (int) coord.y].SetCustomColour(Color.red);
 		}
 	}
@@ -585,7 +634,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		{
 			for (int z = 0; z < gridRegionsArray.GetLength(1); ++z)
 			{
-				gridRegionsArray[x,z].SetRegionState(false);
+				gridRegionsArray[x,z].SetRegionTraversable(false);
 			}
 		}
 	}
@@ -601,12 +650,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Utils.DestroyAsset(floorPlaneObject);
 	}
 
-	public int GetTotalPOIs(){ return totalPOIs; }
-	public int GetTotalPOIsKey(){ return totalPOIsKey; }
-	public int GetTotalPOIsNonKey(){ return totalPOIsNonKey; }
-	public int GetKeyPoiSizeVal(){ return keyPoiSizeVal; }
-	public int GetNonKeyPoiSizeVal(){ return nonKeyPoiSizeVal; }
-
 
 	//input validation method
 	void OnValidate()
@@ -621,6 +664,12 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			gridSizeZ = 10;
 		}
 	}
+
+	public int GetTotalPOIs(){ return totalPOIs; }
+	public int GetTotalPOIsKey(){ return totalPOIsKey; }
+	public int GetTotalPOIsNonKey(){ return totalPOIsNonKey; }
+	public int GetKeyPoiSizeVal(){ return keyPoiSizeVal; }
+	public int GetNonKeyPoiSizeVal(){ return nonKeyPoiSizeVal; }
 
 
 }

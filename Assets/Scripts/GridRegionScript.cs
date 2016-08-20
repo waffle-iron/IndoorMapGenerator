@@ -4,7 +4,7 @@ using System.Collections;
 public class GridRegionScript : MonoBehaviour
 {
 
-	private bool regionOn = false;
+	private bool regionTraversable = false;
 	private Vector2 regionUnitCoordinates = new Vector2(-1f, -1f);
 	private int connectedEdgesCount = 0;
 
@@ -29,7 +29,7 @@ public class GridRegionScript : MonoBehaviour
 		//sharedMaterial vs material
 //		Material mat = this.GetComponent<Renderer>().sharedMaterial;
 
-		if (regionOn)
+		if (regionTraversable)
 		{
 			this.GetComponent<Renderer>().sharedMaterial = materialOn;
 		}
@@ -56,9 +56,9 @@ public class GridRegionScript : MonoBehaviour
 //		);
 	}
 
-	public void SetRegionState(bool regionOn)
+	public void SetRegionTraversable(bool regionOn)
 	{
-		this.regionOn = regionOn;
+		this.regionTraversable = regionOn;
 		UpdateStateColour();
 	}
 
@@ -73,16 +73,16 @@ public class GridRegionScript : MonoBehaviour
 		regionUnitCoordinates.y = unitCoordinateZ;
 	}
 
-	public bool SwitchRegionState()
+	public bool SwitchRegionTraversable()
 	{
-		regionOn = !regionOn;
+		regionTraversable = !regionTraversable;
 		UpdateStateColour();
-		return regionOn;
+		return regionTraversable;
 	}
 
-	public bool IsRegionOn()
+	public bool IsRegionTraversable()
 	{
-		return regionOn;
+		return regionTraversable;
 	}
 
 	public Vector2 GetRegionUnitCoords()
