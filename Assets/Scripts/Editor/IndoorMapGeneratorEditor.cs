@@ -78,28 +78,43 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreateCells ();
 		}
 
-		if (GUILayout.Button("circletest"))
+		if (GUILayout.Button("noise")) {
+			script.CreateRandomNoise ();
+		}
+
+		if (GUILayout.Button("FULL TEST /debug/"))
 		{
-			int min = 0; int max = 10;
-			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 20;
-			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 4;
-			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 5;
-            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 5; max = 10;
-            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 0;
-           	Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 1;
-            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 1;
-			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 0; max = 1;
-            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			min = 1; max = 1;
-			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			if (script.objectHolder.activeInHierarchy) {
+//				Destroy (script.objectHolder.gameObject);
+//			}
+			script.CreateFloorPlane ();
+			script.CreateRegions ();
+			script.CreatePointsOfInterest ();
+			script.CreateEntryPoint ();
+			script.CreateEndPoint ();
+			script.CreatePathEntryEnd ();
+			script.ConnectKeyPois ();
+			script.CreateCells ();
+//			int min = 0; int max = 10;
+//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 20;
+//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 4;
+//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 5;
+//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 5; max = 10;
+//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 0;
+//           	Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 1;
+//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 1;
+//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 0; max = 1;
+//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+//			min = 1; max = 1;
+//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
 		}
 
 

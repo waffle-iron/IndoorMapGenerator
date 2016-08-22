@@ -7,14 +7,15 @@ using System.Linq;
 using Random = System.Random;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 
 public class IndoorMapGeneratorScript : MonoBehaviour
 {
 	//inputs:
-	public int 					gridSizeX = 10;
-    public int 					gridSizeZ = 10;
-	public float 				metersInOneUnit = 1;
-	public int 					regionDensity = 5;
+				   public int 	gridSizeX = 10;
+			       public int 	gridSizeZ = 10;
+				   public float metersInOneUnit = 1;
+				   public int 	regionDensity = 5;
 
 	[Range(1, 25) ]public int 	poiPercentage = 10;
 	[Range(1, 100)]public int 	keyPoiPerc = 50;
@@ -25,6 +26,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	[Range(1, 50) ]public int 	nonKeyPoiSizePerc = 1;
 	[Range(1, 50) ]public int 	nonKeyPoiSizeRndOffset = 10;
+
+	[Range(1, 50) ]public int 	noisePercentage = 10;
+	[Range(1, 20) ]public int 	noiseBaseSizePerc = 5;
+	[Range(1, 50) ]public int 	noiseSizeRandomOffset = 10;
+				   public bool 	differentialNoise = true;
 
 	private GameObject 			objectHolder;
 	private GameObject 			graphObjectHolder;
@@ -62,7 +68,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 
 	//todo: make controller - model infrastructure
-
 
 	public IndoorMapGeneratorScript()
 	{
@@ -219,7 +224,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 						} else {
 							spawned.traversable = false;
 						}
-						spawned.ChangeTraversableColour ();
+						spawned.InvertTraversability ();
+
+						gridCellsArray [(int)spawned.cellUnitCoordinates.x, (int)spawned.cellUnitCoordinates.y] = spawned;
 
 					}
 				}
@@ -227,7 +234,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			}
 		}
 	}
-
 
 	public void CreatePointsOfInterest()
 	{
@@ -321,21 +327,43 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public void CreateEntryPoint()
 	{
 		Random random = new Random();
-		if (pointEntry != Utils.VECTOR2_INVALID_VALUE)
-		{
-			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionTraversable(false);
-		}
-
 		pointEntry = new Vector2(
 			Mathf.FloorToInt(gridSizeX * 0.3f),
 			Mathf.FloorToInt(gridSizeZ * 0.3f)
 		);
 
+//		if (pointEntry != Utils.VECTOR2_INVALID_VALUE)
+//		{
+			
+//		}
+
+		pointEntry.x += random.Next(-gridSizeX / 4, gridSizeX / 4);
+		pointEntry.y += random.Next(-gridSizeZ / 4, gridSizeZ / 4);
+		pointEntry.x = Mathf.Min(gridSizeX - 1, pointEnd.x);
+		pointEntry.y = Mathf.Min(gridSizeZ - 1, pointEnd.y);
+
+		try
+		{
+			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionTraversable(false);
+		}
+		catch (IndexOutOfRangeException indexOutOfRangeException)
+		{
+			Debug.LogException(indexOutOfRangeException);
+			Debug.LogError("out of range: " + "(" + pointEntry.x + ", " + pointEntry.y + ").");
+			pointEntry.x = 2 + Math.Min (1, keyPoiSizeVal - 1);
+			pointEntry.y = 3 + Math.Min (1, keyPoiSizeVal - 1);
+			Debug.LogError ("retrying with values: " + Utils.VectorToString (pointEntry));
+
+			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionTraversable(false);
+
+		}
+
+
 		//todo: think of algorithm for this
-		pointEntry.x += random.Next(-gridSizeX / 3, gridSizeX / 5);
-		pointEntry.y += random.Next(-gridSizeZ / 3, gridSizeZ / 5);
-		pointEntry.x = Mathf.Max(0, pointEntry.x);
-		pointEntry.y = Mathf.Max(0, pointEntry.y);
+//		pointEntry.x += random.Next(-gridSizeX / 3, gridSizeX / 5);
+//		pointEntry.y += random.Next(-gridSizeZ / 3, gridSizeZ / 5);
+//		pointEntry.x = Mathf.Max(0, pointEntry.x);
+//		pointEntry.y = Mathf.Max(0, pointEntry.y);
 
 		List<Vector2> coords = UtilsMath.CreateMidPointCircle(
 				(int)pointEntry.x,
@@ -542,8 +570,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 
 	}
-
-
+		
 	private void CreateFinalConnections(Vector2 secondPoi, Vector2 finalPoi)
 	{
 		List<Vector2> coords;
@@ -555,6 +582,61 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			gridRegionsArray[(int) coord.x, (int) coord.y].SetRegionTraversable(true);
 			gridRegionsArray[(int) coord.x, (int) coord.y].SetCustomColour(Color.red);
 		}
+	}
+
+	public void CreateRandomNoise() {
+		int randomOffsetPercentage = 25;
+		String debugString = "noise: ";
+
+		int maxNoiseAmount = gridCellsArray.GetLength (0) * gridCellsArray.GetLength (1);
+		int noiseAmount = maxNoiseAmount;
+		debugString += "max: " + noiseAmount;
+
+		noiseAmount = Mathf.CeilToInt(noiseAmount * (noisePercentage / 100f));
+
+		debugString += "start: " + noiseAmount;
+
+		noiseAmount *= Utils.RandomRangeMiddleVal (
+			(int)(noiseAmount - (noiseAmount * (randomOffsetPercentage / 100f))),
+			(int)(noiseAmount + (noiseAmount * (randomOffsetPercentage / 100f)))
+		);
+
+		debugString += "offset: " + noiseAmount;
+
+		if (noiseAmount < 0) {
+			noiseAmount = 0;
+		}
+
+		if (noiseAmount > maxNoiseAmount) {
+			noiseAmount = maxNoiseAmount;
+		}
+
+		Debug.Log (debugString);
+		GridCellScript cell;
+		for (int n = 0; n < noiseAmount; ++n) {
+			cell = gridCellsArray [
+				(int)UnityEngine.Random.Range (0, gridCellsArray.GetLength(0)),
+				(int)UnityEngine.Random.Range (0, gridCellsArray.GetLength(0))];
+
+
+			//todo: make this statement prettier
+			if (!differentialNoise) {
+				cell.traversable = true;
+			} else {
+				if (cell.traversable) {
+					cell.traversable = false;
+				} else {
+					cell.traversable = true;
+				}
+			}
+			cell.InvertTraversability ();
+		}
+
+
+	}
+
+	public void CreateBleedNoise(int bleedPowerPercentage) {
+		
 	}
 
 //	public void ConnectKeyPois()

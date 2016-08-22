@@ -68,14 +68,40 @@ public class Utils
 //		minPOIRadius = (int)((1 / (float) gridUnitSize2D.x) * 100f);
 		minPOIRadius = 1; //lol
 
+	}
 
 
+	//LogVector is method for !PROPERLY! printing vector to string. Duh.
+	public static String VectorToString(Vector2 vector) {
+		return VectorToString (vector.x, vector.y);
+	}
+
+	public static String VectorToString(Vector3 vector) {
+		return VectorToString (vector.x, vector.y, vector.z);
+	}
+
+	private static String VectorToString(float valX, float valY) {
+		return VectorToString (valX, valY, null);
+	}
+		
+	private static String VectorToString(float valX, float valY, Nullable<float> valZ) {
+		StringBuilder builder = new StringBuilder ("(");
+		builder.Append (valX.ToString ());
+		builder.Append (",");
+		builder.Append (valY.ToString ());
+		if (valZ != null) 
+		{
+			builder.Append (",");
+			builder.Append (valZ.ToString ());
+		}
+		builder.Append (")");
+
+		return builder.ToString ();
 	}
 
 
 
 	//UTILITY METHODS:
-
 	public static float Min(List<float> list)
 	{
 		return list.Select((t, i) => list.ElementAt(i)).Concat(new[] {float.MaxValue}).Min();
