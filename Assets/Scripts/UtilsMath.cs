@@ -145,6 +145,21 @@ public class UtilsMath
 		return coords;
 	}
 
+	// I may have trouble adding 2+2 sometimes, but I figured out that if you want to get
+	// max number of grid elements inside circle of radius (circleRadius) (eg. 3),
+	// then you have to go like this: (4*3 + 4*2 + 4*1).
+	public static int MidPointCircleMaxElements(int circleRadius) {
+		
+		if (circleRadius <= 0)
+			return 0;
+		
+		int elements = 0;
+		for (int i = circleRadius; i >= 1; --i) {
+			elements += 4 * i;
+		}
+		return elements;
+	}
+
 	public static double VectorLength(Vector2 vector)
 	{
 		return Math.Sqrt(Math.Pow(vector.x, 2) + Math.Pow(vector.y, 2));
