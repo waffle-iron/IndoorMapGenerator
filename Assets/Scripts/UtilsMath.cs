@@ -145,6 +145,15 @@ public class UtilsMath
 		return coords;
 	}
 
+	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ, bool excludeMidPoint) {
+		if (!excludeMidPoint) {
+			return CreateMidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
+		}
+		List<Vector2> coords = CreateMidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
+		coords.Remove (new Vector2 (midPointX, midPointZ));
+		return coords;
+	}
+
 	// I may have trouble adding 2+2 sometimes, but I figured out that if you want to get
 	// MAXIMUM number of grid elements inside circle of radius = circleRadius (eg. 3),
 	// then you have to go like this: (4*3 + 4*2 + 4*1).

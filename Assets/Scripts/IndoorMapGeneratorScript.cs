@@ -27,6 +27,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 50) ]public int 	noisePercentage = 10;
 	[Range(1, 20) ]public int 	noiseBaseSizePerc = 5;
 	[Range(1, 50) ]public int 	noiseSizeRandomOffset = 10;
+	[Range(1, 10) ]public int 	noiseMaxSize = 3;
 				   public bool 	differentialNoise = true;
 
 	[Range(1, 50) ]public int 	bleedScanRadius = 6;
@@ -619,26 +620,61 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		Debug.Log (debugString);
 		GridCellScript cell;
+		GridCellScript cellCircle;
+		List<Vector2> cellsCircle = new List<Vector2> ();
 		for (int n = 0; n < noiseAmount; ++n) {
+			cellsCircle.Clear ();
 			cell = gridCellsArray [
 				(int)UnityEngine.Random.Range (0, gridCellsArray.GetLength(0)),
 				(int)UnityEngine.Random.Range (0, gridCellsArray.GetLength(0))];
 
 
-			//todo: make this statement prettier
-			if (!differentialNoise) {
-				cell.traversable = true;
-			} else {
-				if (cell.traversable) {
-					cell.traversable = false;
-				} else {
-					cell.traversable = true;
-				}
+
+			ProcessCellNoise (cell);
+
+
+			cellsCircle = UtilsMath.CreateMidPointCircle (
+				(int)cell.cellUnitCoordinates.x,
+				(int)cell.cellUnitCoordinates.y,
+				noiseMaxSize, 
+				0,
+				gridCellsArray.GetLength(0),
+				gridCellsArray.GetLength(1),
+				true
+			);
+
+			for (int c = 0; c < cellsCircle.Count; ++c) {
+//				cellCircle = gridCellsArray [(int)cellsCircle [c].x, (int)cellsCircle [c].y];
+				ProcessCellNoise (gridCellsArray[(int)cellsCircle[c].x, (int)cellsCircle[c].y]);
+
 			}
-			cell.ColourTraversability ();
+
+//			//todo: make this statement prettier
+//			if (!differentialNoise) {
+//				cell.traversable = true;
+//			} else {
+//				if (cell.traversable) {
+//					cell.traversable = false;
+//				} else {
+//					cell.traversable = true;
+//				}
+//			}
+//			cell.ColourTraversability ();
 		}
+	}
 
-
+	private void ProcessCellNoise(GridCellScript cell) {
+		//todo: make this statement prettier
+		if (!differentialNoise) {
+			cell.traversable = true;
+		} else {
+			if (cell.traversable) {
+				cell.traversable = false;
+			} else {
+				cell.traversable = true;
+			}
+		}
+		cell.ColourTraversability ();
 	}
 
 
