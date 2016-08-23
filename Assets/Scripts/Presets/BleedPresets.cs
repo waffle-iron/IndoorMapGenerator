@@ -2,7 +2,7 @@
 
 public class BleedPresets {
 
-	//todo: store this shit in XML, duh.
+	//TODO: USE UNITY PERSISTENCE
 
 	public class PresetBase {
 		public int bleedScanRadius = 2;

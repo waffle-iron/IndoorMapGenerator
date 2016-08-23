@@ -33,6 +33,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 100)]public int 	bleedThresholdPerc = 40;
 	[Range(1, 5)  ]public int 	bleedIterations = 2;
 	[Range(1, 100)]public int 	bleedChancePerc = 75;
+	[Range(1, 10) ]public int 	bleedMaxSize = 3;
 
 	private GameObject 			objectHolder;
 	private GameObject 			graphObjectHolder;
@@ -643,7 +644,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public void CreateBleedNoise() {
 //		if (bleedPreset == null) {
-			CreateBleedNoise (bleedIterations, bleedScanRadius, bleedThresholdPerc, bleedChancePerc);
+		CreateBleedNoise (bleedIterations, bleedScanRadius, bleedThresholdPerc, bleedChancePerc, bleedMaxSize);
 //			return;
 //		}
 //		CreateBleedNoise(bleedPreset.)
@@ -656,7 +657,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	//	bleed noise threshold
 	//	bleed noise ratio
 	//	int bleedCreationIterations
-	private void CreateBleedNoise(int bleedIterations, int bleedScanRadius, int bleedThresholdPerc, int bleedChancePerc) {
+	private void CreateBleedNoise(int bleedIterations, int bleedScanRadius, int bleedThresholdPerc, int bleedChancePerc, int bleedMaxSize) {
 
 		int bleedThresholdVal;
 //		int bleedRatio;
@@ -710,6 +711,22 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 			//fix dat
 			GridCellScript cell;
+			int count = modifiedElements.Count;
+
+			if (bleedMaxSize > 1) {
+				for (int e = 0; e < count; ++e) {
+					cell = gridCellsArray [(int)modifiedElements [e].x, (int)modifiedElements [e].y];
+					modifiedElements.AddRange (UtilsMath.CreateMidPointCircle (
+						(int)cell.cellUnitCoordinates.x, 
+						(int)cell.cellUnitCoordinates.y, 
+						bleedMaxSize,
+						0, 
+						gridCellsArray.GetLength (0),
+						gridCellsArray.GetLength (1)
+					));
+				}
+			}
+
 			for (int e = 0; e < modifiedElements.Count; ++e) {
 				cell = gridCellsArray [(int)modifiedElements [e].x, (int)modifiedElements [e].y];
 				if (!cell.traversable && UnityEngine.Random.Range(0, 100) < bleedChancePerc) {
