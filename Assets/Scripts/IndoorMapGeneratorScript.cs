@@ -5,10 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
-using System.Runtime.Remoting.Messaging;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Xml.Schema;
 
 public class IndoorMapGeneratorScript : MonoBehaviour
 {
@@ -36,7 +32,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 50) ]public int 	bleedScanRadius = 6;
 	[Range(1, 100)]public int 	bleedThresholdPerc = 40;
 	[Range(1, 5)  ]public int 	bleedIterations = 2;
-	[Range(1, 100)]public int 	bleedChancePercent = 75;
+	[Range(1, 100)]public int 	bleedChancePerc = 75;
 
 	private GameObject 			objectHolder;
 	private GameObject 			graphObjectHolder;
@@ -644,6 +640,15 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	}
 
+
+	public void CreateBleedNoise() {
+//		if (bleedPreset == null) {
+			CreateBleedNoise (bleedIterations, bleedScanRadius, bleedThresholdPerc, bleedChancePerc);
+//			return;
+//		}
+//		CreateBleedNoise(bleedPreset.)
+	}
+
 	//TODO:
 	//	bleed neighbour scan RADIUS
 	//  bleed SIZE
@@ -651,31 +656,29 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	//	bleed noise threshold
 	//	bleed noise ratio
 	//	int bleedCreationIterations
-	public void CreateBleedNoise() {
-//		int neighbourScanRadius = 5;
-//		int bleedThresholdPercent = 25;
-		int bleedThreshold;
-//		int bleedCreationIterations; //todo
-		int bleedRatio;
+	private void CreateBleedNoise(int bleedIterations, int bleedScanRadius, int bleedThresholdPerc, int bleedChancePerc) {
 
-		int bleedSize = 1; //todo for more
-		int bleedSizePercentageOffset;
+		int bleedThresholdVal;
+//		int bleedRatio;
+//		int bleedSize = 1; //todo for more
+//		int bleedSizePercentageOffset;
 
 		List<Vector2> scanRadiusElements;
 		List<Vector2> modifiedElements = new List<Vector2> ();
 		Vector2 currentElement = new Vector2 ();
+
 		int traversableElementsInRadius;
 		int maxThreshold = UtilsMath.MidPointCircleMaxElements (bleedScanRadius);
 
 
-		bleedThreshold = Mathf.CeilToInt(maxThreshold * (bleedThresholdPerc / 100f));
+		bleedThresholdVal = Mathf.CeilToInt(maxThreshold * (bleedThresholdPerc / 100f));
 		modifiedElements.Clear ();
 
 		for (int iterations = 0; iterations < bleedIterations; ++iterations) {
 
 			for (int dx = 0; dx < gridCellsArray.GetLength (0); ++dx) {
 				for (int dz = 0; dz < gridCellsArray.GetLength (1); ++dz) {
-				
+
 					currentElement.x = dx;
 					currentElement.y = dz;
 					traversableElementsInRadius = 0;
@@ -687,8 +690,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 						0, 
 						gridCellsArray.GetLength (0), 
 						gridCellsArray.GetLength (1));
-				
-//				scanRadiusElements.Remove (currentElement);
+
+					scanRadiusElements.Remove (currentElement);
 
 					for (int e = 0; e < scanRadiusElements.Count; ++e) {
 						if (gridCellsArray [(int)scanRadiusElements [e].x, (int)scanRadiusElements [e].y].traversable) {
@@ -696,10 +699,10 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 						}
 					}
 
-					if (traversableElementsInRadius >= bleedThreshold) {
-//					if (!gridCellsArray[dx,dz].traversable) {
+					if (traversableElementsInRadius >= bleedThresholdVal) {
+						//					if (!gridCellsArray[dx,dz].traversable) {
 						modifiedElements.Add (currentElement);
-//					}
+						//					}
 					}
 
 				}
@@ -709,7 +712,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			GridCellScript cell;
 			for (int e = 0; e < modifiedElements.Count; ++e) {
 				cell = gridCellsArray [(int)modifiedElements [e].x, (int)modifiedElements [e].y];
-				if (!cell.traversable && UnityEngine.Random.Range(0, 100) < bleedChancePercent) {
+				if (!cell.traversable && UnityEngine.Random.Range(0, 100) < bleedChancePerc) {
 					cell.traversable = true;
 					cell.ColourTraversability ();
 				}
@@ -733,7 +736,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //
 //		for (int n = 0; n < keyPoisList.Count - 1; ++n)
 //		{
-////			actualNode = keyPoisList.ElementAt(n);
+//			actualNode = keyPoisList.ElementAt(n);
 //
 //			for (int i = 0; i < keyPoisList.Count; ++i)
 //			{

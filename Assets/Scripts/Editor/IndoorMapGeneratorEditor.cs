@@ -2,11 +2,27 @@
 using System.Collections;
 using System.Linq;
 using UnityEditor;
+using System.Reflection;
+using System;
+
 
 [CustomEditor(typeof(IndoorMapGeneratorScript))]
 public class IndoorMapGeneratorEditor : Editor
 {
 	private IndoorMapGeneratorScript script;
+
+	//todo: rewite this -.-
+	private int bleedPresetSelected;
+	private string[] bleedPresets = new string[]
+	{
+		"Custom", 
+		"SmoothEdges", 
+		"SmoothEdgesBig",
+		"SmoothAllEdges",
+		"ExpandDensity",
+		"AddSomeRandom",
+		"AddTotalRandom"
+	};
 
 
 	public override void OnInspectorGUI()
@@ -44,6 +60,10 @@ public class IndoorMapGeneratorEditor : Editor
 
 
 		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
+
+		bleedPresetSelected = 1;
+		bleedPresetSelected = EditorGUILayout.Popup("Bleed Preset:", bleedPresetSelected, bleedPresets); 
+
 
 		if (GUILayout.Button("Create Floor Plane"))
 		{
