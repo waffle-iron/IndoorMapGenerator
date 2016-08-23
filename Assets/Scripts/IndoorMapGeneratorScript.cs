@@ -8,6 +8,7 @@ using Random = System.Random;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
+using System.Xml.Schema;
 
 public class IndoorMapGeneratorScript : MonoBehaviour
 {
@@ -31,6 +32,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 20) ]public int 	noiseBaseSizePerc = 5;
 	[Range(1, 50) ]public int 	noiseSizeRandomOffset = 10;
 				   public bool 	differentialNoise = true;
+
+	[Range(1, 50) ]public int 	bleedScanRadius = 6;
+	[Range(1, 100)]public int 	bleedThresholdPerc = 40;
+	[Range(1, 5)  ]public int 	bleedIterations = 2;
+	[Range(1, 100)]public int 	bleedChancePercent = 75;
 
 	private GameObject 			objectHolder;
 	private GameObject 			graphObjectHolder;
@@ -224,7 +230,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 						} else {
 							spawned.traversable = false;
 						}
-						spawned.InvertTraversability ();
+						spawned.ColourTraversability ();
 
 						gridCellsArray [(int)spawned.cellUnitCoordinates.x, (int)spawned.cellUnitCoordinates.y] = spawned;
 
@@ -355,7 +361,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			Debug.LogError ("retrying with values: " + Utils.VectorToString (pointEntry));
 
 			gridRegionsArray[(int)pointEntry.x, (int)pointEntry.y].SetRegionTraversable(false);
-
 		}
 
 
@@ -584,8 +589,12 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 	}
 
+	//TODO: 
+	//	noise SIZE, 
+	//	noise size PERCENTAGE OFFSET, 
+	//	noise AMOUNT percentage OFFSET
 	public void CreateRandomNoise() {
-		int randomOffsetPercentage = 25;
+		int randomOffsetPercentage = 10;
 		String debugString = "noise: ";
 
 		int maxNoiseAmount = gridCellsArray.GetLength (0) * gridCellsArray.GetLength (1);
@@ -596,10 +605,10 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		debugString += "start: " + noiseAmount;
 
-		noiseAmount *= Utils.RandomRangeMiddleVal (
-			(int)(noiseAmount - (noiseAmount * (randomOffsetPercentage / 100f))),
-			(int)(noiseAmount + (noiseAmount * (randomOffsetPercentage / 100f)))
-		);
+//		noiseAmount *= Utils.RandomRangeMiddleVal (
+//			(int)(noiseAmount - (noiseAmount * (randomOffsetPercentage / 100f))),
+//			(int)(noiseAmount + (noiseAmount * (randomOffsetPercentage / 100f)))
+//		);
 
 		debugString += "offset: " + noiseAmount;
 
@@ -629,14 +638,85 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 					cell.traversable = true;
 				}
 			}
-			cell.InvertTraversability ();
+			cell.ColourTraversability ();
 		}
 
 
 	}
 
-	public void CreateBleedNoise(int bleedPowerPercentage) {
-		
+	//TODO:
+	//	bleed neighbour scan RADIUS
+	//  bleed SIZE
+	// 	bleed size PERCENTAGE OFFSET
+	//	bleed noise threshold
+	//	bleed noise ratio
+	//	int bleedCreationIterations
+	public void CreateBleedNoise() {
+//		int neighbourScanRadius = 5;
+//		int bleedThresholdPercent = 25;
+		int bleedThreshold;
+//		int bleedCreationIterations; //todo
+		int bleedRatio;
+
+		int bleedSize = 1; //todo for more
+		int bleedSizePercentageOffset;
+
+		List<Vector2> scanRadiusElements;
+		List<Vector2> modifiedElements = new List<Vector2> ();
+		Vector2 currentElement = new Vector2 ();
+		int traversableElementsInRadius;
+		int maxThreshold = UtilsMath.MidPointCircleMaxElements (bleedScanRadius);
+
+
+		bleedThreshold = Mathf.CeilToInt(maxThreshold * (bleedThresholdPerc / 100f));
+		modifiedElements.Clear ();
+
+		for (int iterations = 0; iterations < bleedIterations; ++iterations) {
+
+			for (int dx = 0; dx < gridCellsArray.GetLength (0); ++dx) {
+				for (int dz = 0; dz < gridCellsArray.GetLength (1); ++dz) {
+				
+					currentElement.x = dx;
+					currentElement.y = dz;
+					traversableElementsInRadius = 0;
+
+					scanRadiusElements = UtilsMath.CreateMidPointCircle (
+						dx, 
+						dz, 
+						bleedScanRadius, 
+						0, 
+						gridCellsArray.GetLength (0), 
+						gridCellsArray.GetLength (1));
+				
+//				scanRadiusElements.Remove (currentElement);
+
+					for (int e = 0; e < scanRadiusElements.Count; ++e) {
+						if (gridCellsArray [(int)scanRadiusElements [e].x, (int)scanRadiusElements [e].y].traversable) {
+							++traversableElementsInRadius;
+						}
+					}
+
+					if (traversableElementsInRadius >= bleedThreshold) {
+//					if (!gridCellsArray[dx,dz].traversable) {
+						modifiedElements.Add (currentElement);
+//					}
+					}
+
+				}
+			}
+
+			//fix dat
+			GridCellScript cell;
+			for (int e = 0; e < modifiedElements.Count; ++e) {
+				cell = gridCellsArray [(int)modifiedElements [e].x, (int)modifiedElements [e].y];
+				if (!cell.traversable && UnityEngine.Random.Range(0, 100) < bleedChancePercent) {
+					cell.traversable = true;
+					cell.ColourTraversability ();
+				}
+			}
+
+		}
+
 	}
 
 //	public void ConnectKeyPois()

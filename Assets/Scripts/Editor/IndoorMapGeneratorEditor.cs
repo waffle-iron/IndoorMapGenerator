@@ -82,6 +82,10 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreateRandomNoise ();
 		}
 
+		if (GUILayout.Button("bleed")) {
+			script.CreateBleedNoise ();
+		}
+
 		if (GUILayout.Button("FULL TEST /debug/"))
 		{
 //			if (script.objectHolder.activeInHierarchy) {

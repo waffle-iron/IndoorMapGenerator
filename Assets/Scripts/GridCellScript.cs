@@ -28,7 +28,7 @@ public class GridCellScript : MonoBehaviour {
 	}
 
 
-	public void InvertTraversability() {
+	public void ColourTraversability() {
 		Material actualMat = new Material (this.GetComponent<Renderer> ().sharedMaterial);
 
 		if(traversable) {
