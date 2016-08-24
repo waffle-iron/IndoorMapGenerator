@@ -36,6 +36,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 100)]public int 	bleedChancePerc = 75;
 	[Range(1, 10) ]public int 	bleedMaxSize = 3;
 
+
 	private GameObject 			objectHolder;
 	private GameObject 			graphObjectHolder;
 
@@ -281,7 +282,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			int radius = keyPoiSizeVal;
 			radius += Utils.RandomRangeMiddleVal(0, Mathf.FloorToInt(radius * keyPoiSizeRndOffset/100f));
 
-			List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+			List<Vector2> coords = UtilsMath.MidPointCircle(
 				row,
 				column,
 				radius,
@@ -311,7 +312,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			int radius = nonKeyPoiSizeVal;
 			radius += Utils.RandomRangeMiddleVal(0, Mathf.FloorToInt(radius * nonKeyPoiSizeRndOffset/100f));
 
-			List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+			List<Vector2> coords = UtilsMath.MidPointCircle(
 				row,
 				column,
 				radius,
@@ -368,7 +369,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //		pointEntry.x = Mathf.Max(0, pointEntry.x);
 //		pointEntry.y = Mathf.Max(0, pointEntry.y);
 
-		List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+		List<Vector2> coords = UtilsMath.MidPointCircle(
 				(int)pointEntry.x,
 				(int)pointEntry.y,
 				Math.Min(1,keyPoiSizeVal-1),
@@ -412,7 +413,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			Debug.LogError("out of range: " + "(" + pointEnd.x + ", " + pointEnd.y + ").");
 		}
 
-		List<Vector2> coords = UtilsMath.CreateMidPointCircle(
+		List<Vector2> coords = UtilsMath.MidPointCircle(
 				(int)pointEnd.x,
 				(int)pointEnd.y,
 				keyPoiSizeVal+1,
@@ -633,10 +634,10 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			ProcessCellNoise (cell);
 
 
-			cellsCircle = UtilsMath.CreateMidPointCircle (
+			cellsCircle = UtilsMath.MidPointCircle (
 				(int)cell.cellUnitCoordinates.x,
 				(int)cell.cellUnitCoordinates.y,
-				noiseMaxSize, 
+				UnityEngine.Random.Range(1, noiseMaxSize),
 				0,
 				gridCellsArray.GetLength(0),
 				gridCellsArray.GetLength(1),
@@ -676,8 +677,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 		cell.ColourTraversability ();
 	}
-
-
+		
 	public void CreateBleedNoise() {
 //		if (bleedPreset == null) {
 		CreateBleedNoise (bleedIterations, bleedScanRadius, bleedThresholdPerc, bleedChancePerc, bleedMaxSize);
@@ -720,7 +720,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 					currentElement.y = dz;
 					traversableElementsInRadius = 0;
 
-					scanRadiusElements = UtilsMath.CreateMidPointCircle (
+					scanRadiusElements = UtilsMath.MidPointCircle (
 						dx, 
 						dz, 
 						bleedScanRadius, 
@@ -752,10 +752,10 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			if (bleedMaxSize > 1) {
 				for (int e = 0; e < count; ++e) {
 					cell = gridCellsArray [(int)modifiedElements [e].x, (int)modifiedElements [e].y];
-					modifiedElements.AddRange (UtilsMath.CreateMidPointCircle (
+					modifiedElements.AddRange (UtilsMath.MidPointCircle (
 						(int)cell.cellUnitCoordinates.x, 
 						(int)cell.cellUnitCoordinates.y, 
-						bleedMaxSize,
+						UnityEngine.Random.Range(1, bleedMaxSize),
 						0, 
 						gridCellsArray.GetLength (0),
 						gridCellsArray.GetLength (1)
@@ -774,6 +774,64 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		}
 
 	}
+
+	public void CellularAutomata(int iterationCount, int neighbourhoodScanRadius) {
+
+
+		for (int i=0; i < iterationCount; ++i) {
+			CellularAutomataIteration ();
+		}
+
+	}
+
+	//TODO:
+	//	presets for different Cellular Automata update rules
+	//	MAKE SCANNING BY SQUARE, NOT CIRCLE!!!! (for noise and bleed as well!) (or add option for doing one way or another!)
+	public void CellularAutomataIteration(int neighbourhoodScanRadius) {
+
+		List<Vector2> modifiedElements = new List<Vector2> ();
+		List<Vector2> scanningElements = new List<Vector2> ();
+
+		int livingMaximumThresholdPerc = 100;
+		int livingMinimumThresholdPerc = 4;
+
+		int dyingMaximumThresholdPerc = 4;
+		int dyingMinimumThresholdPerc = 0;
+
+		int maximumCells = UtilsMath.MidPointCircleMaxElements (neighbourhoodScanRadius + 1);
+
+		int livingCells;
+
+		for (int dx = 0; dx < gridCellsArray.GetLength(0); ++dx) { 
+			for (int dz = 0; dz < gridCellsArray.GetLength(1); ++dz) {
+				livingCells = 0;
+				scanningElements = UtilsMath.MidPointCircle (
+					dx, 
+					dz, 
+					neighbourhoodScanRadius + 1, 
+					0, 
+					gridCellsArray.GetLength (0), 
+					gridCellsArray.GetLength (1),
+					true
+				);
+
+				for (int s = 0; s < scanningElements.Count; ++s) {
+					if (gridCellsArray[(int)scanningElements[s].x, (int)scanningElements[s].y].traversable) {
+						++livingCells;
+					}
+				}
+
+//				if (livingCells > livingMinimumThreshold) {
+//					
+//				}
+					
+
+			}
+		}
+
+	}
+
+
 
 //	public void ConnectKeyPois()
 //	{

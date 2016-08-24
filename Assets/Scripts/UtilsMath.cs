@@ -106,8 +106,13 @@ public class UtilsMath
 		}
 		return line;
 	}
-	
-	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius)
+
+	/**
+	  Returning list (list) of square elements in 2d space, which are creating a 'circle' of given radius
+	  (circleRadius) given certain 'Mid-Point', that is center of the circle of (X, Z) coordinates of
+	  (midPointX, midPointZ).
+	 */
+	public static List<Vector2> MidPointCircle(int midPointX, int midPointZ, int circleRadius)
 	{
 		List<Vector2> list = new List<Vector2>();
 		Vector2 listElement = new Vector2();
@@ -128,9 +133,19 @@ public class UtilsMath
 		return list;
 	}
 
-	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ)
+	/**
+	  Returning list (list) of square elements in 2d space, which are creating a 'circle' of given radius
+	  (circleRadius) given certain 'Mid-Point', that is center of the circle of (X, Z) coordinates of
+	  (midPointX, midPointZ).
+
+	  List of coordinates is cropped when conditions for minimum and maximum index are not met, preventing 
+	  IndexOutOfRange exception. 
+	  Minimum allowed coordinate pair for any given element in 2d space (X, Z) is determined by (min, min) parameter,
+	  and maximum allowed coordinate pair (X, Z) is (maxX, maxZ)
+	 */
+	public static List<Vector2> MidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ)
 	{
-		List<Vector2> coords = CreateMidPointCircle(midPointX, midPointZ, circleRadius);
+		List<Vector2> coords = MidPointCircle(midPointX, midPointZ, circleRadius);
 		Vector2 coord;
 		for (int c = 0; c < coords.Count; c++)
 		{
@@ -145,18 +160,97 @@ public class UtilsMath
 		return coords;
 	}
 
-	public static List<Vector2> CreateMidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ, bool excludeMidPoint) {
+	/**
+	  Returning list (list) of square elements in 2d space, which are creating a 'circle' of given radius
+	  (circleRadius) given certain 'Mid-Point', that is center of the circle of (X, Z) coordinates of
+	  (midPointX, midPointZ).
+
+	  List of coordinates is cropped when conditions for minimum and maximum index are not met, preventing 
+	  IndexOutOfRange exception. 
+	  Minimum allowed coordinate pair for any given element in 2d space (X, Z) is determined by (min, min) parameter,
+	  and maximum allowed coordinate pair (X, Z) is (maxX, maxZ)
+
+	  Additionally, if (excludeMidPoint) flag is 'true', then center of the circle is not present in output coordinate list.
+	 */
+	public static List<Vector2> MidPointCircle(int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ, bool excludeMidPoint) {
 		if (!excludeMidPoint) {
-			return CreateMidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
+			return MidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
 		}
-		List<Vector2> coords = CreateMidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
+		List<Vector2> coords = MidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
 		coords.Remove (new Vector2 (midPointX, midPointZ));
 		return coords;
 	}
 
-	// I may have trouble adding 2+2 sometimes, but I figured out that if you want to get
-	// MAXIMUM number of grid elements inside circle of radius = circleRadius (eg. 3),
-	// then you have to go like this: (4*3 + 4*2 + 4*1).
+	/**
+	  Returning list (list) of square elements in 2d space, which are creating a square of given radius
+	  (squareRadius) given certain 'Mid-Point', that is center of the square of (X, Z) coordinates of
+	  (midPointX, midPointZ).
+	 */
+	public static List<Vector2> MidPointSquare(int midPointX, int midPointZ, int squareRadius) {
+		List<Vector2> list = new List<Vector2> ();
+		Vector2 listElement = new Vector2 ();
+
+		for (int x = midPointX - squareRadius; x <= midPointX + squareRadius; ++x) {
+			for (int y = midPointZ - squareRadius; y <= midPointZ + squareRadius; ++y) {
+				listElement.Set (x, y);
+				list.Add (listElement);
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	  Returning list (list) of square elements in 2d space, which are creating a square of given radius
+	  (squareRadius) given certain 'Mid-Point', that is center of the square of (X, Z) coordinates of
+	  (midPointX, midPointZ).
+
+	  List of coordinates is cropped when conditions for minimum and maximum index are not met, preventing 
+	  IndexOutOfRange exception. 
+	  Minimum allowed coordinate pair for any given element in 2d space (X, Z) is determined by (min, min) parameter,
+	  and maximum allowed coordinate pair (X, Z) is (maxX, maxZ)
+	 */
+	public static List<Vector2> MidPointSquare(int midPointX, int midPointZ, int squareRadius, int min, int maxX, int maxZ) {
+		List<Vector2> coords = MidPointSquare (midPointX, midPointZ, squareRadius);
+		Vector2 coord;
+		for (int c = 0; c < coords.Count; c++) {
+			coord = coords.ElementAt (c);
+			if (coord.x < min || coord.x >= maxX || coord.y < min || coord.y >= maxZ)
+			{
+				coords.RemoveAt(c);
+				--c;
+			}
+		}
+
+		return coords;
+	}
+
+	/**
+	  Returning list (list) of square elements in 2d space, which are creating a square of given radius
+	  (squareRadius) given certain 'Mid-Point', that is center of the square of (X, Z) coordinates of
+	  (midPointX, midPointZ).
+
+	  List of coordinates is cropped when conditions for minimum and maximum index are not met, preventing 
+	  IndexOutOfRange exception. 
+	  Minimum allowed coordinate pair for any given element in 2d space (X, Z) is determined by (min, min) parameter,
+	  and maximum allowed coordinate pair (X, Z) is (maxX, maxZ)
+
+	  Additionally, if (excludeMidPoint) flag is 'true', then center of the square is not present in output coordinate list.
+	 */
+	public static List<Vector2> MidPointSquare(int midPointX, int midPointZ, int squareRadius, int min, int maxX, int maxZ, bool excludeMidPoint) {
+		if (!excludeMidPoint) {
+			return MidPointSquare (midPointX, midPointZ, squareRadius, min, maxX, maxZ);
+		}
+		List<Vector2> coords = MidPointSquare (midPointX, midPointZ, squareRadius, min, maxX, maxZ);
+		coords.Remove (new Vector2 (midPointX, midPointZ));
+		return coords;
+	}
+
+	/** 
+	  I may have trouble adding 2+2 sometimes, but I figured out that if you want to get
+	  MAXIMUM number of grid elements inside circle of (circleRadius)'s radius (eg. 3),
+	  then you have to go like this: (4*3 + 4*2 + 4*1).
+	 */
 	public static int MidPointCircleMaxElements(int circleRadius) {
 		int elements = 0;
 
@@ -166,37 +260,61 @@ public class UtilsMath
 		return elements;
 	}
 
+	/**
+	 * Likewise for square based area, but base number for calculations is number 8.
+	 * So, maximum number of grid elements inside square of (squareRadius)'s radius (eg. 4)
+	 * is (8*4 + 8*3 + 8*2 + 8*1).
+	 */ 
+	public static int MidPointSquareMaxElements(int squareRadius) {
+		int maxElements = 0;
+		for (int i = squareRadius; i >= 1; --i) {
+			maxElements += 8 * i;
+		}
+
+		return maxElements;
+	}
+
+	/**
+	 * Returning vector length as double precision float type value.
+	 */ 
 	public static double VectorLength(Vector2 vector)
 	{
 		return Math.Sqrt(Math.Pow(vector.x, 2) + Math.Pow(vector.y, 2));
 	}
 
+	/**
+	 * Returning vector length as double precision float type value.
+	 * 
+	 * Returning value is cast to float type value.
+	 */ 
 	public static float VectorLengthToFloat(Vector2 vector)
 	{
 		return (float)VectorLength(vector);
 	}
 
+	/**
+	 * Returning vector length as double precision float type value.
+	 * 
+	 * Returning value is cast to integer type value (with appropriate rounding).
+	 */ 
 	public static float VectorLengthToInt(Vector2 vector)
 	{
 		return Mathf.RoundToInt(VectorLengthToFloat(vector));
 	}
 
-//
-//	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius)
-//	{
-//		return CreateMidPointCircle((int)midPoint.x, (int)midPoint.y, circleRadius);
-//	}
-//
-//	public static List<Vector2> CreateMidPointCircle(Vector2 midPoint, int circleRadius, int min, int maxX, int maxZ)
-//	{
-//		return CreateMidPointCircle((int) midPoint.x, (int) midPoint.y, circleRadius, min, maxX, maxZ);
-//	}
-
+	/**
+	 * Returns difference between two vectors' coordinates in form of a vector.
+	 * Takes a set of 2 coordinates (X1, Z1, X2, Z2) as a parameters.
+	 */
 	public static Vector2 VectorsDifference(float vecAX, float vecAY, float vecBX, float vecBY)
 	{
 		return new Vector2(Mathf.Abs(vecAX - vecBX), Mathf.Abs(vecAY - vecBY));
 	}
 
+	/**
+	 * Returns difference between two vectors' coordinates in form of a vector.
+	 * Takes a set of 2 vectors (vectorA, vectorB) as a parameters.
+	 */
 	public static Vector2 VectorsDifference(Vector2 vectorA, Vector2 vectorB)
 	{
 		return VectorsDifference(vectorA.x, vectorA.y, vectorB.x, vectorB.y);
@@ -229,6 +347,9 @@ public class UtilsMath
 		return uniqueNums;
 	}
 
+	/*
+	 * Returning array of numbers ranging from 0 (inclusive) to (count) (inclusive).
+	 */ 
 	public static int[] CreateAscendingNumbersArray(int count)
 	{
 		int[] nums = new int[count];
@@ -240,6 +361,9 @@ public class UtilsMath
 		return nums;
 	}
 
+	/*
+	 * Returning list of numbers ranging from 0 (inclusive) to (count) (inclusive).
+	 */ 
 	public static LinkedList<int> CreateAscendingNumbers(int count)
 	{
 		LinkedList<int> numbers = new LinkedList<int>();
@@ -252,6 +376,9 @@ public class UtilsMath
 		return numbers;
 	}
 
+	/**
+	 * Utility method for checking if (number) is inside the (container). Comparision by value.
+	 */ 
 	private static bool Contains(int[] container, int number)
 	{
 		for (int c = 0; c < container.Length; ++c)
@@ -264,6 +391,9 @@ public class UtilsMath
 		return false;
 	}
 
+	/**
+	 * Utility method for checking if (number) is inside the (container). Comparision by value.
+	 */ 
 	private static bool Contains(LinkedList<int> container, int number)
 	{
 		for (int c = 0; c < container.Count; ++c)
