@@ -40,5 +40,9 @@ public class GridCellScript : MonoBehaviour {
 		this.GetComponent<Renderer> ().sharedMaterial = actualMat;
 	}
 
+	public GridCellScript InvertTraversability() {
+		this.traversable = !traversable;
+		return this;
+	}
 
 }

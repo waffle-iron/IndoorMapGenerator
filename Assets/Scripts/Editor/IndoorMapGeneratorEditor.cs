@@ -98,6 +98,10 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreateCells ();
 		}
 
+		if (GUILayout.Button("CA iteration")) {
+			script.CellularAutomata (1);
+		}
+
 		if (GUILayout.Button("noise")) {
 			script.CreateRandomNoise ();
 		}

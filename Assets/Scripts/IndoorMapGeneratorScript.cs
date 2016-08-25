@@ -36,6 +36,20 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	[Range(1, 100)]public int 	bleedChancePerc = 75;
 	[Range(1, 10) ]public int 	bleedMaxSize = 3;
 
+	[Range(1, 10 )]public int	CAScanRadius = 1;
+	[Range(1, 100)]public int 	livingMaximumThresholdPerc = 100;
+	[Range(1, 100)]public int 	livingMinimumThresholdPerc = 50;
+	[Range(1, 100)]public int 	dyingMaximumThresholdPerc = 50;
+	[Range(1, 100)]public int 	dyingMinimumThresholdPerc = 0;
+
+
+	//TODO:
+	//	Create private variables for holding values for %-based parameters
+	// 	eg. concrete value of noiseBaseSizePerc, so noiseBaseSizeVal
+	// 	and update values each time public parameter is changed, and feed this shit into methods
+	//
+	// 	IMPORTANT!!!!!!!!!!!!!!!!!1
+
 
 	private GameObject 			objectHolder;
 	private GameObject 			graphObjectHolder;
@@ -634,7 +648,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			ProcessCellNoise (cell);
 
 
-			cellsCircle = UtilsMath.MidPointCircle (
+			cellsCircle = UtilsMath.MidPointSquare (
 				(int)cell.cellUnitCoordinates.x,
 				(int)cell.cellUnitCoordinates.y,
 				UnityEngine.Random.Range(1, noiseMaxSize),
@@ -775,40 +789,36 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	}
 
-	public void CellularAutomata(int iterationCount, int neighbourhoodScanRadius) {
-
-
+	public void CellularAutomata(int iterationCount) {
 		for (int i=0; i < iterationCount; ++i) {
-			CellularAutomataIteration ();
+			CellularAutomataIteration (CAScanRadius);
 		}
-
 	}
 
 	//TODO:
 	//	presets for different Cellular Automata update rules
 	//	MAKE SCANNING BY SQUARE, NOT CIRCLE!!!! (for noise and bleed as well!) (or add option for doing one way or another!)
-	public void CellularAutomataIteration(int neighbourhoodScanRadius) {
+	private void CellularAutomataIteration(int neighbourhoodScanRadius) {
+
+		int maximumCells = UtilsMath.MidPointSquareMaxElements (neighbourhoodScanRadius);
+
+//		int livingMaximumThresholdVal = Mathf.FloorToInt ((livingMaximumThresholdPerc / 100f) * maximumCells);
+		int livingMinimumThresholdVal = Mathf.FloorToInt ((livingMinimumThresholdPerc / 100f) * maximumCells);
+		int dyingMaximumThresholdVal = Mathf.CeilToInt ((dyingMaximumThresholdPerc / 100f) * maximumCells);
+//		int dyingMinimumThresholdVal = Mathf.CeilToInt ((dyingMinimumThresholdPerc / 100f) * maximumCells);
 
 		List<Vector2> modifiedElements = new List<Vector2> ();
 		List<Vector2> scanningElements = new List<Vector2> ();
-
-		int livingMaximumThresholdPerc = 100;
-		int livingMinimumThresholdPerc = 4;
-
-		int dyingMaximumThresholdPerc = 4;
-		int dyingMinimumThresholdPerc = 0;
-
-		int maximumCells = UtilsMath.MidPointCircleMaxElements (neighbourhoodScanRadius + 1);
-
+		GridCellScript cell;
 		int livingCells;
 
 		for (int dx = 0; dx < gridCellsArray.GetLength(0); ++dx) { 
 			for (int dz = 0; dz < gridCellsArray.GetLength(1); ++dz) {
 				livingCells = 0;
-				scanningElements = UtilsMath.MidPointCircle (
+				scanningElements = UtilsMath.MidPointSquare (
 					dx, 
 					dz, 
-					neighbourhoodScanRadius + 1, 
+					neighbourhoodScanRadius, 
 					0, 
 					gridCellsArray.GetLength (0), 
 					gridCellsArray.GetLength (1),
@@ -821,12 +831,22 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 					}
 				}
 
-//				if (livingCells > livingMinimumThreshold) {
-//					
-//				}
-					
+				cell = gridCellsArray [dx, dz];
+				livingCells += (maximumCells - scanningElements.Count);
+
+				if ((livingCells > livingMinimumThresholdVal && !cell.traversable)
+					|| (livingCells < dyingMaximumThresholdVal && cell.traversable)) {
+					modifiedElements.Add (new Vector2 (dx, dz));
+				} 
 
 			}
+		}
+			
+
+		for (int m = 0; m < modifiedElements.Count; ++m) {
+			gridCellsArray [(int)modifiedElements [m].x, (int)modifiedElements [m].y]
+				.InvertTraversability ()
+				.ColourTraversability ();
 		}
 
 	}
