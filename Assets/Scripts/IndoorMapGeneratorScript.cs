@@ -995,6 +995,10 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //		Utils.DestroyAssets(childHolderObject);
 	}
 
+	public void DestroyMap() {
+		Utils.DestroyAsset (objectHolder);
+	}
+
 	private void DestroyFloorPlane()
 	{
 		Utils.DestroyAsset(floorPlaneObject);

@@ -65,22 +65,63 @@ public class IndoorMapGeneratorEditor : Editor
 		bleedPresetSelected = EditorGUILayout.Popup("Bleed Preset:", bleedPresetSelected, bleedPresets); 
 
 
-		if (GUILayout.Button("Create Floor Plane"))
+//		if (GUILayout.Button("Create Floor Plane"))
+//		{
+//			script.CreateFloorPlane();
+//			script.CreateRegions();
+//		}
+//
+//		if (GUILayout.Button("POIs"))
+//		{
+//			script.CreatePointsOfInterest();
+//		}
+//
+//		if (GUILayout.Button("entry/exit nodes"))
+//		{
+//			script.CreateEntryPoint();
+//			script.CreateEndPoint();
+//		}
+
+		if (GUILayout.Button("FULL TEST /debug/"))
 		{
-			script.CreateFloorPlane();
-			script.CreateRegions();
+			//			if (script.objectHolder.activeInHierarchy) {
+			//				Destroy (script.objectHolder.gameObject);
+			//			}
+			script.DestroyMap();
+			script.CreateFloorPlane ();
+			script.CreateRegions ();
+			script.CreatePointsOfInterest ();
+			script.CreateEntryPoint ();
+			script.CreateEndPoint ();
+			script.CreatePathEntryEnd ();
+			script.ConnectKeyPois ();
+			script.CreateCells ();
+			//			int min = 0; int max = 10;
+			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 20;
+			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 4;
+			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 5;
+			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 5; max = 10;
+			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 0;
+			//           	Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 1;
+			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 1;
+			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 0; max = 1;
+			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+			//			min = 1; max = 1;
+			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
 		}
 
-		if (GUILayout.Button("POIs"))
-		{
-			script.CreatePointsOfInterest();
+		if (GUILayout.Button("REVERT")) {
+			script.RevertCellsOperations ();
 		}
 
-		if (GUILayout.Button("entry/exit nodes"))
-		{
-			script.CreateEntryPoint();
-			script.CreateEndPoint();
-		}
 
 		if (GUILayout.Button("bresenham"))
 		{
@@ -93,10 +134,10 @@ public class IndoorMapGeneratorEditor : Editor
 			script.ConnectKeyPois();
 		}
 
-		if (GUILayout.Button("Create Cells")) 
-		{
-			script.CreateCells ();
-		}
+//		if (GUILayout.Button("Create Cells")) 
+//		{
+//			script.CreateCells ();
+//		}
 
 		if (GUILayout.Button("CA iteration")) {
 			script.CellularAutomata (1);
@@ -110,44 +151,6 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreateBleedNoise ();
 		}
 
-		if (GUILayout.Button("FULL TEST /debug/"))
-		{
-//			if (script.objectHolder.activeInHierarchy) {
-//				Destroy (script.objectHolder.gameObject);
-//			}
-			script.CreateFloorPlane ();
-			script.CreateRegions ();
-			script.CreatePointsOfInterest ();
-			script.CreateEntryPoint ();
-			script.CreateEndPoint ();
-			script.CreatePathEntryEnd ();
-			script.ConnectKeyPois ();
-			script.CreateCells ();
-//			int min = 0; int max = 10;
-//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 20;
-//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 4;
-//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 5;
-//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 5; max = 10;
-//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 0;
-//           	Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 1;
-//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 1;
-//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 0; max = 1;
-//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-//			min = 1; max = 1;
-//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-		}
-
-		if (GUILayout.Button("REVERT")) {
-			script.RevertCellsOperations ();
-		}
 
 
 		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
