@@ -145,6 +145,10 @@ public class IndoorMapGeneratorEditor : Editor
 //			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
 		}
 
+		if (GUILayout.Button("REVERT")) {
+			script.RevertCellsOperations ();
+		}
+
 
 		EditorGUILayout.TextArea("",GUI.skin.horizontalSlider);
 		EditorGUILayout.LabelField("details:", center);

@@ -68,6 +68,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	private GridRegionScript[,] gridRegionsArray;
 	private GridCellScript[,] 	gridCellsArray;
+	private Stack<GridCellScript[,]> gridCellsArrayStack = new Stack<GridCellScript[,]> ();
 
 	private Vector2 			pointEntry = Utils.VECTOR2_INVALID_VALUE;
 	private Vector2 			pointEnd = Utils.VECTOR2_INVALID_VALUE;
@@ -252,6 +253,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 			}
 		}
+
+		gridCellsArrayStack.Push (gridCellsArray);
 	}
 
 	public void CreatePointsOfInterest()
@@ -643,10 +646,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				(int)UnityEngine.Random.Range (0, gridCellsArray.GetLength(0)),
 				(int)UnityEngine.Random.Range (0, gridCellsArray.GetLength(0))];
 
-
-
 			ProcessCellNoise (cell);
-
 
 			cellsCircle = UtilsMath.MidPointSquare (
 				(int)cell.cellUnitCoordinates.x,
@@ -659,23 +659,11 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			);
 
 			for (int c = 0; c < cellsCircle.Count; ++c) {
-//				cellCircle = gridCellsArray [(int)cellsCircle [c].x, (int)cellsCircle [c].y];
 				ProcessCellNoise (gridCellsArray[(int)cellsCircle[c].x, (int)cellsCircle[c].y]);
-
 			}
-
-//			//todo: make this statement prettier
-//			if (!differentialNoise) {
-//				cell.traversable = true;
-//			} else {
-//				if (cell.traversable) {
-//					cell.traversable = false;
-//				} else {
-//					cell.traversable = true;
-//				}
-//			}
-//			cell.ColourTraversability ();
 		}
+
+		gridCellsArrayStack.Push (gridCellsArray);
 	}
 
 	private void ProcessCellNoise(GridCellScript cell) {
@@ -785,6 +773,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				}
 			}
 
+			gridCellsArrayStack.Push (gridCellsArray);
 		}
 
 	}
@@ -851,6 +840,51 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	}
 
+	public void RevertCellsOperations() {
+//		RevertCellsOperations (1);
+		gridCellsArrayStack.Pop();
+//		gridCellsArray = gridCellsArrayStack.Peek ();
+		RestructurizeAllCells(gridCellsArrayStack.Peek());
+		ReRenderAllCells ();
+	}
+
+	public void RevertCellsOperations(int operations) {
+
+		if (operations > gridCellsArrayStack.Count) {
+			operations = gridCellsArrayStack.Count;
+		}
+			
+		for (int o = 0; o < operations-1; ++o) {
+			//TODO: 
+			//	Exception should be more defined to reduce generic operations overhead!
+			try {
+			gridCellsArray = gridCellsArrayStack.Pop ();
+			} catch (Exception exc) {
+				Debug.LogError ("EXCEPTION IN STACK POPPING: " + exc.Message);
+			}
+		}
+
+		ReRenderAllCells ();
+	}
+
+	private void RestructurizeAllCells(GridCellScript[,] newCells) {
+		for (int dx = 0; dx < gridCellsArray.GetLength(0); ++dx) {
+			for (int dz = 0; dz < gridCellsArray.GetLength(1); ++dz) {
+				gridCellsArray [dx, dz].cellUnitCoordinates = newCells[dx, dz].cellUnitCoordinates;
+				gridCellsArray [dx, dz].traversable = newCells[dx, dz].traversable;
+				gridCellsArray [dx, dz].ColourTraversability ();
+
+			}
+		}
+	}
+
+	private void ReRenderAllCells() {
+		for (int dx = 0; dx < gridCellsArray.GetLength(0); ++dx) {
+			for (int dz = 0; dz < gridCellsArray.GetLength(1); ++dz) {
+				gridCellsArray [dx, dz].ColourTraversability ();
+			}
+		}
+	}
 
 
 //	public void ConnectKeyPois()
