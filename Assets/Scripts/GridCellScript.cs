@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Security.Cryptography;
+using System;
 
-public class GridCellScript : MonoBehaviour {
+public class GridCellScript : MonoBehaviour, ICloneable {
 
 	public bool traversable = false;
 
@@ -10,6 +11,11 @@ public class GridCellScript : MonoBehaviour {
 
 	public Material material;
 	public Material materialOff;
+
+	public GridCellScript(bool traversable, Vector2 cellUnitCoordinates) {
+		this.traversable = traversable;
+		this.cellUnitCoordinates = cellUnitCoordinates;
+	}
 
 //	private Color colourTraversableTrue;
 //	private Color colourTraversableFalse;
@@ -45,4 +51,8 @@ public class GridCellScript : MonoBehaviour {
 		return this;
 	}
 
+	public object Clone() {
+//		return new GridCellScript(traversable, cellUnitCoordinates);
+		return this.MemberwiseClone();
+	}
 }

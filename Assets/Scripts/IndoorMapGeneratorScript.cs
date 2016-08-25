@@ -254,7 +254,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			}
 		}
 
-		gridCellsArrayStack.Push (gridCellsArray);
+		gridCellsArrayStack.Push (DeepCloneCells(gridCellsArray));
 	}
 
 	public void CreatePointsOfInterest()
@@ -663,7 +663,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			}
 		}
 
-		gridCellsArrayStack.Push (gridCellsArray);
+		gridCellsArrayStack.Push (DeepCloneCells(gridCellsArray));
 	}
 
 	private void ProcessCellNoise(GridCellScript cell) {
@@ -773,7 +773,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				}
 			}
 
-			gridCellsArrayStack.Push (gridCellsArray);
+			gridCellsArrayStack.Push (DeepCloneCells(gridCellsArray));
 		}
 
 	}
@@ -843,8 +843,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public void RevertCellsOperations() {
 //		RevertCellsOperations (1);
 		gridCellsArrayStack.Pop();
-//		gridCellsArray = gridCellsArrayStack.Peek ();
-		RestructurizeAllCells(gridCellsArrayStack.Peek());
+		gridCellsArray = gridCellsArrayStack.Peek ();
+//		RestructurizeAllCells(gridCellsArrayStack.Peek());
 		ReRenderAllCells ();
 	}
 
@@ -884,6 +884,18 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				gridCellsArray [dx, dz].ColourTraversability ();
 			}
 		}
+	}
+
+	private GridCellScript[,] DeepCloneCells(GridCellScript[,] cells) {
+		GridCellScript[,] cloned = new GridCellScript[cells.GetLength (0), cells.GetLength (1)];
+
+		for (int dx = 0; dx < gridCellsArray.GetLength (0); ++dx) {
+			for (int dz = 0; dz < gridCellsArray.GetLength (1); ++dz) {
+				cloned [dx, dz] = (GridCellScript)cells[dx, dz].Clone ();
+			}
+		}
+
+		return cloned;
 	}
 
 
