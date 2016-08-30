@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using System.Reflection;
 using System;
+using System.Xml.Linq;
 
 
 [CustomEditor (typeof(IndoorMapGeneratorScript))]
@@ -80,6 +81,14 @@ public class IndoorMapGeneratorEditor : Editor
 //			script.CreateEndPoint();
 //		}
 
+		if (GUILayout.Button("marching squares")) {
+			script.GetComponent<MarchingSquaresComponent> ().GenerateMarchingSquaresMap (
+				script.GetGridCellsArray(),
+				script.gridCellScale.x,
+				1f
+			);
+		}
+			
 		if (GUILayout.Button ("FULL TEST /debug/")) {
 			//			if (script.objectHolder.activeInHierarchy) {
 			//				Destroy (script.objectHolder.gameObject);

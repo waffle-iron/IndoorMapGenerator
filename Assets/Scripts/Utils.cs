@@ -12,6 +12,11 @@ public class Utils
 	public static readonly float PLANE_SIZE_CORRECTION_MULTIPLIER = 0.1f;
 	public static readonly float VERTEX_CUE_SIZE_CORRECTION_MULTIPLIER = 0.3f;
 
+	public static Color black;
+	public static Color white;
+	public static Color greyDark;
+	public static Color greyLight;
+
 	//VARIABLES:
 	private static float metersInOneUnit;
 	private static float regionDensity;
@@ -40,6 +45,10 @@ public class Utils
 	public static void Initialize (int gridSizeXVal, int gridSizeZVal, int regionDensityVal, float metersInOneUnitVal)
 	{
 		initialized = true;
+		black = new Color (0.1f, 0.1f, 0.1f);
+		white = new Color (0.8f, 0.8f, 0.8f);
+		greyDark = new Color(0.6f, 0.6f, 0.6f);
+		greyLight = new Color(0.35f, 0.35f, 0.35f);
 		UpdateConstants (gridSizeXVal, gridSizeZVal, regionDensityVal, metersInOneUnitVal);
 	}
 

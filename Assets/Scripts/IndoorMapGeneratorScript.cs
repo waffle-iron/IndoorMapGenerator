@@ -14,34 +14,36 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public float metersInOneUnit = 1;
 	public int regionDensity = 5;
 
-	[Range (1, 25)]public int poiPercentage = 10;
+	[Range (1, 25)]	public int poiPercentage = 10;
 	[Range (1, 100)]public int keyPoiPerc = 50;
 
 	[Range (1, 100)]public int keyPoiRndOffset = 10;
-	[Range (1, 50)]public int keyPoiSizePerc = 25;
+	[Range (1, 50)]	public int keyPoiSizePerc = 25;
 	[Range (1, 200)]public int keyPoiSizeRndOffset = 10;
 
-	[Range (1, 50)]public int nonKeyPoiSizePerc = 1;
-	[Range (1, 50)]public int nonKeyPoiSizeRndOffset = 10;
+	[Range (1, 50)]	public int nonKeyPoiSizePerc = 1;
+	[Range (1, 50)]	public int nonKeyPoiSizeRndOffset = 10;
 
-	[Range (1, 50)]public int noisePercentage = 10;
-	[Range (1, 20)]public int noiseBaseSizePerc = 5;
-	[Range (1, 50)]public int noiseSizeRandomOffset = 10;
-	[Range (1, 10)]public int noiseMaxSize = 3;
-	public bool differentialNoise = true;
+	[Range (1, 50)]	public int noisePercentage = 10;
+	[Range (1, 20)]	public int noiseBaseSizePerc = 5;
+	[Range (1, 50)]	public int noiseSizeRandomOffset = 10;
+	[Range (1, 10)]	public int noiseMaxSize = 3;
+				   	public bool differentialNoise = true;
 
-	[Range (1, 50)]public int bleedScanRadius = 6;
+	[Range (1, 50)]	public int bleedScanRadius = 6;
 	[Range (1, 100)]public int bleedThresholdPerc = 40;
-	[Range (1, 5)]public int bleedIterations = 2;
+	[Range (1, 5)]	public int bleedIterations = 2;
 	[Range (1, 100)]public int bleedChancePerc = 75;
-	[Range (1, 10)]public int bleedMaxSize = 3;
+	[Range (1, 10)]	public int bleedMaxSize = 3;
 
-	[Range (1, 10)]public int	CAScanRadius = 1;
+	[Range (1, 10)]	public int CAScanRadius = 1;
 	[Range (1, 100)]public int livingMaximumThresholdPerc = 100;
 	[Range (1, 100)]public int livingMinimumThresholdPerc = 50;
 	[Range (1, 100)]public int dyingMaximumThresholdPerc = 50;
 	[Range (1, 100)]public int dyingMinimumThresholdPerc = 0;
 
+
+	public MarchingSquaresComponent marchingSquaresComponent;
 
 	//TODO:
 	//	Create private variables for holding values for %-based parameters
@@ -49,7 +51,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	// 	and update values each time public parameter is changed, and feed this shit into methods
 	//
 	// 	IMPORTANT!!!!!!!!!!!!!!!!!1
-
 
 	private GameObject objectHolder;
 	private GameObject graphObjectHolder;
@@ -86,6 +87,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	//todo: delete that? its not needed anyway
 	private String methodName;
 
+
+	public Vector3 gridCellScale;
 
 	//todo: make controller - model infrastructure
 
@@ -201,18 +204,14 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		GridCellScript spawned;
 		Vector3 spawnedPosition;
 		bool regionTraversable;
-		Vector3 spawnedScale = gridRegionsArray [0, 0].gameObject.transform.localScale;
-		spawnedScale = Utils.divideXZ (spawnedScale, regionDensity);
+		gridCellScale = gridRegionsArray [0, 0].gameObject.transform.localScale;
+		gridCellScale = Utils.divideXZ (gridCellScale, regionDensity);
 
 		Vector3 positionOffset = Utils.GetObjectOffsetToCenter (gridCellPrefab.gameObject);
-		positionOffset = Utils.multiply (positionOffset, spawnedScale);
+		positionOffset = Utils.multiply (positionOffset, gridCellScale);
 
 
-
-//		Debug.Log ("region (1,1): pos: " +  gridRegionsArray[1,1].gameObject.transform.position + ", utilspos: " + Utils.GetBottomLeftCornerXZ(gridRegionsArray[1,1].gameObject));
-//		Debug.Log ("region (1,2): pos: " +  gridRegionsArray[1,2].gameObject.transform.position + ", utilspos: " + Utils.GetBottomLeftCornerXZ(gridRegionsArray[1,2].gameObject));
-//		Debug.Log ("region (1,3): pos: " +  gridRegionsArray[1,3].gameObject.transform.position + ", utilspos: " + Utils.GetBottomLeftCornerXZ(gridRegionsArray[1,3].gameObject));
-		Debug.Log ("regdens: " + regionDensity + " ,scalereg: " + gridRegionsArray [0, 0].gameObject.transform.localScale + ", scalecell: " + "(" + spawnedScale.x + "," + spawnedScale.y + "," + spawnedScale.z + ").");
+		Debug.Log ("regdens: " + regionDensity + " ,scalereg: " + gridRegionsArray [0, 0].gameObject.transform.localScale + ", scalecell: " + "(" + gridCellScale.x + "," + gridCellScale.y + "," + gridCellScale.z + ").");
 
 		for (int x = 0; x < gridSizeX; ++x) {
 			for (int z = 0; z < gridSizeZ; ++z) {
@@ -229,12 +228,12 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 						spawned.name = "cell (" + spawned.cellUnitCoordinates.x + "," + spawned.cellUnitCoordinates.y + ")";
 
 						spawned.transform.parent = gridCellsHolder.transform;
-						spawned.transform.localScale = spawnedScale;
+						spawned.transform.localScale = gridCellScale;
 
 						spawnedPosition = Utils.GetBottomLeftCornerXZ (gridRegionsArray [x, z].gameObject);
 						spawnedPosition += positionOffset;
-						spawnedPosition.x += (spawnedScale.x / Utils.PLANE_SIZE_CORRECTION_MULTIPLIER) * dx;
-						spawnedPosition.z += (spawnedScale.z / Utils.PLANE_SIZE_CORRECTION_MULTIPLIER) * dz;
+						spawnedPosition.x += (gridCellScale.x / Utils.PLANE_SIZE_CORRECTION_MULTIPLIER) * dx;
+						spawnedPosition.z += (gridCellScale.z / Utils.PLANE_SIZE_CORRECTION_MULTIPLIER) * dz;
 						spawned.transform.position = spawnedPosition;
 
 						if (regionTraversable) {
@@ -1022,5 +1021,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		return nonKeyPoiSizeVal;
 	}
 
+	public GridCellScript[,] GetGridCellsArray() {
+		return gridCellsArray;
+	}
 
 }
