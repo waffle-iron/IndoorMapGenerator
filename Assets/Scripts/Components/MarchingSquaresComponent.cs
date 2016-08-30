@@ -7,8 +7,8 @@ public class MarchingSquaresComponent : MonoBehaviour {
 
 	public bool debugGizmos = false;
 
-	private float debugCornerCubeScale;
-	private float debugMidPointCubeScale;
+	private Vector3 debugCornerCubeScale;
+	private Vector3 debugMidPointCubeScale;
 
 
 	void Start () {
@@ -20,8 +20,14 @@ public class MarchingSquaresComponent : MonoBehaviour {
 
 		squareScale *= 10f;
 
-		debugCornerCubeScale = 0.1f;
-		debugMidPointCubeScale = 0.05f;
+		debugCornerCubeScale = Vector3.one;
+		debugCornerCubeScale *= (float)(0.25f * squareScale);
+		debugMidPointCubeScale = Vector3.one;
+		debugMidPointCubeScale *= (float)(0.15f * squareScale);
+
+//		debugCornerCubeScale = (float)(0.8f * squareScale);
+//		debugMidPointCubeScale = (float)(0.5f * squareScale);
+
 		int cellsUnitSizeX = cellMap.GetLength (0);
 		int cellsUnitSizeZ = cellMap.GetLength (1);
 
@@ -36,9 +42,9 @@ public class MarchingSquaresComponent : MonoBehaviour {
 			for (int z = 0; z < cellsUnitSizeZ; ++z) {
 				//todo: refactor + create midpoints in some double for loop above
 				coordinates = new Vector3 (
-					-cellsRealSizeX / 2f + (x * squareScale) + squareScale / 2f,
+					/* -cellsRealSizeX / 2f */ + (x * squareScale) /* + squareScale / 2f */,
 					height,
-					-cellsRealSizeZ / 2f + (z * squareScale) + squareScale / 2f);
+					/* -cellsRealSizeZ / 2f */ + (z * squareScale) /* + squareScale / 2f */);
 				if (cellMap [x, z].traversable) {
 					squareCorners [x, z] = new Corner (coordinates, true, squareScale);
 				} else {
@@ -77,35 +83,38 @@ public class MarchingSquaresComponent : MonoBehaviour {
 			for (int x = 0; x < marchingSquaresMap.GetLength(0); ++x) {
 				for (int z = 0; z < marchingSquaresMap.GetLength (1); ++z) {	
 
-//					//drawing square cross lines:
+					//drawing square cross lines:
 //					Gizmos.color = Utils.white;
 //					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates ());
 //					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates ());
 //
-//					//drawing square sides:
-//					Gizmos.color = Utils.greyLight;
-//					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates ());
-//					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates ());
-//					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates ());
-//					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates ());
+					//drawing square sides:
+					Gizmos.color = Utils.greyDark;
+					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates ());
+					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates ());
+					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates ());
+					Gizmos.DrawLine (marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates (), marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates ());
 
 
 					//Drawing midpoints:
 					Gizmos.color = Utils.greyDark;
-					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointTop.GetUnitCoordinates (), Vector3.one * debugMidPointCubeScale);
-					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointRight.GetUnitCoordinates (), Vector3.one * debugMidPointCubeScale);
-					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointBottom.GetUnitCoordinates (), Vector3.one * debugMidPointCubeScale);
-					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointLeft.GetUnitCoordinates (), Vector3.one * debugMidPointCubeScale);
+					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointTop.GetUnitCoordinates (), debugMidPointCubeScale);
+					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointRight.GetUnitCoordinates (), debugMidPointCubeScale);
+					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointBottom.GetUnitCoordinates (), debugMidPointCubeScale);
+					Gizmos.DrawCube (marchingSquaresMap [x, z].midPointLeft.GetUnitCoordinates (), debugMidPointCubeScale);
 
 					//Drawing corners:
-					Gizmos.color = (marchingSquaresMap [x, z].cornerTopLeft.GetTraversable ()) ? Utils.white : Utils.black;
-					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates (), Vector3.one * debugCornerCubeScale);
-					Gizmos.color = (marchingSquaresMap [x, z].cornerTopLeft.GetTraversable ()) ? Utils.white : Utils.black;
-					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates (), Vector3.one * debugCornerCubeScale);
-					Gizmos.color = (marchingSquaresMap [x, z].cornerTopLeft.GetTraversable ()) ? Utils.white : Utils.black;
-					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates (), Vector3.one * debugCornerCubeScale);
-					Gizmos.color = (marchingSquaresMap [x, z].cornerTopLeft.GetTraversable ()) ? Utils.white : Utils.black;
-					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates (), Vector3.one * debugCornerCubeScale);
+					Gizmos.color = (marchingSquaresMap [x, z].cornerTopLeft.GetTraversable ()) ? Color.white : Utils.white;
+					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerTopLeft.GetUnitCoordinates (), debugCornerCubeScale);
+
+					Gizmos.color = (marchingSquaresMap [x, z].cornerTopRight.GetTraversable ()) ? Color.white : Utils.white;
+					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerTopRight.GetUnitCoordinates (), debugCornerCubeScale);
+
+					Gizmos.color = (marchingSquaresMap [x, z].cornerBottomLeft.GetTraversable ()) ? Color.white : Utils.white;
+					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerBottomLeft.GetUnitCoordinates (), debugCornerCubeScale);
+
+					Gizmos.color = (marchingSquaresMap [x, z].cornerBottomRight.GetTraversable ()) ? Color.white : Utils.white;
+					Gizmos.DrawCube (marchingSquaresMap [x, z].cornerBottomRight.GetUnitCoordinates (), debugCornerCubeScale);
 
 				}
 			}

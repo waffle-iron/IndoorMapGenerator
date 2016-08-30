@@ -85,7 +85,7 @@ public class IndoorMapGeneratorEditor : Editor
 			script.GetComponent<MarchingSquaresComponent> ().GenerateMarchingSquaresMap (
 				script.GetGridCellsArray(),
 				script.gridCellScale.x,
-				1f
+				3f
 			);
 		}
 			

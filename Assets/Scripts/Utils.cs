@@ -45,10 +45,10 @@ public class Utils
 	public static void Initialize (int gridSizeXVal, int gridSizeZVal, int regionDensityVal, float metersInOneUnitVal)
 	{
 		initialized = true;
-		black = new Color (0.1f, 0.1f, 0.1f);
-		white = new Color (0.8f, 0.8f, 0.8f);
-		greyDark = new Color(0.6f, 0.6f, 0.6f);
-		greyLight = new Color(0.35f, 0.35f, 0.35f);
+		black = new Color (0.15f, 0.15f, 0.15f);
+		white = new Color (0.65f, 0.65f, 0.65f);
+		greyLight = new Color(0.6f, 0.6f, 0.6f);
+		greyDark = new Color(0.35f, 0.35f, 0.35f);
 		UpdateConstants (gridSizeXVal, gridSizeZVal, regionDensityVal, metersInOneUnitVal);
 	}
 
