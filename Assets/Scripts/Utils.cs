@@ -46,8 +46,8 @@ public class Utils
 	{
 		initialized = true;
 		black = new Color (0.15f, 0.15f, 0.15f);
-		white = new Color (0.65f, 0.65f, 0.65f);
-		greyLight = new Color(0.6f, 0.6f, 0.6f);
+		white = new Color (0.57f, 0.57f, 0.57f);
+//		greyLight = new Color(0.6f, 0.6f, 0.6f);
 		greyDark = new Color(0.35f, 0.35f, 0.35f);
 		UpdateConstants (gridSizeXVal, gridSizeZVal, regionDensityVal, metersInOneUnitVal);
 	}

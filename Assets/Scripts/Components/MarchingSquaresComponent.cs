@@ -1,29 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MarchingSquaresComponent : MonoBehaviour {
 
 	private MarchingSquare[,] marchingSquaresMap;
 
 	public bool debugGizmos = false;
-
 	private Vector3 debugCornerCubeScale;
 	private Vector3 debugMidPointCubeScale;
 
+//	void Start () {
+//	
+//	}
 
-	void Start () {
-	
-	}
-
-		
 	public void GenerateMarchingSquaresMap(GridCellScript[,] cellMap, float squareScale, float height) {
 
 		squareScale *= 10f;
 
 		debugCornerCubeScale = Vector3.one;
-		debugCornerCubeScale *= (float)(0.25f * squareScale);
+		debugCornerCubeScale *= (float)(0.32f * squareScale);
 		debugMidPointCubeScale = Vector3.one;
-		debugMidPointCubeScale *= (float)(0.15f * squareScale);
+		debugMidPointCubeScale *= (float)(0.20f * squareScale);
 
 //		debugCornerCubeScale = (float)(0.8f * squareScale);
 //		debugMidPointCubeScale = (float)(0.5f * squareScale);
@@ -42,9 +40,9 @@ public class MarchingSquaresComponent : MonoBehaviour {
 			for (int z = 0; z < cellsUnitSizeZ; ++z) {
 				//todo: refactor + create midpoints in some double for loop above
 				coordinates = new Vector3 (
-					/* -cellsRealSizeX / 2f */ + (x * squareScale) /* + squareScale / 2f */,
+					x * squareScale,
 					height,
-					/* -cellsRealSizeZ / 2f */ + (z * squareScale) /* + squareScale / 2f */);
+					z * squareScale);
 				if (cellMap [x, z].traversable) {
 					squareCorners [x, z] = new Corner (coordinates, true, squareScale);
 				} else {
