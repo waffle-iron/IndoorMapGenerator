@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Random = System.Random;
 
+[RequireComponent (typeof (MarchingSquaresComponent))]
+[RequireComponent (typeof (MeshGenerator2DComponent))]
 public class IndoorMapGeneratorScript : MonoBehaviour
 {
 	//inputs:
@@ -44,6 +46,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 
 	public MarchingSquaresComponent marchingSquaresComponent;
+	public MeshGenerator2DComponent meshGenerator2dComponent;
 
 	//TODO:
 	//	Create private variables for holding values for %-based parameters
@@ -52,29 +55,36 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	//
 	// 	IMPORTANT!!!!!!!!!!!!!!!!!1
 
-	private GameObject objectHolder;
+
+	//holders:
+	private GameObject debugHolder;
 	private GameObject graphObjectHolder;
+	private GameObject gridRegionsHolder;
+	private GameObject gridCellsHolder;
+
+	private GameObject objectHolder;
+	private GameObject mesh2dHolder;
 
 	//prefabs:
 	public GameObject floorPlanePrefab;
 	public GridRegionScript	gridRegionPrefab;
 	public GridCellScript gridCellPrefab;
 
-	//holders:
-	private GameObject gridRegionsHolder;
-	private GameObject gridCellsHolder;
+
 
 	//instantiated GameObjects:
 	private GameObject floorPlaneObject;
+
 
 	private GridRegionScript[,] gridRegionsArray;
 	private GridCellScript[,] gridCellsArray;
 	private Stack<GridCellScript[,]> gridCellsArrayStack = new Stack<GridCellScript[,]> ();
 
+
 	private Vector2 pointEntry = Utils.VECTOR2_INVALID_VALUE;
 	private Vector2 pointEnd = Utils.VECTOR2_INVALID_VALUE;
 
-	//todo: make this shit private
+
 	private int totalPOIs;
 	private int totalPOIsKey;
 	private int totalPOIsNonKey;
@@ -83,9 +93,6 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	private LinkedList<GridRegionScript> keyPoisList = new LinkedList<GridRegionScript> ();
 	private LinkedList<GridRegionScript> nonKeyPoisList = new LinkedList<GridRegionScript> ();
-
-	//todo: delete that? its not needed anyway
-	private String methodName;
 
 
 	public Vector3 gridCellScale;
@@ -146,15 +153,15 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		Debug.Log (System.Reflection.MethodBase.GetCurrentMethod ().Name, this);
 
 
-		objectHolder = new GameObject ();
-		objectHolder.name = "IndoorMapGen map";
+		debugHolder = new GameObject ();
+		debugHolder.name = "(DEBUG)IndoorMapGen map";
 
 		floorPlaneObject = (GameObject)Instantiate (floorPlanePrefab);
 		floorPlaneObject.transform.localScale = Utils.GetGridRealSize3D (Utils.PLANE_SIZE_CORRECTION_MULTIPLIER);
 		floorPlaneObject.transform.rotation = Quaternion.Euler (0, 0, 0);
 		floorPlaneObject.transform.position = Utils.GetTopLeftCornerXZ (Vector3.zero, floorPlaneObject);
 		floorPlaneObject.name = "Floor (" + gridSizeX + ", " + gridSizeZ + ")";
-		floorPlaneObject.transform.parent = objectHolder.transform;
+		floorPlaneObject.transform.parent = debugHolder.transform;
 	}
 
 	//todo: regions (this method and CreatePointsOfInterest()) are calibrated to be n x n.
@@ -167,7 +174,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		gridRegionsHolder = new GameObject ();
 		gridRegionsHolder.name = "Grid Regions";
-		gridRegionsHolder.transform.parent = objectHolder.transform;
+		gridRegionsHolder.transform.parent = debugHolder.transform;
 
 
 		GridRegionScript spawned;
@@ -197,7 +204,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		gridCellsArray = new GridCellScript[gridSizeX * regionDensity, gridSizeZ * regionDensity];
 		gridCellsHolder = new GameObject ();
 		gridCellsHolder.name = "cells (" + gridCellsArray.GetLength (0) + "," + gridCellsArray.GetLength (1) + ")";
-		gridCellsHolder.transform.parent = objectHolder.transform;
+		gridCellsHolder.transform.parent = debugHolder.transform;
 		gridCellsHolder.transform.position += new Vector3 (0f, 0.2f, 0f);
 
 		//iterating over every region on the map
@@ -815,6 +822,31 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	}
 
+
+
+	public void MarchingSquaresAlgorithm() {
+		marchingSquaresComponent.GenerateMarchingSquaresMap (
+			gridCellsArray,
+			gridCellScale.x,
+			3f
+		);
+	}
+		
+	public void GenerateMesh2d() {
+		objectHolder = new GameObject ("Indoor map");
+		objectHolder.transform.position = new Vector3 (0f, 0.1f, 0f);
+
+		mesh2dHolder = new GameObject ("mesh 2d");
+		mesh2dHolder.transform.parent = objectHolder.transform;
+		(mesh2dHolder.AddComponent<MeshRenderer> ()).material = meshGenerator2dComponent.debugMaterial;
+		mesh2dHolder.AddComponent<MeshFilter> ();
+
+
+		meshGenerator2dComponent.SetTarget (mesh2dHolder);
+		meshGenerator2dComponent.GenerateMesh (marchingSquaresComponent.GetMarchingSquaresMap ());
+
+	}
+		
 	public void RevertCellsOperations ()
 	{
 //		RevertCellsOperations (1);
@@ -878,7 +910,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		return cloned;
 	}
 
-
+	/**
 	//	public void ConnectKeyPois()
 	//	{
 	//		GridRegionScript actualNode = keyPoisList.ElementAt(0);
@@ -957,6 +989,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	//			}
 	//		}
 	//	}
+	*/
 
 	private void CleanGridRegionsOff ()
 	{
@@ -973,8 +1006,9 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 //		Utils.DestroyAssets(childHolderObject);
 	}
 
-	public void DestroyMap ()
+	public void DestroyHolders ()
 	{
+		Utils.DestroyAsset (debugHolder);
 		Utils.DestroyAsset (objectHolder);
 	}
 

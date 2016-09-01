@@ -81,19 +81,18 @@ public class IndoorMapGeneratorEditor : Editor
 //			script.CreateEndPoint();
 //		}
 
+		if(GUILayout.Button("Generate Mesh (2d)")) {
+			script.GenerateMesh2d ();
+		}
+
 		if (GUILayout.Button("marching squares")) {
-			script.GetComponent<MarchingSquaresComponent> ().GenerateMarchingSquaresMap (
-				script.GetGridCellsArray(),
-				script.gridCellScale.x,
-				3f
-			);
+			script.MarchingSquaresAlgorithm ();
+
 		}
 			
 		if (GUILayout.Button ("FULL TEST /debug/")) {
-			//			if (script.objectHolder.activeInHierarchy) {
-			//				Destroy (script.objectHolder.gameObject);
-			//			}
-			script.DestroyMap ();
+			
+			script.DestroyHolders ();
 			script.CreateFloorPlane ();
 			script.CreateRegions ();
 			script.CreatePointsOfInterest ();
@@ -102,26 +101,7 @@ public class IndoorMapGeneratorEditor : Editor
 			script.CreatePathEntryEnd ();
 			script.ConnectKeyPois ();
 			script.CreateCells ();
-			//			int min = 0; int max = 10;
-			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 20;
-			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 4;
-			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 5;
-			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 5; max = 10;
-			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 0;
-			//           	Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 1;
-			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 1;
-			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 0; max = 1;
-			//            Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
-			//			min = 1; max = 1;
-			//			Debug.LogError("rand("+min+","+max+")=>" + Utils.RandomRangeMiddleVal(min, max));
+
 		}
 
 		if (GUILayout.Button ("REVERT")) {

@@ -10,10 +10,10 @@ using UnityEngine;
  * 	directly to the right of it. In consequence, if we are inspecting top left corner of a square, 
  * 	the upperMidPoint actually points to a midPoint in another (upper) square.
  */ 
-public class Corner {
+public class Corner : MidPoint {
 
-	private int 	vertexIndex;
-	private Vector3 unitCoordinates;
+//	private int 	vertexIndex;
+//	private Vector3 unitCoordinates;
 	private bool 	traversable;
 
 	private MidPoint upperMidPoint;
@@ -25,8 +25,8 @@ public class Corner {
 	 * Two midpoints needed for mesh triangulation will be generated based on
 	 * (squareScale) parameter.
 	 */
-	public Corner(Vector3 unitCoordinates, bool traversable, float squareScale) {
-		this.unitCoordinates = unitCoordinates;
+	public Corner(Vector3 unitCoordinates, bool traversable, float squareScale) : base (unitCoordinates) {
+//		this.unitCoordinates = unitCoordinates;
 		this.traversable = traversable;
 		upperMidPoint = new MidPoint (unitCoordinates + Vector3.forward * squareScale / 2f);
 		rightMidPoint = new MidPoint (unitCoordinates + Vector3.right * squareScale / 2f);
@@ -37,21 +37,21 @@ public class Corner {
 	 * Two midpoints needed for mesh triangulation will be referenced based on 
 	 * (upperMidPoint) and (rightMidPoint) parameters.
 	 */
-	public Corner(Vector3 unitCoordinates, bool traversable, MidPoint upperMidPoint, MidPoint rightMidPoint) {
-		this.unitCoordinates = unitCoordinates;
+	public Corner(Vector3 unitCoordinates, bool traversable, MidPoint upperMidPoint, MidPoint rightMidPoint) : base(unitCoordinates) {
+//		this.unitCoordinates = unitCoordinates;
 		this.traversable = traversable;
 		this.upperMidPoint = upperMidPoint;
 		this.rightMidPoint = rightMidPoint;
 	}
 		
 
-	public int GetVertexIndex() {
-		return vertexIndex;
-	}
-
-	public Vector3 GetUnitCoordinates() {
-		return unitCoordinates;
-	}
+//	public int GetVertexIndex() {
+//		return vertexIndex;
+//	}
+//
+//	public Vector3 GetUnitCoordinates() {
+//		return unitCoordinates;
+//	}
 
 	public bool GetTraversable() {
 		return traversable;

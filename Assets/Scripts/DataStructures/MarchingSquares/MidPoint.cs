@@ -13,8 +13,8 @@ using UnityEngineInternal;
  */ 
 public class MidPoint {
 
-	private int 	vertexIndex;
-	private Vector3 unitCoordinates;
+	protected int 	vertexIndex = Utils.INTEGER_INVALID_VALUE;
+	protected Vector3 unitCoordinates;
 
 	public MidPoint(Vector3 unitCoordinates) {
 		this.unitCoordinates = unitCoordinates;
@@ -25,6 +25,11 @@ public class MidPoint {
 	}
 
 	public int GetVertexIndex() {
+		return vertexIndex;
+	}
+
+	public int SetVertexIndex(int vertexIndexValue) {
+		vertexIndex = vertexIndexValue;
 		return vertexIndex;
 	}
 
