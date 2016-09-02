@@ -81,6 +81,10 @@ public class IndoorMapGeneratorEditor : Editor
 //			script.CreateEndPoint();
 //		}
 
+		if (GUILayout.Button("Generate Walls")) {
+			script.GenerateMeshWalls ();
+		}
+
 		if(GUILayout.Button("Generate Mesh (2d)")) {
 			script.GenerateMesh2d ();
 		}

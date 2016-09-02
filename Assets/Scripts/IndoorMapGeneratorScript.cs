@@ -8,6 +8,7 @@ using Random = System.Random;
 
 [RequireComponent (typeof (MarchingSquaresComponent))]
 [RequireComponent (typeof (MeshGenerator2DComponent))]
+[RequireComponent (typeof (MeshGeneratorWallsComponent))]
 public class IndoorMapGeneratorScript : MonoBehaviour
 {
 	//inputs:
@@ -47,6 +48,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	public MarchingSquaresComponent marchingSquaresComponent;
 	public MeshGenerator2DComponent meshGenerator2dComponent;
+	public MeshGeneratorWallsComponent meshGeneratorWallsComponent;
 
 	//TODO:
 	//	Create private variables for holding values for %-based parameters
@@ -64,6 +66,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 	private GameObject objectHolder;
 	private GameObject mesh2dHolder;
+	private GameObject meshWallsHolder;
 
 	//prefabs:
 	public GameObject floorPlanePrefab;
@@ -808,8 +811,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 				if ((livingCells > livingMinimumThresholdVal && !cell.traversable)
 				    || (livingCells < dyingMaximumThresholdVal && cell.traversable)) {
 					modifiedElements.Add (new Vector2 (dx, dz));
-				} 
-
+				}
 			}
 		}
 			
@@ -838,12 +840,33 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 
 		mesh2dHolder = new GameObject ("mesh 2d");
 		mesh2dHolder.transform.parent = objectHolder.transform;
+
 		(mesh2dHolder.AddComponent<MeshRenderer> ()).material = meshGenerator2dComponent.debugMaterial;
 		mesh2dHolder.AddComponent<MeshFilter> ();
 
-
 		meshGenerator2dComponent.SetTarget (mesh2dHolder);
-		meshGenerator2dComponent.GenerateMesh (marchingSquaresComponent.GetMarchingSquaresMap ());
+		meshGenerator2dComponent.SatistfyDependencies (marchingSquaresComponent.GetMarchingSquaresMap ());
+		meshGenerator2dComponent.GenerateMesh ();
+	}
+
+	public void GenerateMeshWalls() {
+		if (objectHolder == null) {
+			GenerateMesh2d ();
+		}
+
+		meshWallsHolder = new GameObject ("walls");
+		meshWallsHolder.transform.parent = objectHolder.transform;
+
+		(meshWallsHolder.AddComponent<MeshRenderer> ()).material = meshGeneratorWallsComponent.debugMaterial;
+		meshWallsHolder.AddComponent<MeshFilter> ();
+
+		meshGeneratorWallsComponent.SetTarget (meshWallsHolder);
+		if (Utils.inEditor ()) {
+			meshGeneratorWallsComponent.SatisfyDependencies (mesh2dHolder.GetComponent<MeshFilter> ().sharedMesh);
+		} else {
+			meshGeneratorWallsComponent.SatisfyDependencies (mesh2dHolder.GetComponent<MeshFilter> ().mesh);
+		}
+		meshGeneratorWallsComponent.GenerateMesh ();
 
 	}
 		
@@ -999,8 +1022,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			}
 		}
 	}
-
-
+		
 	private void DestroyChildren ()
 	{
 //		Utils.DestroyAssets(childHolderObject);
@@ -1016,9 +1038,7 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	{
 		Utils.DestroyAsset (floorPlaneObject);
 	}
-
-
-	//input validation method
+		
 	void OnValidate ()
 	{
 		if (gridSizeX < 10) {
