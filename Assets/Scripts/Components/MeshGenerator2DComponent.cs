@@ -80,13 +80,13 @@ public class MeshGenerator2DComponent : MonoBehaviour {
 				break;
 
 			case 1: 
-				MeshifySquare (square.midPointBottom, square.cornerBottomLeft, square.midPointLeft);
+				MeshifySquare (square.midPointLeft, square.midPointBottom, square.cornerBottomLeft);
 				break;
 			case 2: 
-				MeshifySquare (square.midPointRight, square.cornerBottomRight, square.midPointBottom);
+				MeshifySquare (square.cornerBottomRight, square.midPointBottom, square.midPointRight);
 				break;
 			case 4: 
-				MeshifySquare (square.midPointTop, square.cornerTopRight, square.midPointRight);
+				MeshifySquare (square.cornerTopRight, square.midPointRight, square.midPointTop);
 				break;
 			case 8: 
 				MeshifySquare (square.cornerTopLeft, square.midPointTop, square.midPointLeft);
