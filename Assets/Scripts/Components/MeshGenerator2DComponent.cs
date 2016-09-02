@@ -21,28 +21,31 @@ using System;
  * 		In order to optimise mesh (reduce number of vertices and triangles in a mesh), call OptimiseMesh() (not mandatory).
  *		
  */ 
-public class MeshGenerator2DComponent : MonoBehaviour {
+public class MeshGenerator2DComponent : MeshGeneratorAbstractComponent {
 
-	public Material 		debugMaterial;
+	public 	Material 			debugMaterial;
+	private MarchingSquare[,] 	marchingSquaresMap;
 
 	//refactor lists to arrays of fixed size
-	//(because it's possible (?) to know vertex count beforehand).
-	private List<Vector3> 	vertices;
-	private List<int> 		triangles;
-	private GameObject 		targetMapObject;
+	//(because it's possible (?) to know vertex count beforehand)?.
+//	private List<Vector3> 	vertices;
+//	private List<int> 		triangles;
 
-
-
-
-	public void SetTarget(GameObject target) {
-		targetMapObject = target;
+	public void SatistfyDependencies(MarchingSquare[,] marchingSquaresMap) {
+		if (marchingSquaresMap == null) {
+			throw new NullReferenceException ("Invalid parameter passed as dependency");
+		}
+		this.marchingSquaresMap = marchingSquaresMap;
 	}
 
-	public void GenerateMesh(MarchingSquare[,] marchingSquaresMap) {
+	public override void GenerateMesh() {
 		
+		if (marchingSquaresMap == null) {
+			throw new NullReferenceException ("Dependencies (map of Marching Squares) not satisfied or variable data was deleted");
+		}
+
 		vertices = new List<Vector3> ();
 		triangles = new List<int> ();
-
 		for (int x = 0; x < marchingSquaresMap.GetLength (0); ++x) {
 			for (int z = 0; z < marchingSquaresMap.GetLength (1); ++z) {
 				CreateTrianglesForSquare (marchingSquaresMap [x, z]);
@@ -50,27 +53,33 @@ public class MeshGenerator2DComponent : MonoBehaviour {
 		}
 
 		AssignMeshToTarget ();
+		marchingSquaresMap = null;
 	}
 
-	private void AssignMeshToTarget() {
+
+	public void GenerateMesh(MarchingSquare[,] marchingSquaresMap) {
+		SatistfyDependencies (marchingSquaresMap);
+		GenerateMesh ();
+	}
+
+	protected override void AssignMeshToTarget() {
 		Mesh mapMesh = new Mesh ();
 
 		try {
-			targetMapObject.GetComponent<MeshFilter> ().mesh = mapMesh;
+			targetObject.GetComponent<MeshFilter> ().mesh = mapMesh;
 			mapMesh.vertices = vertices.ToArray ();
 			mapMesh.triangles = triangles.ToArray ();
 		} catch (NullReferenceException nullRefExc) {
 			Debug.LogError ("Null pointer in assigning mesh to target object - target doesn't have MeshFilter / MeshRenderer attached? " +
 				"GenerateMesh() was not performed correctly?");
 		}
-
+			
 		mapMesh.RecalculateNormals ();
 		mapMesh.RecalculateBounds ();
 		mapMesh.Optimize ();
 	}
-
-
-	public void OptimiseMesh() {
+		
+	public override void OptimiseMesh() {
 		
 	}
 
@@ -150,7 +159,6 @@ public class MeshGenerator2DComponent : MonoBehaviour {
 		}
 	}
 		
-
 	private void CreateVertices(MidPoint[] points) {
 		for (int p = 0; p < points.GetLength(0); ++p) {
 			if (points[p].GetVertexIndex() == Utils.INTEGER_INVALID_VALUE) {
