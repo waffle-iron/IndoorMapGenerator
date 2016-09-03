@@ -49,6 +49,8 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 	public MarchingSquaresComponent marchingSquaresComponent;
 	public MeshGenerator2DComponent meshGenerator2dComponent;
 	public MeshGeneratorWallsComponent meshGeneratorWallsComponent;
+	public GameObject		meshFloor;
+
 
 	//TODO:
 	//	Create private variables for holding values for %-based parameters
@@ -867,6 +869,22 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 			meshGeneratorWallsComponent.SatisfyDependencies (mesh2dHolder.GetComponent<MeshFilter> ().mesh);
 		}
 		meshGeneratorWallsComponent.GenerateMesh ();
+
+		Vector3 floorPos = floorPlaneObject.transform.position;
+		floorPos.y = 2f;
+		floorPlaneObject.transform.position = floorPos;
+
+		Vector3 floorScale = floorPlaneObject.transform.localScale;
+		floorScale.x *= 1.05f;
+		floorScale.z *= 1.05f;
+		floorPlaneObject.transform.localScale = floorScale;
+
+		floorPlaneObject.transform.parent = objectHolder.transform;
+
+		GameObject.Destroy (debugHolder);
+
+//		meshGeneratorWallsComponent.SetFloorTarget (Instantiate (meshFloor));
+//		meshGeneratorWallsComponent.GenerateFloorMesh ();
 
 	}
 		

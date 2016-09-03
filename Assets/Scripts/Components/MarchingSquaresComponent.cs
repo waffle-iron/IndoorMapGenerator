@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 /**
  * 	Component for IndoorMapGeneratorScript.
@@ -29,8 +30,13 @@ public class MarchingSquaresComponent : MonoBehaviour {
 	private Vector3 debugMidPointCubeScale;
 
 	public void GenerateMarchingSquaresMap(GridCellScript[,] cellMap, float squareScale, float height) {
+		GenerateMarchingSquaresMap (cellMap, squareScale, height, 3);
+	}
 
-		//
+	public void GenerateMarchingSquaresMap(GridCellScript[,] cellMap, float squareScale, float height, int borderSize) {
+
+		cellMap = BorderCells (cellMap, borderSize);
+
 		squareScale *= 10f;
 
 		//for debug purposes only: sets size of individual squares elements, as rendered by OnDrawGizmos method.
@@ -76,6 +82,28 @@ public class MarchingSquaresComponent : MonoBehaviour {
 			}
 		}
 			
+	}
+
+	public GridCellScript[,] BorderCells (GridCellScript[,] cellMap, int borderSize) {
+		GridCellScript[,] borderedCellMap = new GridCellScript[
+			cellMap.GetLength (0) + borderSize * 2,
+			cellMap.GetLength (1) + borderSize * 2];
+
+		for (int x = 0; x < borderedCellMap.GetLength(0); ++x) {
+			for (int z = 0; z < borderedCellMap.GetLength(1); ++z) {
+				if (x >= borderSize && 
+					z >= borderSize &&
+					x < (cellMap.GetLength(0) + borderSize) &&
+					z < (cellMap.GetLength(1) + borderSize)) 
+				{
+					borderedCellMap [x, z] = cellMap [x - borderSize, z - borderSize];
+				} else {
+					borderedCellMap [x, z] = new GridCellScript (false, x, z);
+				}
+			}
+		}
+
+		return borderedCellMap;
 	}
 
 	public void GenerateMarchingSquaresMap(GridCellScript[,] cellMap, float squareScale) {

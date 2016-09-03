@@ -38,6 +38,26 @@ public class MeshGenerator2DComponent : MeshGeneratorAbstractComponent {
 		this.marchingSquaresMap = marchingSquaresMap;
 	}
 
+//	private MarchingSquare[,] BorderCells(MarchingSquare[,] marchingSquares, int borderSize) {
+//		MarchingSquare[,] borderedMarchingSquares = new MarchingSquare[
+//			marchingSquares.GetLength (0) + borderSize * 2,
+//			marchingSquares.GetLength (1) + borderSize * 2];
+//
+//		for (int x = 0; x < borderedMarchingSquares.GetLength(0); ++x) {
+//			for (int z = 0; z < borderedMarchingSquares.GetLength(1); ++z) {
+//				if (x >= borderSize && 
+//					z >= borderSize &&
+//					x < (borderedMarchingSquares.GetLength(0) + borderSize) &&
+//					z < (borderedMarchingSquares.GetLength(1) + borderSize)) 
+//				{
+//					borderedMarchingSquares [x, z] = marchingSquares [x - borderSize, z - borderSize];
+//				} else {
+//					borderedMarchingSquares[x,z] = new MarchingSquare()
+//				}
+//			}
+//		}
+//	}
+
 	public override void GenerateMesh() {
 		
 		if (marchingSquaresMap == null) {

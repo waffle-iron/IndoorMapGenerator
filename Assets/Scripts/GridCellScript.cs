@@ -19,6 +19,12 @@ public class GridCellScript : MonoBehaviour, ICloneable
 		this.cellUnitCoordinates = cellUnitCoordinates;
 	}
 
+	public GridCellScript (bool traversable, int cellUnitCoordinatesX, int cellUnitCoordinatesZ)
+	{
+		this.traversable = traversable;
+		this.cellUnitCoordinates = new Vector2(cellUnitCoordinatesX, cellUnitCoordinatesZ);
+	}
+
 	//	private Color colourTraversableTrue;
 	//	private Color colourTraversableFalse;
 

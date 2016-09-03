@@ -87,6 +87,7 @@ public class IndoorMapGeneratorEditor : Editor
 
 		if(GUILayout.Button("Generate Mesh (2d)")) {
 			script.GenerateMesh2d ();
+			script.GenerateMeshWalls ();
 		}
 
 		if (GUILayout.Button("marching squares")) {
