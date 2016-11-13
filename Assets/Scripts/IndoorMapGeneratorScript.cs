@@ -153,6 +153,15 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		CalculateValues ();
 	}
 
+
+	/**
+	 * Creates floor plane, which is a flat object which is basically floor on which
+	 * actors can walk on.
+	 * 
+	 * Intantiates floorPlaneObject from floorPlanePrefab (prefab from Editor),
+	 * saves 3d data and attaches object to debugHolder as a child.
+	 */
+	//	TODO: apply 3d procedural meshing here (so that floor is not flat)
 	public void CreateFloorPlane ()
 	{
 		Debug.Log (System.Reflection.MethodBase.GetCurrentMethod ().Name, this);
@@ -168,8 +177,16 @@ public class IndoorMapGeneratorScript : MonoBehaviour
 		floorPlaneObject.name = "Floor (" + gridSizeX + ", " + gridSizeZ + ")";
 		floorPlaneObject.transform.parent = debugHolder.transform;
 	}
+		
 
-	//todo: regions (this method and CreatePointsOfInterest()) are calibrated to be n x n.
+	/**
+	 * Creating Regions (first part of splitting floor plane into smaller parts),
+	 * which will be used for defining a traversal graph.
+	 * 
+	 * Instantiates gridRegionsArray. For every element of the array:
+	 * 	-instantiates gridRegionPrefab
+	 */ 
+	//TODO: regions (this method and CreatePointsOfInterest()) are calibrated to be n x n.
 	//investigate and fix dat
 	public void CreateRegions ()
 	{
