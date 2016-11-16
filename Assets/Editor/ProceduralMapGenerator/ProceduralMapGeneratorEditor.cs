@@ -10,12 +10,27 @@ public class ProceduralMapGeneratorEditor : Editor {
 	public override void OnInspectorGUI() {
 		generator = (ProceduralMapGenerator)target;
 
-		if (DrawDefaultInspector ()) {
-			generator.GeneratePerlinNoiseValuesMap ();
-		}
+		DrawDefaultInspector ();
+//		if (DrawDefaultInspector ()) {
+//			generator.GeneratePerlinNoiseValuesMap ();
+//		}
 
 		if (GUILayout.Button("perlin")) {
 			generator.GeneratePerlinNoiseValuesMap ();
+		}
+
+		if (GUILayout.Button("test cross")) {
+			generator.GenerateTestCrossValuesMap ();
+		}
+
+		if (GUILayout.Button("Gaussian Blur (perlin)")) {
+			generator.GeneratePerlinNoiseValuesMap ();
+			generator.ApplyGaussianBlur ();
+		}
+
+		if (GUILayout.Button("Gaussian Blur (Cross)")) {
+			generator.GenerateTestCrossValuesMap ();
+			generator.ApplyGaussianBlur ();
 		}
 	}
 

@@ -8,41 +8,45 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	public Renderer renderer;
 
 
-	public void RenderPerlinNoise(float[,] perlinNoiseValues) {
-		renderer.sharedMaterial.mainTexture = CreatePerlinNoiseTexture (perlinNoiseValues);
+	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
+		renderer.sharedMaterial.mainTexture = CreateValuesTexture (valuesArray, rangeMin, rangeMax);
 		renderer.transform.localScale = new Vector3 (
-			perlinNoiseValues.GetLength (0), 
+			valuesArray.GetLength (0), 
 			1, 
-			perlinNoiseValues.GetLength (1)
+			valuesArray.GetLength (1)
 		);
 	}
 
 
 	//2D
-	private Texture CreatePerlinNoiseTexture(float[,] perlinNoiseValues) {
+	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin, float rangeMax) {
 
-		int mapDimensionX = perlinNoiseValues.GetLength (0);
-		int mapDimensionZ = perlinNoiseValues.GetLength (1);
+		int mapDimensionX = valuesArray.GetLength (0);
+		int mapDimensionZ = valuesArray.GetLength (1);
 
-		Texture2D perlinNoiseTexture = new Texture2D (mapDimensionX, mapDimensionZ);
-		Color[] perlinNoiseTextureColourMap = new Color[mapDimensionX * mapDimensionZ];
+		Texture2D valueTexture = new Texture2D (mapDimensionX, mapDimensionZ);
+		Color[] valueTextureColorMap = new Color[mapDimensionX * mapDimensionZ];
 
 		for(int x = 0; x < mapDimensionX; ++x) {
 			for (int z = 0; z < mapDimensionZ; ++z) {
-				if (perlinNoiseValues[x, z] > 1 || perlinNoiseValues[x, z] < 0) {
-					Debug.LogError ("perlin value outside of range (" + perlinNoiseValues [x, z] + ") on [x:" + x + ", z:" + z + ").");
-					perlinNoiseTextureColourMap [x * mapDimensionZ + z] = Color.black;
+				if (valuesArray[x, z] > rangeMax || valuesArray[x, z] < rangeMin) {
+					Debug.LogError ("value in array outside of range (" + valuesArray [x, z] + ") on [x:" + x + ", z:" + z + "].");
+					valueTextureColorMap [x * mapDimensionZ + z] = Color.black;
 					continue;
 				}
 
-				perlinNoiseTextureColourMap [x * mapDimensionZ + z] = Color.Lerp(Color.yellow, Color.red, perlinNoiseValues[x, z]);
+				valueTextureColorMap [x * mapDimensionZ + z] = Color.Lerp(
+					Color.yellow, 
+					Color.red, 
+					Mathf.InverseLerp(rangeMin, rangeMax, valuesArray[x, z])
+				);
 			}
 		}
-		perlinNoiseTexture.SetPixels (perlinNoiseTextureColourMap);
-		perlinNoiseTexture.filterMode = FilterMode.Point;
-		perlinNoiseTexture.Apply ();
+		valueTexture.SetPixels (valueTextureColorMap);
+		valueTexture.filterMode = FilterMode.Point;
+		valueTexture.Apply ();
 
-		return perlinNoiseTexture;
+		return valueTexture;
 	}
 
 

@@ -11,7 +11,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		mapTotalDimensionZ = 10;
 	public int 		mapTotalDimensionY;
 	public float 	perlinNoiseScale = 0.3f;
+	public int		blurRadius = 3;
+	public int 		blurIterations = 4;
+	public int		blurSolidification = 2;
 
+	float[,] mapValuesArray;
 
 
 	public void GeneratePerlinNoiseValuesMap() {
@@ -21,9 +25,27 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			perlinNoiseScale
 		);
 
-		GetComponent<PerlinNoiseRenderer> ().RenderPerlinNoise (perlinNoiseMap);
+		mapValuesArray = perlinNoiseMap;
+
+		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
 	}
 
+	public void GenerateTestCrossValuesMap() {
+		float[,] testCrossMap = GetComponent<ComputationUtils> ().CreateTestCrossValues (
+			mapTotalDimensionX, 
+			mapTotalDimensionZ
+		);
+
+		mapValuesArray = testCrossMap;
+
+		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
+	}
+
+	public void ApplyGaussianBlur() {
+		mapValuesArray = GetComponent<ComputationUtils> ().GaussianBlur (mapValuesArray, blurRadius, blurIterations, blurSolidification);
+
+		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
+	}
 
 
 	// Use this for initialization
