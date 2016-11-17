@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Runtime.InteropServices;
+using System;
+using System.Security.Policy;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
@@ -11,12 +13,31 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		mapTotalDimensionZ = 10;
 	public int 		mapTotalDimensionY;
 	public float 	perlinNoiseScale = 0.3f;
-	public int		blurRadius = 3;
-	public int 		blurIterations = 4;
-	public int		blurSolidification = 2;
 
-	float[,] mapValuesArray;
+	[Range(0f, 10f)] public int	blurRadius = 3;
 
+	[Range(0f, 10f)] public int blurIterations = 4;
+
+	[Range(0f, 5f)] public int	blurSolidification = 2;
+
+	public int contrastPercent;
+
+	private float[,] mapValuesArray;
+
+
+	//todo: keep reference of ComputationUtils in variable here somewhere
+	//(PROS: so that we do not take reflective lookups every function?
+	// MAYBE CONS: memory leaks?)
+
+	public void ApplyContrast() {
+		if (mapValuesArray == null) {
+			GeneratePerlinNoiseValuesMap ();
+		}
+
+		mapValuesArray = GetComponent<ComputationUtils> ().ContrastValues (mapValuesArray, contrastPercent, new float[]{1f, 0f});
+
+		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
+	}
 
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = GetComponent<ComputationUtils> ().CreatePerlinNoiseValues (

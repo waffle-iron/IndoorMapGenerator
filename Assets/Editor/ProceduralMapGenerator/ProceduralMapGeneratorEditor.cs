@@ -1,37 +1,90 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using System;
 
 [CustomEditor (typeof (ProceduralMapGenerator))]
 public class ProceduralMapGeneratorEditor : Editor {
 
 	ProceduralMapGenerator generator;
 
+	private const int buttonPerlin = 1;
+	private const int buttonTestCross = 2;
+	private const int buttonGaussianBlurPerlin = 3;
+	private const int buttonGaussianBlurCross = 4;
+
+	private int lastUsed = 1;
+	private long lastUsedTime = DateTime.Now.Ticks / TimeSpan.TicksPerSecond;
+
 	public override void OnInspectorGUI() {
 		generator = (ProceduralMapGenerator)target;
 
-		DrawDefaultInspector ();
-//		if (DrawDefaultInspector ()) {
-//			generator.GeneratePerlinNoiseValuesMap ();
-//		}
+		if (DrawDefaultInspector ()) {
+			if (lastUsedTime < DateTime.Now.Ticks / TimeSpan.TicksPerSecond + 1000) {
+				switch (lastUsed) {
+					case 1:
+						ButtonPerlin ();
+						Debug.Log (Mathf.Lerp (0, 100, 134));
+						break;
+					case 2:
+						ButtonTestCross ();
+						break;
+					case 3:
+						ButtonGaussianBlurPerlin ();
+						break;
+					case 4:
+						ButtonGaussianBlurCross ();
+						break;
+				}
+			}
+		}
 
 		if (GUILayout.Button("perlin")) {
-			generator.GeneratePerlinNoiseValuesMap ();
+			ButtonPerlin ();
 		}
 
 		if (GUILayout.Button("test cross")) {
-			generator.GenerateTestCrossValuesMap ();
+			ButtonTestCross ();
 		}
 
 		if (GUILayout.Button("Gaussian Blur (perlin)")) {
-			generator.GeneratePerlinNoiseValuesMap ();
-			generator.ApplyGaussianBlur ();
+			ButtonGaussianBlurPerlin ();
 		}
 
 		if (GUILayout.Button("Gaussian Blur (Cross)")) {
-			generator.GenerateTestCrossValuesMap ();
-			generator.ApplyGaussianBlur ();
+			ButtonGaussianBlurCross ();
 		}
+
+		if (GUILayout.Button("Apply Contrast")) {
+			ButtonApplyContrast ();
+		}
+	}
+
+	private void ButtonPerlin() {
+		generator.GeneratePerlinNoiseValuesMap ();
+		lastUsed = 1;
+	}
+
+	private void ButtonTestCross() {
+		generator.GenerateTestCrossValuesMap ();
+		lastUsed = 2;
+	}
+
+	private void ButtonGaussianBlurPerlin() {
+		generator.GeneratePerlinNoiseValuesMap ();
+		generator.ApplyGaussianBlur ();
+		lastUsed = 3;
+	}
+
+	private void ButtonGaussianBlurCross() {
+		generator.GenerateTestCrossValuesMap ();
+		generator.ApplyGaussianBlur ();
+		lastUsed = 4;
+	}
+
+	private void ButtonApplyContrast() {
+		generator.GeneratePerlinNoiseValuesMap ();
+		generator.ApplyContrast ();
 	}
 
 }

@@ -2,8 +2,66 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.CodeDom;
+using System;
 
 public class ComputationUtils : MonoBehaviour {
+
+	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio) {
+		return ContrastValues(
+			inputValuesArray,
+			percentRatio,
+			FindRangesMaxMin (inputValuesArray)
+		);
+		
+	}
+
+	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio, float rangeMin, float rangeMax) {
+//		if (rangeMax < rangeMin) {
+//			float tmp = rangeMin; //todo: refactor to use only 2 variables, not 2 + tmp
+//			rangeMin = rangeMax;
+//			rangeMax = tmp;
+//		}
+
+
+		float contrastDeltaRange = (rangeMax - rangeMin) * (percentRatio / (100f * 2f));
+		float contrastRangeMin = rangeMin + contrastDeltaRange;
+		float contrastRangeMax = rangeMax - contrastDeltaRange;
+
+		Debug.Log ("ctrRange: " + contrastDeltaRange + ", ctrMin: " + contrastRangeMin + ", ctrMax: " + contrastRangeMax);
+
+		for (int x = 0; x < inputValuesArray.GetLength (0); ++x) {
+			for (int z = 0; z < inputValuesArray.GetLength (1); ++z) {
+				float contrastedValue = Mathf.Lerp (contrastRangeMin, contrastRangeMax, inputValuesArray [x, z]);
+				float valueAdaptedToOutput = Mathf.InverseLerp (rangeMin, rangeMax, contrastedValue);
+				inputValuesArray [x, z] = valueAdaptedToOutput;
+			}
+		}
+
+		return inputValuesArray;
+	}
+
+	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio, float[] rangeMaxMin) {
+		return ContrastValues (inputValuesArray, percentRatio, rangeMaxMin [1], rangeMaxMin [0]);
+	}
+
+
+
+	public float[] FindRangesMaxMin(float[,] inputValuesArray) {
+		float[] rangesMaxMin = new float[2];
+		rangesMaxMin [0] = float.MinValue;
+		rangesMaxMin [1] = float.MaxValue;
+		for (int x = 0; x < inputValuesArray.GetLength (0); ++x) {
+			for (int z = 0; z < inputValuesArray.GetLength (1); ++z) {
+				if (inputValuesArray [x, z] > rangesMaxMin [0]) {
+					rangesMaxMin [0] = inputValuesArray [x, z];
+				} 
+				if (inputValuesArray[x,z] < rangesMaxMin[1]) {
+					rangesMaxMin [1] = inputValuesArray [x, z];
+				}
+			}
+		}
+		return rangesMaxMin;
+	}
 
 	//1 channel implementation of Gaussian Blur
 	public float[,] GaussianBlur(float[,] inputValuesArray, int blurRadius = 5, int blurIterations = 3, int blurSolidifications = 0) {
