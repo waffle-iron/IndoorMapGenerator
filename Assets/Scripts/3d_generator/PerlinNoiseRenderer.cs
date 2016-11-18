@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.Xml.Linq;
+using System.Linq.Expressions;
 
 public class PerlinNoiseRenderer : MonoBehaviour {
 
@@ -9,6 +10,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 
 	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
+		ValidateRenderer ();
 		renderer.sharedMaterial.mainTexture = CreateValuesTexture (valuesArray, rangeMin, rangeMax);
 		renderer.transform.localScale = new Vector3 (
 			valuesArray.GetLength (0), 
@@ -49,6 +51,17 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		return valueTexture;
 	}
 
+	void OnValidate() {
+		ValidateRenderer ();
+	}
 
+	private void ValidateRenderer() {
+		if (renderer == null) {
+			Renderer renderObject = gameObject.GetComponent<ProceduralMapGenerator> ().GetMapOutputObject ().GetPlaneObject ();
+			if (renderObject != null) {
+				renderer = renderObject;
+			} 
+		}
+	}
 
 }

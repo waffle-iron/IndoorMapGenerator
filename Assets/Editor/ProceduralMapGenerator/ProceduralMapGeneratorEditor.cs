@@ -16,6 +16,9 @@ public class ProceduralMapGeneratorEditor : Editor {
 	private int lastUsed = 1;
 	private long lastUsedTime = DateTime.Now.Ticks / TimeSpan.TicksPerSecond;
 
+	//TODO: some buttons should be PRESSED DOWN on click, not TAPPED
+	//eg: on clicking CONTRAST, more values should pop pup, to fine tune Contrast work
+
 	public override void OnInspectorGUI() {
 		generator = (ProceduralMapGenerator)target;
 
