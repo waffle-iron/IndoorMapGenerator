@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Xml.Linq;
 using System.Linq.Expressions;
+using System.Collections.Generic;
 
 public class PerlinNoiseRenderer : MonoBehaviour {
 
@@ -34,26 +35,12 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 
 
-	public void RenderGraphMarkers(int mapResolutionX, int mapResolutionZ, int graphResolutionX, int graphResolutionY, int graphResolutionZ) {
+	public void RenderGraphMarkers(Vector3[] graphMarkersPositions) {
+
 		view.ClearGraph ();
-
-		float graphMarkersPositionY = graphResolutionY / 2; //so that markers are drawn in between minY and maxY vals
-		float graphMarkersDistanceX = mapResolutionX / graphResolutionX;
-		float graphMarkersDistanceZ = mapResolutionZ / graphResolutionZ;
-
-		for(int x = 0; x < graphResolutionX; ++x) {
-			for(int z = 0; z < graphResolutionZ; ++z) {
-				Vector3 position = new Vector3 (x * graphMarkersDistanceX, graphMarkersPositionY, z * graphMarkersDistanceZ);
-				//TODO: USE CENTER OBJECT METHOD FROM UTILS CLASS!
-				position.x -= mapResolutionX / 2f;
-				position.z -= mapResolutionZ / 2f; 
-				view.AddGraphMarker (
-						position,
-						true
-				);
-			}
+		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
+			view.AddGraphMarker (graphMarkersPositions [m], true);
 		}
-
 	}
 
 

@@ -39,7 +39,7 @@ public class MapOutputObject : MonoBehaviour {
 		Renderer marker = Instantiate (graphMarkerPrefab);
 		marker.transform.parent = graphMarkersView.transform;
 		marker.transform.position = markerPosition;
-		marker.transform.localScale = new Vector3 (2f, 2f, 2f); //todo: computUtils.VectorDivide(scale, 2)!
+		marker.transform.localScale = new Vector3 (1.5f, 1.5f, 1.5f); //todo: computUtils.VectorDivide(scale, 2)!
 		return marker;
 	}
 

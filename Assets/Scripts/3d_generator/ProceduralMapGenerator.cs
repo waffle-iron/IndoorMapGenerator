@@ -35,6 +35,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	//(PROS: so that we do not take reflective lookups every function?
 	// MAYBE CONS: memory leaks?)
 
+	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = GetComponent<ComputationUtils> ().CreatePerlinNoiseValues (
 			mapResolutionX, 
@@ -79,12 +80,31 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		RenderValuesArray (mapValuesArray);
 	}
 
+
 	public void GenerateGraphMarkers() {
-		GetComponent<PerlinNoiseRenderer> ().RenderGraphMarkers (
-			mapResolutionX, mapResolutionZ, 
-			graphResolutionX, graphResolutionY, graphResolutionZ
-		);
+
+		Vector3[] graphMarkersPositions = new Vector3[graphResolutionX * graphResolutionX];
+
+		float graphMarkersPositionY = graphResolutionY / 2; //so that markers are drawn in between minY and maxY vals
+		float graphMarkersDistanceX = mapResolutionX / graphResolutionX;
+		float graphMarkersDistanceZ = mapResolutionZ / graphResolutionZ;
+
+
+		for(int x = 0; x < graphResolutionX; ++x) {
+			for(int z = 0; z < graphResolutionZ; ++z) {
+				Vector3 position = new Vector3 (x * graphMarkersDistanceX, graphMarkersPositionY, z * graphMarkersDistanceZ);
+				//TODO: USE CENTER OBJECT METHOD FROM UTILS CLASS!
+				position.x -= mapResolutionX / 2f;
+				position.z -= mapResolutionZ / 2f; 
+				graphMarkersPositions [x * graphResolutionZ + z] = position;
+			}
+		}
+			
+		GetComponent<PerlinNoiseRenderer> ().RenderGraphMarkers (graphMarkersPositions);
 	}
+
+//	public void Generate
+
 
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
