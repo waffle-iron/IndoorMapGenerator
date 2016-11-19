@@ -64,6 +64,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 		if (GUILayout.Button("Apply Contrast")) {
 			ButtonApplyContrast ();
 		}
+
+		if (GUILayout.Button("graph markers")) {
+			generator.GenerateGraphMarkers ();
+		}
 	}
 
 	private void ButtonPerlin() {

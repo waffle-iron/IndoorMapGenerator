@@ -6,13 +6,21 @@ using System;
 
 public class ComputationUtils : MonoBehaviour {
 
+	//todo: more professional name than 'divideBy'
+	public Vector3 VectorDivide(Vector3 input, float divideBy) {
+		input.x = input.x / divideBy;
+		input.y = input.y / divideBy;
+		input.z = input.z / divideBy;
+
+		return input;
+	}
+
 	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio) {
 		return ContrastValues(
 			inputValuesArray,
 			percentRatio,
 			FindRangesMinMax (inputValuesArray)
 		);
-		
 	}
 
 	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio, float rangeMin, float rangeMax) {
@@ -101,6 +109,7 @@ public class ComputationUtils : MonoBehaviour {
 					}
 				}
 
+				//todo: Mathf.Clamp(rangeMin, rangeMax)
 				blurredValues[i,j] = val/((blurRadius+blurRadius+1)*(blurRadius+blurRadius+1));
 			}
 		}

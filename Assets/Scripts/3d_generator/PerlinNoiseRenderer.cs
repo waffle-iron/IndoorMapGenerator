@@ -9,6 +9,53 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	public  MapOutputObject viewPrefab;
 	private MapOutputObject view;
 
+	void Reset() {
+		ValidateView ();
+	}
+
+	public void ValidateView() {
+		if (view == null) {
+			view = (MapOutputObject) Instantiate (viewPrefab);
+		}
+		ValidatePlaneView ();
+		ValidateGraphView ();
+	}
+
+	private void ValidatePlaneView() {
+		if (view.GetPlaneView () == null) {
+			view.InstantiatePlane ();
+		}
+	}
+
+	private void ValidateGraphView() {
+		if (view.GetGraphView () == null) {
+			view.InstantiateGraph ();
+		}
+	}
+
+
+	public void RenderGraphMarkers(int mapResolutionX, int mapResolutionZ, int graphResolutionX, int graphResolutionY, int graphResolutionZ) {
+		view.ClearGraph ();
+
+		float graphMarkersPositionY = graphResolutionY / 2; //so that markers are drawn in between minY and maxY vals
+		float graphMarkersDistanceX = mapResolutionX / graphResolutionX;
+		float graphMarkersDistanceZ = mapResolutionZ / graphResolutionZ;
+
+		for(int x = 0; x < graphResolutionX; ++x) {
+			for(int z = 0; z < graphResolutionZ; ++z) {
+				Vector3 position = new Vector3 (x * graphMarkersDistanceX, graphMarkersPositionY, z * graphMarkersDistanceZ);
+				//TODO: USE CENTER OBJECT METHOD FROM UTILS CLASS!
+				position.x -= mapResolutionX / 2f;
+				position.z -= mapResolutionZ / 2f; 
+				view.AddGraphMarker (
+						position,
+						true
+				);
+			}
+		}
+
+	}
+
 
 	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
 		ValidateView ();
@@ -48,30 +95,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		valueTexture.Apply ();
 
 		return valueTexture;
-	}
-
-	void Reset() {
-		ValidateView ();
-	}
-
-	public void ValidateView() {
-		if (view == null) {
-			view = (MapOutputObject) Instantiate (viewPrefab);
-		}
-		ValidatePlaneView ();
-		ValidateGraphView ();
-	}
-
-	private void ValidatePlaneView() {
-		if (view.GetPlaneView () == null) {
-			view.InstantiatePlane ();
-		}
-	}
-
-	private void ValidateGraphView() {
-		if (view.GetGraphView () == null) {
-			view.InstantiateGraph ();
-		}
 	}
 
 }

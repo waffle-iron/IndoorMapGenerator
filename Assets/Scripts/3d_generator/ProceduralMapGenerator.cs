@@ -15,8 +15,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		mapResolutionY;
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10;
-	public int 		regionResolutionX = 25;
-	public int 		regionResolutionZ = 25;
+	public int 		graphResolutionX = 25;
+	public int 		graphResolutionY = 5;
+	public int 		graphResolutionZ = 25;
 	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
@@ -25,13 +26,14 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	[Range(-200, 100)]public int contrastPercent = 0;
 
+	//this should be in some model class (Repository pattern?)
 	private float[,] mapValuesArray;
+//	private 
 
 
 	//todo: keep reference of ComputationUtils in variable here somewhere
 	//(PROS: so that we do not take reflective lookups every function?
 	// MAYBE CONS: memory leaks?)
-
 
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = GetComponent<ComputationUtils> ().CreatePerlinNoiseValues (
@@ -41,7 +43,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		);
 
 		mapValuesArray = perlinNoiseMap;
-
 		RenderValuesArray (mapValuesArray);
 	}
 
@@ -52,18 +53,18 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		);
 
 		mapValuesArray = testCrossMap;
-
 		RenderValuesArray (mapValuesArray);
 	}
 
 	public void ApplyGaussianBlur() {
-		mapValuesArray = GetComponent<ComputationUtils> ().GaussianBlur (mapValuesArray, blurRadius, blurIterations, blurSolidification);
+		mapValuesArray = GetComponent<ComputationUtils> ().GaussianBlur (
+			mapValuesArray, 
+			blurRadius, 
+			blurIterations, 
+			blurSolidification
+		);
 
 		RenderValuesArray (mapValuesArray);
-	}
-
-	private void RenderValuesArray(float[,] mapValuesArray) {
-		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
 	}
 
 	public void ApplyContrast() {
@@ -71,9 +72,23 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			GeneratePerlinNoiseValuesMap ();
 		}
 
-		mapValuesArray = GetComponent<ComputationUtils> ().ContrastValues (mapValuesArray, contrastPercent, new float[]{1f, 0f});
-
+		mapValuesArray = GetComponent<ComputationUtils> ().ContrastValues (
+			mapValuesArray, contrastPercent, 
+			1f, 0f
+		);
 		RenderValuesArray (mapValuesArray);
+	}
+
+	public void GenerateGraphMarkers() {
+		GetComponent<PerlinNoiseRenderer> ().RenderGraphMarkers (
+			mapResolutionX, mapResolutionZ, 
+			graphResolutionX, graphResolutionY, graphResolutionZ
+		);
+	}
+
+
+	private void RenderValuesArray(float[,] mapValuesArray) {
+		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
 	}
 
 	// Use this for initialization
