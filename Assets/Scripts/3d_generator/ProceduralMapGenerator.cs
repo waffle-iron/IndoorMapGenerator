@@ -16,8 +16,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10;
 	public int 		graphResolutionX = 25;
-	public int 		graphResolutionY = 5;
 	public int 		graphResolutionZ = 25;
+	public int 		graphResolutionY = 5;
 	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
@@ -26,9 +26,16 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	[Range(-200, 100)]public int contrastPercent = 0;
 
+	//TODO: non-square resolutions dont work (like
+
+	private float graphMarkersPositionY;
+	private float graphMarkersDistanceX;
+	private float graphMarkersDistanceZ;
+
 	//this should be in some model class (Repository pattern?)
 	private float[,] mapValuesArray;
 //	private 
+
 
 
 	//todo: keep reference of ComputationUtils in variable here somewhere
@@ -83,12 +90,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void GenerateGraphMarkers() {
 
-		Vector3[] graphMarkersPositions = new Vector3[graphResolutionX * graphResolutionX];
-
-		float graphMarkersPositionY = graphResolutionY / 2; //so that markers are drawn in between minY and maxY vals
-		float graphMarkersDistanceX = mapResolutionX / graphResolutionX;
-		float graphMarkersDistanceZ = mapResolutionZ / graphResolutionZ;
-
+		Vector3[] graphMarkersPositions = new Vector3[graphResolutionX * graphResolutionZ];
 
 		for(int x = 0; x < graphResolutionX; ++x) {
 			for(int z = 0; z < graphResolutionZ; ++z) {
@@ -96,6 +98,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				//TODO: USE CENTER OBJECT METHOD FROM UTILS CLASS!
 				position.x -= mapResolutionX / 2f;
 				position.z -= mapResolutionZ / 2f; 
+				position.x += graphMarkersDistanceX / 2f;
+				position.z += graphMarkersDistanceZ / 2f;
 				graphMarkersPositions [x * graphResolutionZ + z] = position;
 			}
 		}
@@ -103,12 +107,19 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		GetComponent<PerlinNoiseRenderer> ().RenderGraphMarkers (graphMarkersPositions);
 	}
 
-//	public void Generate
-
-
+	public void GenerateGraphPOIs() {
+		
+	}
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
 		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
+	}
+
+	void OnValidate() {
+		Debug.Log ("onvalidate");
+	 	graphMarkersPositionY = graphResolutionY / 2f; //so that markers are drawn in between minY and maxY vals
+		graphMarkersDistanceX = mapResolutionX / (float)graphResolutionX;
+		graphMarkersDistanceZ = mapResolutionZ / (float)graphResolutionZ;
 	}
 
 	// Use this for initialization
