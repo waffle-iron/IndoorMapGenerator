@@ -6,6 +6,7 @@ using System.Security.Policy;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
+[ExecuteInEditMode] //https://docs.unity3d.com/ScriptReference/ExecuteInEditMode.html
 public class ProceduralMapGenerator : MonoBehaviour {
 
 //	public MapOutputObject mapOutputObject;
@@ -18,6 +19,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		graphResolutionX = 25;
 	public int 		graphResolutionZ = 25;
 	public int 		graphResolutionY = 5;
+
+	public int 		graphKeyPoisPerc = 5;
+	public int 		graphNonKeyPoisPerc = 8;
+
+
 	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
@@ -41,6 +47,25 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	//todo: keep reference of ComputationUtils in variable here somewhere
 	//(PROS: so that we do not take reflective lookups every function?
 	// MAYBE CONS: memory leaks?)
+
+
+	void Start () {
+		Debug.Log ("start");
+	}
+
+	void Update () {
+		
+	}
+
+	void Awake() {
+	}
+
+	void OnGUI() {
+	}
+
+	void OnRenderObject() {
+	}
+
 
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
@@ -120,15 +145,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	 	graphMarkersPositionY = graphResolutionY / 2f; //so that markers are drawn in between minY and maxY vals
 		graphMarkersDistanceX = mapResolutionX / (float)graphResolutionX;
 		graphMarkersDistanceZ = mapResolutionZ / (float)graphResolutionZ;
-	}
-
-	// Use this for initialization
-	void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
 }

@@ -6,10 +6,6 @@ using System;
 [CustomEditor (typeof (ProceduralMapGenerator))]
 public class ProceduralMapGeneratorEditor : Editor {
 
-	void Reset() {
-		Debug.Log ("Reset");
-	}
-
 	ProceduralMapGenerator generator;
 
 	private const int buttonPerlin = 1;
