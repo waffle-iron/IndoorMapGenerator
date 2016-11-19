@@ -6,6 +6,8 @@ using System;
 
 public class ComputationUtils : MonoBehaviour {
 
+
+
 	//todo: more professional name than 'divideBy'
 	public Vector3 VectorDivide(Vector3 input, float divideBy) {
 		input.x = input.x / divideBy;
