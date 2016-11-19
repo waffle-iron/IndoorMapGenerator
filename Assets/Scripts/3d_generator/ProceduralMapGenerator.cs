@@ -8,15 +8,15 @@ using System.Security.Policy;
 [RequireComponent (typeof (PerlinNoiseRenderer))]
 public class ProceduralMapGenerator : MonoBehaviour {
 
-	public MapOutputObject mapOutputObject;
+//	public MapOutputObject mapOutputObject;
 
-	public int 		mapTotalDimensionX = 10;
-	public int 		mapTotalDimensionZ = 10;
-	public int 		mapTotalDimensionY;
-	public int 		perlinDimensionX = 10;
-	public int 		perlinDimensionZ = 10;
-	public int 		regionDimensionX = 5;
-	public int 		regionDimensionZ = 5;
+	public int 		mapResolutionX = 10;
+	public int 		mapResolutionZ = 10;
+	public int 		mapResolutionY;
+	public int 		perlinResolutionX = 10;
+	public int 		perlinResolutionZ = 10;
+	public int 		regionResolutionX = 5;
+	public int 		regionResolutionZ = 5;
 	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
@@ -44,8 +44,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = GetComponent<ComputationUtils> ().CreatePerlinNoiseValues (
-			mapTotalDimensionX, 
-			mapTotalDimensionZ, 
+			mapResolutionX, 
+			mapResolutionZ, 
 			perlinNoiseScale
 		);
 
@@ -56,8 +56,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void GenerateTestCrossValuesMap() {
 		float[,] testCrossMap = GetComponent<ComputationUtils> ().CreateTestCrossValues (
-			mapTotalDimensionX, 
-			mapTotalDimensionZ
+			mapResolutionX, 
+			mapResolutionZ
 		);
 
 		mapValuesArray = testCrossMap;
@@ -73,10 +73,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
 		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
-	}
-		
-	public MapOutputObject GetMapOutputObject() {
-		return mapOutputObject;
 	}
 
 	// Use this for initialization

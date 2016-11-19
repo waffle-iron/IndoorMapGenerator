@@ -6,13 +6,18 @@ using System.Linq.Expressions;
 
 public class PerlinNoiseRenderer : MonoBehaviour {
 
-	public Renderer renderer;
+	public  MapOutputObject viewPrefab;
+	private MapOutputObject view;
 
 
 	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
-		ValidateRenderer ();
-		renderer.sharedMaterial.mainTexture = CreateValuesTexture (valuesArray, rangeMin, rangeMax);
-		renderer.transform.localScale = new Vector3 (
+		ValidateView ();
+		view.GetPlaneView ().sharedMaterial.mainTexture = CreateValuesTexture (
+			valuesArray, 
+			rangeMin, 
+			rangeMax
+		);
+		view.GetPlaneView().GetComponent<Renderer> ().transform.localScale = new Vector3 (
 			valuesArray.GetLength (0), 
 			1, 
 			valuesArray.GetLength (1)
@@ -22,7 +27,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 	//2D
 	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin, float rangeMax) {
-
 		int mapDimensionX = valuesArray.GetLength (0);
 		int mapDimensionZ = valuesArray.GetLength (1);
 
@@ -31,12 +35,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 		for(int x = 0; x < mapDimensionX; ++x) {
 			for (int z = 0; z < mapDimensionZ; ++z) {
-				if (valuesArray[x, z] > rangeMax || valuesArray[x, z] < rangeMin) {
-					Debug.LogError ("value in array outside of range (" + valuesArray [x, z] + ") on [x:" + x + ", z:" + z + "].");
-					valueTextureColorMap [x * mapDimensionZ + z] = Color.black;
-					continue;
-				}
-
 				valueTextureColorMap [x * mapDimensionZ + z] = Color.Lerp(
 					Color.yellow, 
 					Color.red, 
@@ -44,6 +42,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 				);
 			}
 		}
+
 		valueTexture.SetPixels (valueTextureColorMap);
 		valueTexture.filterMode = FilterMode.Point;
 		valueTexture.Apply ();
@@ -51,16 +50,27 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		return valueTexture;
 	}
 
-	void OnValidate() {
-		ValidateRenderer ();
+	void Reset() {
+		ValidateView ();
 	}
 
-	private void ValidateRenderer() {
-		if (renderer == null) {
-			Renderer renderObject = gameObject.GetComponent<ProceduralMapGenerator> ().GetMapOutputObject ().GetPlaneObject ();
-			if (renderObject != null) {
-				renderer = renderObject;
-			} 
+	public void ValidateView() {
+		if (view == null) {
+			view = (MapOutputObject) Instantiate (viewPrefab);
+		}
+		ValidatePlaneView ();
+		ValidateGraphView ();
+	}
+
+	private void ValidatePlaneView() {
+		if (view.GetPlaneView () == null) {
+			view.InstantiatePlane ();
+		}
+	}
+
+	private void ValidateGraphView() {
+		if (view.GetGraphView () == null) {
+			view.InstantiateGraph ();
 		}
 	}
 
