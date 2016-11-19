@@ -17,7 +17,8 @@ public class MapOutputObject : MonoBehaviour {
 
 	public void InstantiateGraph() {
 		graphView = new GameObject ();
-
+		graphView.transform.parent = gameObject.GetComponent <Transform> ();
+		graphView.name = "graphView";
 	}
 
 	public void ClearGraph() {

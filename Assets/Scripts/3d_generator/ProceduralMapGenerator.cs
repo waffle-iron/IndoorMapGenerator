@@ -10,20 +10,20 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 //	public MapOutputObject mapOutputObject;
 
-	public int 		mapResolutionX = 10;
-	public int 		mapResolutionZ = 10;
+	public int 		mapResolutionX = 250;
+	public int 		mapResolutionZ = 250;
 	public int 		mapResolutionY;
-	public int 		perlinResolutionX = 10;
-	public int 		perlinResolutionZ = 10;
-	public int 		regionResolutionX = 5;
-	public int 		regionResolutionZ = 5;
+//	public int 		perlinResolutionX = 10;
+//	public int 		perlinResolutionZ = 10;
+	public int 		regionResolutionX = 25;
+	public int 		regionResolutionZ = 25;
 	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
 	[Range(0f, 10f)] public int blurIterations = 4;
 	[Range(0f, 5f)]  public int	blurSolidification = 2;
 
-	public int contrastPercent;
+	[Range(-200, 100)]public int contrastPercent = 0;
 
 	private float[,] mapValuesArray;
 
@@ -32,15 +32,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	//(PROS: so that we do not take reflective lookups every function?
 	// MAYBE CONS: memory leaks?)
 
-	public void ApplyContrast() {
-		if (mapValuesArray == null) {
-			GeneratePerlinNoiseValuesMap ();
-		}
-
-		mapValuesArray = GetComponent<ComputationUtils> ().ContrastValues (mapValuesArray, contrastPercent, new float[]{1f, 0f});
-
-		RenderValuesArray (mapValuesArray);
-	}
 
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = GetComponent<ComputationUtils> ().CreatePerlinNoiseValues (
@@ -73,6 +64,16 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
 		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
+	}
+
+	public void ApplyContrast() {
+		if (mapValuesArray == null) {
+			GeneratePerlinNoiseValuesMap ();
+		}
+
+		mapValuesArray = GetComponent<ComputationUtils> ().ContrastValues (mapValuesArray, contrastPercent, new float[]{1f, 0f});
+
+		RenderValuesArray (mapValuesArray);
 	}
 
 	// Use this for initialization

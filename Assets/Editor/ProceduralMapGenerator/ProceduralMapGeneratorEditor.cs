@@ -31,7 +31,6 @@ public class ProceduralMapGeneratorEditor : Editor {
 				switch (lastUsed) {
 					case 1:
 						ButtonPerlin ();
-						Debug.Log (Mathf.Lerp (0, 100, 134));
 						break;
 					case 2:
 						ButtonTestCross ();

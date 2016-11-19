@@ -10,18 +10,16 @@ public class ComputationUtils : MonoBehaviour {
 		return ContrastValues(
 			inputValuesArray,
 			percentRatio,
-			FindRangesMaxMin (inputValuesArray)
+			FindRangesMinMax (inputValuesArray)
 		);
 		
 	}
 
 	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio, float rangeMin, float rangeMax) {
-//		if (rangeMax < rangeMin) {
-//			float tmp = rangeMin; //todo: refactor to use only 2 variables, not 2 + tmp
-//			rangeMin = rangeMax;
-//			rangeMax = tmp;
-//		}
 
+		if (percentRatio < -100) {
+			percentRatio = (int)Math.Pow((percentRatio/100),7)*100; // f(x) = x^7
+		}
 
 		float contrastDeltaRange = (rangeMax - rangeMin) * (percentRatio / (100f * 2f));
 		float contrastRangeMin = rangeMin + contrastDeltaRange;
@@ -40,27 +38,28 @@ public class ComputationUtils : MonoBehaviour {
 		return inputValuesArray;
 	}
 
-	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio, float[] rangeMaxMin) {
-		return ContrastValues (inputValuesArray, percentRatio, rangeMaxMin [1], rangeMaxMin [0]);
+	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio, float[] rangesMinMax) {
+		return ContrastValues (inputValuesArray, percentRatio, rangesMinMax [0], rangesMinMax [1]);
 	}
 
 
 
-	public float[] FindRangesMaxMin(float[,] inputValuesArray) {
-		float[] rangesMaxMin = new float[2];
-		rangesMaxMin [0] = float.MinValue;
-		rangesMaxMin [1] = float.MaxValue;
+	public float[] FindRangesMinMax(float[,] inputValuesArray) {
+		float[] rangesMinMax = new float[2];
+		rangesMinMax [0] = float.MaxValue;
+		rangesMinMax [1] = float.MinValue;
+
 		for (int x = 0; x < inputValuesArray.GetLength (0); ++x) {
 			for (int z = 0; z < inputValuesArray.GetLength (1); ++z) {
-				if (inputValuesArray [x, z] > rangesMaxMin [0]) {
-					rangesMaxMin [0] = inputValuesArray [x, z];
-				} 
-				if (inputValuesArray[x,z] < rangesMaxMin[1]) {
-					rangesMaxMin [1] = inputValuesArray [x, z];
+				if (inputValuesArray[x,z] < rangesMinMax[0]) {
+					rangesMinMax [0] = inputValuesArray [x, z];
 				}
+				if (inputValuesArray [x, z] > rangesMinMax [1]) {
+					rangesMinMax [1] = inputValuesArray [x, z];
+				} 
 			}
 		}
-		return rangesMaxMin;
+		return rangesMinMax;
 	}
 
 	//1 channel implementation of Gaussian Blur
