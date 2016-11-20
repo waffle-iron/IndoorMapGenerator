@@ -64,6 +64,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 		if (GUILayout.Button("graph markers")) {
 			generator.GenerateGraphMarkers ();
 		}
+
+		if (GUILayout.Button("graph nodes")) {
+			generator.GenerateGraphPOIs ();
+		}
 	}
 
 	private void ButtonPerlin() {

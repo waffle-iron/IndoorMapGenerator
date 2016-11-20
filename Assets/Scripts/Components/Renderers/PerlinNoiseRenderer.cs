@@ -36,10 +36,15 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 
 	public void RenderGraphMarkers(Vector3[] graphMarkersPositions) {
-
 		view.ClearGraph ();
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
 			view.AddGraphMarker (graphMarkersPositions [m], true);
+		}
+	}
+
+	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions) {
+		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
+			view.AddGraphNode (graphKeyPoisPositions [p], true);
 		}
 	}
 

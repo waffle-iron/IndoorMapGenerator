@@ -25,4 +25,20 @@ public class ComputationUtils : MonoBehaviour {
 		return testCrossValues;
 	}
 
+	public GaussianBlur GetGaussianBlur() {
+		return gaussianBlur;
+	}
+
+	public MathUtils GetUtilsMath() {
+		return utilsMath;
+	}
+
+	public RandomUtils GetUtilsRandom() {
+		return utilsRandom;
+	}
+
+	public VectorUtils GetUtilsVector() {
+		return utilsVector;
+	}
+
 }

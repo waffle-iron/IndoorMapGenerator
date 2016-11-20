@@ -18,10 +18,19 @@ public class ProceduralMapGenerator : MonoBehaviour {
 //	public int 		perlinResolutionZ = 10;
 	public int 		graphResolutionX = 25;
 	public int 		graphResolutionZ = 25;
+	private int 	graphResolutionXZ;
 	public int 		graphResolutionY = 5;
 
-	public int 		graphKeyPoisPerc = 5;
-	public int 		graphNonKeyPoisPerc = 8;
+	public int 		keyPoisPerc = 5;
+	public int 		keyPoisRandomOffsetPerc = 0;
+	private int 	keyPoisCount;
+
+	public float 	keyPoisSizePerc = 1;
+	public int 		keyPoisSizeRandomOffsetPerc = 0;
+	private float	keyPoisSize;
+
+	public int 		nonKeyPoisPerc = 8;
+
 
 
 	public float 	perlinNoiseScale = 0.3f;
@@ -32,7 +41,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	[Range(-200, 100)]public int contrastPercent = 0;
 
-	//TODO: non-square resolutions dont work (like
 
 	private float graphMarkersPositionY;
 	private float graphMarkersDistanceX;
@@ -40,8 +48,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	//this should be in some model class (Repository pattern?)
 	private float[,] mapValuesArray;
-//	private 
 
+	private ComputationUtils 		utils;
+	private new PerlinNoiseRenderer renderer;
 
 
 	//todo: keep reference of ComputationUtils in variable here somewhere
@@ -54,7 +63,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	void Update () {
-		
+		if (utils == null) {
+			utils = GetComponent<ComputationUtils> ();
+		}
+		if(renderer == null) {
+			renderer = GetComponent<PerlinNoiseRenderer> ();
+		}
 	}
 
 	void Awake() {
@@ -69,10 +83,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
-		float[,] perlinNoiseMap = GetComponent<ComputationUtils> ().CreatePerlinNoiseValues (
-			mapResolutionX, 
-			mapResolutionZ, 
-			perlinNoiseScale
+		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
+			mapResolutionX, mapResolutionZ, perlinNoiseScale
 		);
 
 		mapValuesArray = perlinNoiseMap;
@@ -80,9 +92,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void GenerateTestCrossValuesMap() {
-		float[,] testCrossMap = GetComponent<ComputationUtils> ().CreateTestCrossValues (
-			mapResolutionX, 
-			mapResolutionZ
+		float[,] testCrossMap = utils.CreateTestCrossValues (mapResolutionX, mapResolutionZ
 		);
 
 		mapValuesArray = testCrossMap;
@@ -90,11 +100,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ApplyGaussianBlur() {
-		mapValuesArray = GetComponent<ComputationUtils> ().GaussianBlur (
+		mapValuesArray = utils.GetGaussianBlur ().CreateGaussianBlur (
 			mapValuesArray, 
-			blurRadius, 
-			blurIterations, 
-			blurSolidification
+			blurRadius, blurIterations, blurSolidification
 		);
 
 		RenderValuesArray (mapValuesArray);
@@ -105,21 +113,22 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			GeneratePerlinNoiseValuesMap ();
 		}
 
-		mapValuesArray = GetComponent<ComputationUtils> ().ContrastValues (
-			mapValuesArray, contrastPercent, 
-			1f, 0f
-		);
+		mapValuesArray = utils.GetUtilsMath ().ContrastValues (mapValuesArray, contrastPercent, 1f, 0f);
 		RenderValuesArray (mapValuesArray);
 	}
 
 
 	public void GenerateGraphMarkers() {
-
-		Vector3[] graphMarkersPositions = new Vector3[graphResolutionX * graphResolutionZ];
+		graphResolutionXZ = graphResolutionX * graphResolutionZ;
+		Vector3[] graphMarkersPositions = new Vector3[graphResolutionXZ];
 
 		for(int x = 0; x < graphResolutionX; ++x) {
 			for(int z = 0; z < graphResolutionZ; ++z) {
-				Vector3 position = new Vector3 (x * graphMarkersDistanceX, graphMarkersPositionY, z * graphMarkersDistanceZ);
+				Vector3 position = new Vector3 (
+					x * graphMarkersDistanceX, 
+					graphMarkersPositionY, 
+					z * graphMarkersDistanceZ
+				);
 				//TODO: USE CENTER OBJECT METHOD FROM UTILS CLASS!
 				position.x -= mapResolutionX / 2f;
 				position.z -= mapResolutionZ / 2f; 
@@ -129,15 +138,42 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			}
 		}
 			
-		GetComponent<PerlinNoiseRenderer> ().RenderGraphMarkers (graphMarkersPositions);
+		renderer.RenderGraphMarkers (graphMarkersPositions);
 	}
 
 	public void GenerateGraphPOIs() {
-		
+
+		GenerateGraphMarkers ();
+
+		keyPoisCount = (int) (graphResolutionXZ * (keyPoisPerc / 100f));
+//			(utils.GetUtilsRandom ().RandomRangeMiddleVal (keyPoisPerc, keyPoisRandomOffsetPerc) / 100);
+
+		Vector3[] graphKeyPoisPositions = new Vector3[keyPoisCount];
+
+		Vector2[] graphKeyHorizontalPositions = utils.GetUtilsRandom ().GetUniqueRandomVectors2 (
+			keyPoisCount, 
+			0, graphResolutionX,
+			0, graphResolutionZ);
+
+		for (int i = 0; i < graphKeyPoisPositions.Length; ++i) {
+			graphKeyPoisPositions [i] = new Vector3(
+				graphKeyHorizontalPositions[i].x * graphMarkersDistanceX,
+				0.5f,
+				graphKeyHorizontalPositions[i].y * graphMarkersDistanceZ
+			);
+
+
+			graphKeyPoisPositions [i].x -= mapResolutionX / 2f;
+			graphKeyPoisPositions [i].z -= mapResolutionZ / 2f; 
+			graphKeyPoisPositions [i].x += graphMarkersDistanceX / 2f;
+			graphKeyPoisPositions [i].z += graphMarkersDistanceZ / 2f;
+		}
+
+		renderer.RenderGraphKeyPois (graphKeyPoisPositions);
 	}
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
-		GetComponent<PerlinNoiseRenderer> ().RenderValuesArray (mapValuesArray);
+		renderer.RenderValuesArray (mapValuesArray);
 	}
 
 	void OnValidate() {
