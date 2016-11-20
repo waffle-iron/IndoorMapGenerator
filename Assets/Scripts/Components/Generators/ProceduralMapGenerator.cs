@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System;
 using System.Security.Policy;
+using System.Deployment.Internal;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
@@ -160,7 +161,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		for (int i = 0; i < graphKeyPoisPositions.Length; ++i) {
 			graphKeyPoisPositions [i] = new Vector3(
 				graphKeyHorizontalPositions[i].x * graphMarkersDistanceX,
-				0.5f,
+				utils.GetUtilsRandom ().GetUniqueRandomNumbers (1, 0f, graphResolutionY)[0],
 				graphKeyHorizontalPositions[i].y * graphMarkersDistanceZ
 			);
 
@@ -180,6 +181,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			Vector3 graphEdgeEnd = graphNodesPositions [i + 1];
 			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
 		}
+
+		for (int i = 0; i < graphNodesPositions.Length; ++i) {
+			Vector3 graphEdgeStart = graphNodesPositions [UnityEngine.Random.Range (0, graphNodesPositions.Length-1)];
+			Vector3 graphEdgeEnd = graphNodesPositions [UnityEngine.Random.Range (0, graphNodesPositions.Length-1)];
+			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
+		} 
 	}
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
