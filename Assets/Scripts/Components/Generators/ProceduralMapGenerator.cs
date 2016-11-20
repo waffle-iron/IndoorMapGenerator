@@ -49,6 +49,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	//this should be in some model class (Repository pattern?)
 	private float[,] mapValuesArray;
 
+	private Vector3[] graphNodesPositions;
+
 	private ComputationUtils 		utils;
 	private new PerlinNoiseRenderer renderer;
 
@@ -162,14 +164,22 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				graphKeyHorizontalPositions[i].y * graphMarkersDistanceZ
 			);
 
-
 			graphKeyPoisPositions [i].x -= mapResolutionX / 2f;
 			graphKeyPoisPositions [i].z -= mapResolutionZ / 2f; 
 			graphKeyPoisPositions [i].x += graphMarkersDistanceX / 2f;
 			graphKeyPoisPositions [i].z += graphMarkersDistanceZ / 2f;
 		}
 
+		graphNodesPositions = graphKeyPoisPositions;
 		renderer.RenderGraphKeyPois (graphKeyPoisPositions);
+	}
+
+	public void GenerateGraphEdges() {
+		for (int i = 0; i < graphNodesPositions.Length-1; ++i) {
+			Vector3 graphEdgeStart = graphNodesPositions [i];
+			Vector3 graphEdgeEnd = graphNodesPositions [i + 1];
+			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
+		}
 	}
 
 	private void RenderValuesArray(float[,] mapValuesArray) {

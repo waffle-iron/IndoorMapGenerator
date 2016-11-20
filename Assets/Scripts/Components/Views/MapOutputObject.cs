@@ -6,6 +6,7 @@ public class MapOutputObject : MonoBehaviour {
 	public Renderer 	planePrefab;//for now, later it should be private and should be modified by some renderer (like PNoiseRenderer)
 	public Renderer		graphMarkerPrefab;
 	public Renderer		graphNodePrefab;
+	public Renderer		graphEdgePrefab;
 
 	private Renderer 	planeView;
 
@@ -31,6 +32,9 @@ public class MapOutputObject : MonoBehaviour {
 
 		graphNodesView = new GameObject ("Nodes");
 		graphNodesView.transform.parent = graphView.transform;
+
+		graphEdgesView = new GameObject ("Edges");
+		graphEdgesView.transform.parent = graphView.transform;
 	}
 
 
@@ -83,17 +87,32 @@ public class MapOutputObject : MonoBehaviour {
 			AddGraphNode (nodePosition);
 		}
 //		if (boldNode) {
-			
 //		}
 //		else {
 //			AddGraphNode (nodePosition, graphNodePrefab);
 //		}
 	}
 
+	public void AddGraphEdge(Vector3 position, Vector3 lookat,/*float rotationY,*/ float scaleY) {
+		position += graphMarkerPrefab.bounds.size;
+		Renderer edge = Instantiate (graphEdgePrefab);
+		edge.transform.parent = graphEdgesView.transform;
+		edge.transform.position = position;
+//		edge.transform.rotation = Quaternion.Euler (new Vector3(0f, rotationY, 0f));
+		edge.transform.rotation = Quaternion.LookRotation (lookat, Vector3.up);
+		edge.transform.Rotate (new Vector3(90,0,0));
+		Vector3 scale = edge.transform.localScale;
+		scale.y = scaleY/2f;
+		edge.transform.localScale = scale;
 
+//		edge.transform.rotation = Quaternion.AngleAxis (angleY, Vector3.up);
+//		edge.transform.Rotate (new Vector3 (0f, angleY, 0f), Space.World);
+//		Quaternion rotation = edge.transform.rotation;
+//		rotation
+//		edge.transform.rotate
 
-	public void AddGraphEdge() {
-		
+//		edge.transform.localScale = new Vector3 (5f, 5f, 5f); //todo: computUtils.VectorDivide(scale, 2)!
+//		return edge;
 	}
 
 

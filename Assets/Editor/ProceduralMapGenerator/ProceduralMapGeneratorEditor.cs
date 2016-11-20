@@ -68,6 +68,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 		if (GUILayout.Button("graph nodes")) {
 			generator.GenerateGraphPOIs ();
 		}
+
+		if (GUILayout.Button("graph edges")) {
+			generator.GenerateGraphEdges ();
+		}
 	}
 
 	private void ButtonPerlin() {

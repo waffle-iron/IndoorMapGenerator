@@ -48,6 +48,22 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 	}
 
+	//todo: should be able to receive array of objects defining edge (position, scale, rotation)
+	public void RenderGraphEdge(Vector3 positionA, Vector3 positionB) {
+//		Vector3 edgePosition = new Vector3 ();
+		Vector3 deltaPosition = positionB - positionA;
+		deltaPosition.x /= 2f;
+		deltaPosition.y /= 2f;
+		deltaPosition.z /= 2f;
+
+		view.AddGraphEdge (
+			positionA + deltaPosition, 
+//			Mathf.Acos(Vector3.Dot(positionA.normalized, positionB.normalized)),
+			positionA - positionB,
+			Vector3.Distance (positionA, positionB)
+		);
+	}
+
 
 	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
 		ValidateView ();
