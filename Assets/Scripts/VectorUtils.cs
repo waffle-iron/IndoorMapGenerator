@@ -1,15 +1,13 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
 
-public class VectorUtils : MonoBehaviour {
+public class VectorUtils {
 
-	// Use this for initialization
-	void Start () {
-	
+	public UnityEngine.Vector3 VectorDivide(UnityEngine.Vector3 input, float subtrahend) {
+		input.x = input.x / subtrahend;
+		input.y = input.y / subtrahend;
+		input.z = input.z / subtrahend;
+		return input;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
