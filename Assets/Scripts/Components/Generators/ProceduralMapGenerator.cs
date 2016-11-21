@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.Security.Policy;
 using System.Deployment.Internal;
+using UnityEditor;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
@@ -92,6 +93,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 		mapValuesArray = perlinNoiseMap;
 		RenderValuesArray (mapValuesArray);
+	}
+
+
+	public void GenerateVolumeBlock() {
+		renderer.RenderVolumeBlock (new Vector3(mapResolutionX, mapResolutionY, mapResolutionZ));
 	}
 
 	public void GenerateTestCrossValuesMap() {

@@ -5,38 +5,66 @@ using System.Xml.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
+[ExecuteInEditMode]
 public class PerlinNoiseRenderer : MonoBehaviour {
 
 	public  MapOutputObject viewPrefab;
 	private MapOutputObject view;
 
 	void Reset() {
-		ValidateView ();
+//		ValidateView ();
 	}
 
-	public void ValidateView() {
+	void Update() {
+//		ValidateView ();
+	}
+
+
+	private void ValidateView() {
 		if (view == null) {
 			view = (MapOutputObject) Instantiate (viewPrefab);
 		}
-		ValidatePlaneView ();
-		ValidateGraphView ();
 	}
 
 	private void ValidatePlaneView() {
 		if (view.GetPlaneView () == null) {
-			view.InstantiatePlane ();
+			view.InstantiatePlaneView ();
+		}
+	}
+
+	private void ValidateVolumeView() {
+		if (view.GetVolumeView() == null) {
+			view.InstantiateVolumeView ();
 		}
 	}
 
 	private void ValidateGraphView() {
 		if (view.GetGraphView () == null) {
-			view.InstantiateGraph ();
+			view.InstantiateGraphView ();
+		} else if (!view.CheckGraphChildrenExistence ()) {
+			view.InstantiateGraphView ();
 		}
+	}
+
+	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
+		ValidateView ();
+		ValidatePlaneView ();
+		view.ReplacePlane (
+			CreateValuesTexture (valuesArray, rangeMin, rangeMax),
+			new Vector3(valuesArray.GetLength(0), 1, valuesArray.GetLength(1))
+		);
+	}
+
+	public void RenderVolumeBlock(Vector3 scale) {
+		ValidateVolumeView ();
+//		scale.y /= 2f;
+		view.ReplaceVolumeBlock (new Vector3(0f, scale.y/2f, 0f), scale);
 	}
 
 
 	public void RenderGraphMarkers(Vector3[] graphMarkersPositions) {
-		view.ClearGraph ();
+		ValidateGraphView ();
+		view.ClearGraphMarkers ();
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
 			view.AddGraphMarker (graphMarkersPositions [m], true);
 		}
@@ -47,10 +75,8 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 			view.AddGraphNode (graphKeyPoisPositions [p], true);
 		}
 	}
-
-	//todo: should be able to receive array of objects defining edge (position, scale, rotation)
+		
 	public void RenderGraphEdge(Vector3 positionA, Vector3 positionB) {
-//		Vector3 edgePosition = new Vector3 ();
 		Vector3 deltaPosition = positionB - positionA;
 		deltaPosition.x /= 2f;
 		deltaPosition.y /= 2f;
@@ -58,24 +84,8 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 		view.AddGraphEdge (
 			positionA + deltaPosition, 
-//			Mathf.Acos(Vector3.Dot(positionA.normalized, positionB.normalized)),
 			positionA - positionB,
 			Vector3.Distance (positionA, positionB)
-		);
-	}
-
-
-	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
-		ValidateView ();
-		view.GetPlaneView ().sharedMaterial.mainTexture = CreateValuesTexture (
-			valuesArray, 
-			rangeMin, 
-			rangeMax
-		);
-		view.GetPlaneView().GetComponent<Renderer> ().transform.localScale = new Vector3 (
-			valuesArray.GetLength (0), 
-			1, 
-			valuesArray.GetLength (1)
 		);
 	}
 

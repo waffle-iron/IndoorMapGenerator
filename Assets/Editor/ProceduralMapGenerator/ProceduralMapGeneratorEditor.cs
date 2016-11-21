@@ -76,6 +76,7 @@ public class ProceduralMapGeneratorEditor : Editor {
 
 	private void ButtonPerlin() {
 		generator.GeneratePerlinNoiseValuesMap ();
+		generator.GenerateVolumeBlock ();
 		lastUsed = 1;
 	}
 
