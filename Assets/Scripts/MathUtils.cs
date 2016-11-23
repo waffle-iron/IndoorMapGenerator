@@ -1,7 +1,49 @@
 ﻿using System.Collections;
 using UnityEngine;
+using System;
+using UnityEditor;
 
 public class MathUtils {
+
+	public float[,] ConvertGraphToValues(
+		int mapResolutionX, int mapResolutionY, int mapResolutionZ,  //todo: make vector out of this X,Y,Z stuff
+		int graphResolutionX, int graphResolutionY, int graphResolutionZ, 
+		Vector3[] graphNodes) {
+
+		float[] ranges = FindRangesMinMax (graphNodes);
+		Debug.Log (ranges [0] + "|" + ranges [1] + "|" + ranges [2] + "|" + ranges [3]);
+
+//		float resolutionScaleOffsetX = mapResolutionX / graphResolutionX;
+//		float resolutionScaleOffsetZ = mapResolutionZ / graphResolutionZ;
+
+		float[,] valueMap = new float[mapResolutionX, mapResolutionZ];
+		for (int x = 0; x < mapResolutionX; ++x) {
+			for (int z = 0; z < mapResolutionZ; ++z) {
+				valueMap [x, z] = 0f;
+			}
+		}
+
+		int i = 0;
+		int valX = 0;
+		int valZ = 0;
+		try {
+		for (i = 0; i < graphNodes.Length; ++i) {
+//				valX = mapResolutionZ - (int)(graphNodes[i].z + mapResolutionZ/2);
+//				valZ = mapResolutionX - (int)(graphNodes[i].x + mapResolutionX/2); //works with square grid
+				valX = (int)(graphNodes[i].x + mapResolutionX/2);
+				valZ = (int)(graphNodes[i].z + mapResolutionZ/2);
+
+			valueMap [
+					valX, valZ
+			] = 1f;
+		}
+
+		} catch (IndexOutOfRangeException exc) {
+			Debug.LogError ("(" + i +"), " + "(" + valX +"), " + "(" + valZ +"), " + exc.StackTrace);
+		}
+			
+		return valueMap;
+	}
 
 	public float[,] ContrastValues(float[,] inputValuesArray, int percentRatio) {
 		return ContrastValues(
@@ -85,5 +127,21 @@ public class MathUtils {
 			}
 		}
 		return rangesMinMax;
+	}
+
+	public float[] FindRangesMinMax(Vector3[] inputValuesArray) {
+		float[] rangesMinMaxX = new float[2] {float.MaxValue, float.MinValue};
+		float[] rangesMinMaxY = new float[2] {float.MaxValue, float.MinValue};
+
+		for (int x = 0; x < inputValuesArray.GetLength (0); ++x) {
+			if (inputValuesArray[x].x < rangesMinMaxX[0]) {rangesMinMaxX [0] = inputValuesArray [x].x;}
+
+			if (inputValuesArray[x].x > rangesMinMaxX[1]) {rangesMinMaxX [1] = inputValuesArray [x].x;}
+
+			if (inputValuesArray[x].z < rangesMinMaxY[0]) {rangesMinMaxY [0] = inputValuesArray [x].z;}
+
+			if (inputValuesArray[x].z > rangesMinMaxY[1]) {rangesMinMaxY [1] = inputValuesArray [x].z;}
+		}
+		return new float[4]{rangesMinMaxX[0], rangesMinMaxX[1], rangesMinMaxY[0], rangesMinMaxY[1]};
 	}
 }

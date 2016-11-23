@@ -93,14 +93,12 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	//2D
 	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin, float rangeMax) {
 		int mapDimensionX = valuesArray.GetLength (0);
-		int mapDimensionZ = valuesArray.GetLength (1);
 
 		Texture2D valueTexture = new Texture2D (mapDimensionX, mapDimensionZ);
 		Color[] valueTextureColorMap = new Color[mapDimensionX * mapDimensionZ];
 
 		for(int x = 0; x < mapDimensionX; ++x) {
 			for (int z = 0; z < mapDimensionZ; ++z) {
-				valueTextureColorMap [x * mapDimensionZ + z] = Color.Lerp(
 					Color.yellow, 
 					Color.red, 
 					Mathf.InverseLerp(rangeMin, rangeMax, valuesArray[x, z])

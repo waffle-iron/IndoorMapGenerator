@@ -24,20 +24,20 @@ public class ProceduralMapGeneratorEditor : Editor {
 
 		if (DrawDefaultInspector ()) {
 			if (lastUsedTime < DateTime.Now.Ticks / TimeSpan.TicksPerSecond + 1000) {
-				switch (lastUsed) {
-					case 1:
-						ButtonPerlin ();
-						break;
-					case 2:
-						ButtonTestCross ();
-						break;
-					case 3:
-						ButtonGaussianBlurPerlin ();
-						break;
-					case 4:
-						ButtonGaussianBlurCross ();
-						break;
-				}
+//				switch (lastUsed) {
+//					case 1:
+////						ButtonPerlin ();
+//						break;
+//					case 2:
+//						ButtonTestCross ();
+//						break;
+//					case 3:
+//						ButtonGaussianBlurPerlin ();
+//						break;
+//					case 4:
+//						ButtonGaussianBlurCross ();
+//						break;
+//				}
 			}
 		}
 
@@ -71,6 +71,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 
 		if (GUILayout.Button("graph edges")) {
 			generator.GenerateGraphEdges ();
+		}
+
+		if (GUILayout.Button("mapGraphToValues")) {
+			generator.ConvertGraphToValues ();
 		}
 	}
 

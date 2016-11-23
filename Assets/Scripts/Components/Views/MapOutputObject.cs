@@ -28,6 +28,7 @@ public class MapOutputObject : MonoBehaviour {
 		graphView = new GameObject ("Graph");
 		graphView.transform.parent = gameObject.transform;
 		graphView.transform.position = new Vector3 (0, 1, 0);
+//		graphView.transform.Rotate (new Vector3(0f, 90f, -180f));
 
 		graphMarkersView = new GameObject ("Markers");
 		graphMarkersView.transform.parent = graphView.transform;

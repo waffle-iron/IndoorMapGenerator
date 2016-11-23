@@ -2,6 +2,10 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Security;
+using System.Globalization;
+using System.ComponentModel;
 
 public class RandomUtils {
 
@@ -12,9 +16,6 @@ public class RandomUtils {
 	}
 
 	public float[,] CreatePerlinNoise(int mapDimensionX, int mapDimensionZ, float scaleFactor) {
-//		if (mapDimensionX < 1) { mapDimensionX = 1; }
-//		if (mapDimensionZ < 1) { mapDimensionZ = 1; }
-//		if (scaleFactor < 0.0001f) { scaleFactor = 0.0001f; } 
 		return CreatePerlinNoiseValues (mapDimensionX, mapDimensionZ, scaleFactor);
 	}
 
@@ -38,6 +39,24 @@ public class RandomUtils {
 		return randomNoiseValues;
 	}
 
+
+	public int[] GetUniqueRandomNumbersInt(int count, int rangeMinInclusive, int rangeMaxNonInclusive, bool sortAsc = false){
+		List<int> uniqueNums = new List<int> (count);
+//		int[] uniqueNums = new int[count];
+		int num;
+		for (int c = 0; c < count; c++) {
+			num = random.Next(rangeMinInclusive, rangeMaxNonInclusive);
+			if (!Contains (uniqueNums, num)) {
+				uniqueNums.Add (num);
+			} else {
+				--c;
+			}
+		}
+
+		if (sortAsc) { uniqueNums.OrderBy (x => x); }
+		return uniqueNums.ToArray ();
+	}
+
 	//TODO: refactor to hashmap or whatever
 	// (now, cost of checking for existing number is O(n))
 	//FIXME: if count == 0, sometimes app crashes.
@@ -57,20 +76,61 @@ public class RandomUtils {
 		return uniqueNums;
 	}
 
-	public Vector2[] GetUniqueRandomVectors2 (int count, int rangeMinInclusiveX, int rangeMaxNonInclusiveX, int rangeMinInclusiveZ, int rangeMaxNonInclusiveZ) {
-		Vector2[] uniqueVectors = new Vector2[count];
+	public Vector2[] GetUniqueRandomVectors2 (int count, int rangeMinInclusiveX, int rangeMaxNonInclusiveX, int rangeMinInclusiveZ, int rangeMaxNonInclusiveZ, bool sortAsc = false) {
+		List<Vector2> uniqueVectors = new List<Vector2>(count);
 		Vector2 vec;
+		Vector2 invVec = new Vector2 ();
 		for (int c = 0; c < count; ++c) {
 			vec.x = random.Next (rangeMinInclusiveX, rangeMaxNonInclusiveX);
 			vec.y = random.Next (rangeMinInclusiveZ, rangeMaxNonInclusiveZ);
+//			invVec.x = vec.y;
+//			invVec.y = vec.x;
+//			if (!Contains(uniqueVectors, vec) && vec.x != vec.y && !Contains(uniqueVectors, invVec)) {
 			if (!Contains(uniqueVectors, vec)) {
-				uniqueVectors [c] = vec;
+				uniqueVectors.Add(vec);
 			} else {
 				--c;
 			}
 		}
 
-		return uniqueVectors;
+		if (sortAsc) { uniqueVectors.OrderBy (v => v.x * Math.Abs(rangeMaxNonInclusiveZ - rangeMinInclusiveZ)+ v.y); }
+
+		return uniqueVectors.ToArray ();
+	}
+
+	public Vector2[] GetUniqueRandomEdges(int count, int rangeMinInclusiveX, int rangeMaxNonInclusiveX, int rangeMinInclusiveZ, int rangeMaxNonInclusiveZ, bool sortAsc = false) {
+		//x:
+		int[] uniqueEdgesStart = GetUniqueRandomNumbersInt (count, rangeMinInclusiveX, rangeMaxNonInclusiveX);
+
+		//y:
+		List<int> uniqueEdgesEnd = new List<int>(count);
+		int num;
+		for (int c = 0; c < count; ++c) {
+			num = random.Next (rangeMinInclusiveX, rangeMaxNonInclusiveX);
+			if (!Contains(uniqueEdgesEnd, num) 
+				&& num != uniqueEdgesStart[c] 
+				&& !ContainsInvertedPair (uniqueEdgesStart, uniqueEdgesEnd.ToArray (), uniqueEdgesStart[c], num)
+			) {
+				--c;
+			}
+		}
+
+		Vector2[] uniqueEdgesBorderPoints = new Vector2 [count];
+		for (int c = 0; c < count; ++c) {
+			uniqueEdgesBorderPoints [c].x = uniqueEdgesStart [c];
+			uniqueEdgesBorderPoints [c].y = uniqueEdgesEnd[c];
+		}
+
+		return uniqueEdgesBorderPoints;
+	}
+
+	private bool ContainsInvertedPair(int[] containerX, int[] containerY, int x, int y)  {
+		for (int i=0; i < containerY.Length; ++i) {
+			if (containerX [i] == y && containerY [i] == x)
+				return true;
+		}
+
+		return false;
 	}
 
 	public int RandomRangeMiddleVal (int min, int max) {
@@ -107,6 +167,15 @@ public class RandomUtils {
 		return numbers;
 	}
 
+	private bool Contains (int[] container, int number){
+		for (int c = 0; c < container.Length; ++c) {
+			if (container [c] == number) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Utility method for checking if (number) is inside the (container). Comparision by value.
 	 */ 
@@ -123,6 +192,26 @@ public class RandomUtils {
 	 * Utility method for checking if (number) is inside the (container). Comparision by value.
 	 */ 
 	private bool Contains (LinkedList<float> container, float number){
+		for (int c = 0; c < container.Count; ++c) {
+			if (container.ElementAt (c) == number) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private bool Contains (List<int> container, int number){
+		for (int c = 0; c < container.Count; ++c) {
+			if (container.ElementAt (c) == number) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	//todo: make ONE Contains class (List<Object>, Object)
+	private bool Contains (List<Vector2> container, Vector2 number){
 		for (int c = 0; c < container.Count; ++c) {
 			if (container.ElementAt (c) == number) {
 				return true;

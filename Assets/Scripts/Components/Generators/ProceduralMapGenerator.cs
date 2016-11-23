@@ -24,12 +24,14 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		graphResolutionY = 5;
 
 	public int 		keyPoisPerc = 5;
+
 	public int 		keyPoisRandomOffsetPerc = 0;
 	private int 	keyPoisCount;
 
 	public float 	keyPoisSizePerc = 1;
 	public int 		keyPoisSizeRandomOffsetPerc = 0;
-	private float	keyPoisSize;
+
+	public int		keyPoisConnectionsPerc = 100;
 
 	public int 		nonKeyPoisPerc = 8;
 
@@ -52,6 +54,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private float[,] mapValuesArray;
 
 	private Vector3[] graphNodesPositions;
+	private float	keyPoisSize;
 
 	private ComputationUtils 		utils;
 	private new PerlinNoiseRenderer renderer;
@@ -96,16 +99,26 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 
-	public void GenerateVolumeBlock() {
-		renderer.RenderVolumeBlock (new Vector3(mapResolutionX, mapResolutionY, mapResolutionZ));
-	}
-
 	public void GenerateTestCrossValuesMap() {
-		float[,] testCrossMap = utils.CreateTestCrossValues (mapResolutionX, mapResolutionZ
-		);
+		float[,] testCrossMap = utils.CreateTestCrossValues (mapResolutionX, mapResolutionZ);
 
 		mapValuesArray = testCrossMap;
 		RenderValuesArray (mapValuesArray);
+	}
+
+	public void ConvertGraphToValues() {
+		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValues (
+			mapResolutionX, mapResolutionY, mapResolutionZ,
+			graphResolutionX, graphResolutionY, graphResolutionZ,
+			graphNodesPositions
+		);
+
+		RenderValuesArray (graphValuesAsArray);
+	}
+
+
+	public void GenerateVolumeBlock() {
+		renderer.RenderVolumeBlock (new Vector3(mapResolutionX, mapResolutionY, mapResolutionZ));
 	}
 
 	public void ApplyGaussianBlur() {
@@ -162,7 +175,30 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		Vector2[] graphKeyHorizontalPositions = utils.GetUtilsRandom ().GetUniqueRandomVectors2 (
 			keyPoisCount, 
 			0, graphResolutionX,
-			0, graphResolutionZ);
+			0, graphResolutionZ,
+			true
+		);
+
+//		Vector2[] graphKeyHorizontalPositions = new Vector2[keyPoisCount * 2 + 4];
+//
+//		float graphx = graphResolutionX / keyPoisCount;
+//		float graphz = graphResolutionZ / keyPoisCount;
+//
+//		graphKeyHorizontalPositions [0] = new Vector2 (0f, 0f);
+//		graphKeyHorizontalPositions [1] = new Vector2 (0f, graphResolutionZ);
+//		graphKeyHorizontalPositions [2] = new Vector2 (graphResolutionX, graphResolutionZ);
+//		graphKeyHorizontalPositions [3] = new Vector2 (graphResolutionX, 0f);
+//
+//
+//		for (int i=4; i < keyPoisCount; i=i+2) {
+//			graphKeyHorizontalPositions [i].x = graphx * i;
+//			graphKeyHorizontalPositions [i].y = graphz * i;
+//
+//			if (!(i == 0)) {
+//				graphKeyHorizontalPositions [i + 1].x = graphx * i;
+//				graphKeyHorizontalPositions [i + 1].y = graphResolutionZ - (graphz * i);
+//			}
+//		}
 
 		for (int i = 0; i < graphKeyPoisPositions.Length; ++i) {
 			graphKeyPoisPositions [i] = new Vector3(
@@ -187,13 +223,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			Vector3 graphEdgeEnd = graphNodesPositions [i + 1];
 			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
 		}
-
-		for (int i = 0; i < graphNodesPositions.Length; ++i) {
-			Vector3 graphEdgeStart = graphNodesPositions [UnityEngine.Random.Range (0, graphNodesPositions.Length-1)];
-			Vector3 graphEdgeEnd = graphNodesPositions [UnityEngine.Random.Range (0, graphNodesPositions.Length-1)];
-			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
-		} 
 	}
+
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
 		renderer.RenderValuesArray (mapValuesArray);
