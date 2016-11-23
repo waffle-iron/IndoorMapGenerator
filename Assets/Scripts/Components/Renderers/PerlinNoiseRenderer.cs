@@ -57,22 +57,50 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 	public void RenderVolumeBlock(Vector3 scale) {
 		ValidateVolumeView ();
-//		scale.y /= 2f;
 		view.ReplaceVolumeBlock (new Vector3(0f, scale.y/2f, 0f), scale);
 	}
 
 
-	public void RenderGraphMarkers(Vector3[] graphMarkersPositions) {
+	public void RenderGraphMarkers(Vector3[] graphMarkersPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 		ValidateGraphView ();
 		view.ClearGraphMarkers ();
+		Vector3 graphMarkerPosition;
+		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
-			view.AddGraphMarker (graphMarkersPositions [m], true);
+			graphMarkerPosition = graphMarkersPositions[m];
+
+			graphMarkerPosition.x *= graphEntitiesDistanceX;
+			graphMarkerPosition.z *= graphEntitiesDistanceZ; 
+
+			graphMarkerPosition.x -= mapResolutions.x / 2f; 
+			graphMarkerPosition.z -= mapResolutions.z / 2f;   	//todo: this code snipped is duplicated 3x already, make utils method or sth
+			graphMarkerPosition.x += graphEntitiesDistanceX / 2f;
+			graphMarkerPosition.z += graphEntitiesDistanceZ / 2f;
+
+			view.AddGraphMarker (graphMarkerPosition, true);
 		}
 	}
 
-	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions) {
+	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+
+		Vector3 graphKeyPoiPosition;
+		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
-			view.AddGraphNode (graphKeyPoisPositions [p], true);
+			graphKeyPoiPosition = graphKeyPoisPositions [p];
+
+			graphKeyPoiPosition.x *= graphEntitiesDistanceX;
+			graphKeyPoiPosition.z *= graphEntitiesDistanceZ;
+
+			graphKeyPoiPosition.x -= mapResolutions.x / 2f;
+			graphKeyPoiPosition.z -= mapResolutions.z / 2f; 
+			graphKeyPoiPosition.x += graphEntitiesDistanceX / 2f;
+			graphKeyPoiPosition.z += graphEntitiesDistanceZ / 2f;
+
+			view.AddGraphNode (graphKeyPoiPosition, true);
 		}
 	}
 		
@@ -92,13 +120,16 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 	//2D
 	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin, float rangeMax) {
+
 		int mapDimensionX = valuesArray.GetLength (0);
+		int mapDimensionZ = valuesArray.GetLength (1); 
 
 		Texture2D valueTexture = new Texture2D (mapDimensionX, mapDimensionZ);
 		Color[] valueTextureColorMap = new Color[mapDimensionX * mapDimensionZ];
 
-		for(int x = 0; x < mapDimensionX; ++x) {
-			for (int z = 0; z < mapDimensionZ; ++z) {
+		for (int z = mapDimensionZ-1; z >= 0; --z) {
+			for(int x = mapDimensionX-1; x >= 0; --x) {
+					valueTextureColorMap [((mapDimensionX) * (mapDimensionZ))-1 -  z * (mapDimensionX) - x] = Color.Lerp(
 					Color.yellow, 
 					Color.red, 
 					Mathf.InverseLerp(rangeMin, rangeMax, valuesArray[x, z])
@@ -107,6 +138,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 
 		valueTexture.SetPixels (valueTextureColorMap);
+
 		valueTexture.filterMode = FilterMode.Point;
 		valueTexture.Apply ();
 

@@ -5,41 +5,62 @@ using UnityEditor;
 
 public class MathUtils {
 
-	public float[,] ConvertGraphToValues(
-		int mapResolutionX, int mapResolutionY, int mapResolutionZ,  //todo: make vector out of this X,Y,Z stuff
-		int graphResolutionX, int graphResolutionY, int graphResolutionZ, 
-		Vector3[] graphNodes) {
+	public float[,] ConvertGraphToValueMap(Vector3[] graphNodesPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 
-		float[] ranges = FindRangesMinMax (graphNodes);
+		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+
+		float[] ranges = FindRangesMinMax (graphNodesPositions);
 		Debug.Log (ranges [0] + "|" + ranges [1] + "|" + ranges [2] + "|" + ranges [3]);
 
 //		float resolutionScaleOffsetX = mapResolutionX / graphResolutionX;
 //		float resolutionScaleOffsetZ = mapResolutionZ / graphResolutionZ;
 
-		float[,] valueMap = new float[mapResolutionX, mapResolutionZ];
-		for (int x = 0; x < mapResolutionX; ++x) {
-			for (int z = 0; z < mapResolutionZ; ++z) {
+		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
+		for (int x = 0; x < mapResolutions.x; ++x) {
+			for (int z = 0; z < mapResolutions.z; ++z) {
 				valueMap [x, z] = 0f;
 			}
 		}
 
 		int i = 0;
-		int valX = 0;
-		int valZ = 0;
+		float valX = 0;
+		float valZ = 0;
+		int boundingBoxRadius = 5;
 		try {
-		for (i = 0; i < graphNodes.Length; ++i) {
-//				valX = mapResolutionZ - (int)(graphNodes[i].z + mapResolutionZ/2);
-//				valZ = mapResolutionX - (int)(graphNodes[i].x + mapResolutionX/2); //works with square grid
-				valX = (int)(graphNodes[i].x + mapResolutionX/2);
-				valZ = (int)(graphNodes[i].z + mapResolutionZ/2);
+		for (i = 0; i < graphNodesPositions.Length; ++i) {
+//				valX = (int)(graphNodes[i].x + mapResolutionX/2);
+//				valZ = (int)(graphNodes[i].z + mapResolutionZ/2);
 
-			valueMap [
-					valX, valZ
-			] = 1f;
+				valX = graphNodesPositions[i].x * graphEntitiesDistanceX;
+				valZ = graphNodesPositions[i].z * graphEntitiesDistanceZ;
+
+//				valX -= mapResolutions.x / 2f;
+//				valZ -= mapResolutions.z / 2f; 
+				valX += graphEntitiesDistanceX / 2f;
+				valZ += graphEntitiesDistanceZ / 2f;
+
+				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
+						x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
+						++x
+				) {
+					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
+							z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
+							++z
+					) {
+						valueMap [(int)x, (int)z] = Mathf.Lerp (
+							0f, 
+							1f, 
+							Mathf.InverseLerp (0f, mapResolutions.y, graphNodesPositions[i].y)
+						);
+					}
+				}
+
+
 		}
 
 		} catch (IndexOutOfRangeException exc) {
-			Debug.LogError ("(" + i +"), " + "(" + valX +"), " + "(" + valZ +"), " + exc.StackTrace);
+			Debug.LogError ("(" + i + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"), " + exc.StackTrace);
 		}
 			
 		return valueMap;

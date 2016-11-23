@@ -17,7 +17,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		mapResolutionZ = 250;
 	public int 		mapResolutionY;
 //	public int 		perlinResolutionX = 10;
-//	public int 		perlinResolutionZ = 10;
+//	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
 	public int 		graphResolutionX = 25;
 	public int 		graphResolutionZ = 25;
 	private int 	graphResolutionXZ;
@@ -36,7 +36,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		nonKeyPoisPerc = 8;
 
 
-
 	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
@@ -46,12 +45,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(-200, 100)]public int contrastPercent = 0;
 
 
-	private float graphMarkersPositionY;
-	private float graphMarkersDistanceX;
-	private float graphMarkersDistanceZ;
-
 	//this should be in some model class (Repository pattern?)
 	private float[,] mapValuesArray;
+
+	private Vector3 mapResolutionVector;
+	private Vector3 graphResolutionVector;
 
 	private Vector3[] graphNodesPositions;
 	private float	keyPoisSize;
@@ -59,10 +57,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private ComputationUtils 		utils;
 	private new PerlinNoiseRenderer renderer;
 
-
-	//todo: keep reference of ComputationUtils in variable here somewhere
-	//(PROS: so that we do not take reflective lookups every function?
-	// MAYBE CONS: memory leaks?)
 
 
 	void Start () {
@@ -107,10 +101,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ConvertGraphToValues() {
-		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValues (
-			mapResolutionX, mapResolutionY, mapResolutionZ,
-			graphResolutionX, graphResolutionY, graphResolutionZ,
-			graphNodesPositions
+		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValueMap (
+			graphNodesPositions, mapResolutionVector, graphResolutionVector
 		);
 
 		RenderValuesArray (graphValuesAsArray);
@@ -124,7 +116,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public void ApplyGaussianBlur() {
 		mapValuesArray = utils.GetGaussianBlur ().CreateGaussianBlur (
 			mapValuesArray, 
-			blurRadius, blurIterations, blurSolidification
+			blurRadius, 
+			blurIterations, 
+			blurSolidification
 		);
 
 		RenderValuesArray (mapValuesArray);
@@ -146,32 +140,29 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 		for(int x = 0; x < graphResolutionX; ++x) {
 			for(int z = 0; z < graphResolutionZ; ++z) {
-				Vector3 position = new Vector3 (
-					x * graphMarkersDistanceX, 
-					graphMarkersPositionY, 
-					z * graphMarkersDistanceZ
-				);
-				//TODO: USE CENTER OBJECT METHOD FROM UTILS CLASS!
-				position.x -= mapResolutionX / 2f;
-				position.z -= mapResolutionZ / 2f; 
-				position.x += graphMarkersDistanceX / 2f;
-				position.z += graphMarkersDistanceZ / 2f;
+				Vector3 position = new Vector3 (x, mapResolutionY / 2f, z);
 				graphMarkersPositions [x * graphResolutionZ + z] = position;
 			}
 		}
 			
-		renderer.RenderGraphMarkers (graphMarkersPositions);
+		renderer.RenderGraphMarkers (graphMarkersPositions, mapResolutionVector, graphResolutionVector);
 	}
 
+	//todo: some clever alrorithm here (different for CONNECTING all nodes ONCE (for 100%), twice (for 200%) etc)
+	// 		also, some sort of shortest path between critical pois
+//	https://en.wikipedia.org/wiki/Breadth-first_search
+//	https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+//	https://en.wikipedia.org/wiki/Prim's_algorithm 			!!!
+//	https://en.wikipedia.org/wiki/Shortest_path_problem
+//	https://en.wikipedia.org/wiki/Minimum_spanning_tree
+//	https://en.wikipedia.org/wiki/Eulerian_path#Constructing_Eulerian_trails_and_circuits
+//	http://www.graph-magics.com/articles/euler.php
 	public void GenerateGraphPOIs() {
-
+		
 		GenerateGraphMarkers ();
-
 		keyPoisCount = (int) (graphResolutionXZ * (keyPoisPerc / 100f));
-//			(utils.GetUtilsRandom ().RandomRangeMiddleVal (keyPoisPerc, keyPoisRandomOffsetPerc) / 100);
 
 		Vector3[] graphKeyPoisPositions = new Vector3[keyPoisCount];
-
 		Vector2[] graphKeyHorizontalPositions = utils.GetUtilsRandom ().GetUniqueRandomVectors2 (
 			keyPoisCount, 
 			0, graphResolutionX,
@@ -179,42 +170,18 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			true
 		);
 
-//		Vector2[] graphKeyHorizontalPositions = new Vector2[keyPoisCount * 2 + 4];
-//
-//		float graphx = graphResolutionX / keyPoisCount;
-//		float graphz = graphResolutionZ / keyPoisCount;
-//
-//		graphKeyHorizontalPositions [0] = new Vector2 (0f, 0f);
-//		graphKeyHorizontalPositions [1] = new Vector2 (0f, graphResolutionZ);
-//		graphKeyHorizontalPositions [2] = new Vector2 (graphResolutionX, graphResolutionZ);
-//		graphKeyHorizontalPositions [3] = new Vector2 (graphResolutionX, 0f);
-//
-//
-//		for (int i=4; i < keyPoisCount; i=i+2) {
-//			graphKeyHorizontalPositions [i].x = graphx * i;
-//			graphKeyHorizontalPositions [i].y = graphz * i;
-//
-//			if (!(i == 0)) {
-//				graphKeyHorizontalPositions [i + 1].x = graphx * i;
-//				graphKeyHorizontalPositions [i + 1].y = graphResolutionZ - (graphz * i);
-//			}
-//		}
-
 		for (int i = 0; i < graphKeyPoisPositions.Length; ++i) {
 			graphKeyPoisPositions [i] = new Vector3(
-				graphKeyHorizontalPositions[i].x * graphMarkersDistanceX,
+				graphKeyHorizontalPositions[i].x,
 				utils.GetUtilsRandom ().GetUniqueRandomNumbers (1, 0f, graphResolutionY)[0],
-				graphKeyHorizontalPositions[i].y * graphMarkersDistanceZ
+				graphKeyHorizontalPositions[i].y
 			);
-
-			graphKeyPoisPositions [i].x -= mapResolutionX / 2f;
-			graphKeyPoisPositions [i].z -= mapResolutionZ / 2f; 
-			graphKeyPoisPositions [i].x += graphMarkersDistanceX / 2f;
-			graphKeyPoisPositions [i].z += graphMarkersDistanceZ / 2f;
 		}
 
 		graphNodesPositions = graphKeyPoisPositions;
-		renderer.RenderGraphKeyPois (graphKeyPoisPositions);
+		renderer.RenderGraphKeyPois (graphKeyPoisPositions, mapResolutionVector, graphResolutionVector);
+
+
 	}
 
 	public void GenerateGraphEdges() {
@@ -232,9 +199,14 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	void OnValidate() {
 		Debug.Log ("onvalidate");
-	 	graphMarkersPositionY = graphResolutionY / 2f; //so that markers are drawn in between minY and maxY vals
-		graphMarkersDistanceX = mapResolutionX / (float)graphResolutionX;
-		graphMarkersDistanceZ = mapResolutionZ / (float)graphResolutionZ;
+
+		graphResolutionVector.x = graphResolutionX;
+		graphResolutionVector.y = graphResolutionY;
+		graphResolutionVector.z = graphResolutionZ;
+
+		mapResolutionVector.x = mapResolutionX;
+		mapResolutionVector.y = mapResolutionY;
+		mapResolutionVector.z = mapResolutionZ;
 	}
 
 }
