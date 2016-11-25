@@ -90,19 +90,19 @@ public class ProceduralMapGeneratorEditor : Editor {
 	}
 
 	private void ButtonGaussianBlurPerlin() {
-		generator.GeneratePerlinNoiseValuesMap ();
+//		generator.GeneratePerlinNoiseValuesMap ();
 		generator.ApplyGaussianBlur ();
 		lastUsed = 3;
 	}
 
 	private void ButtonGaussianBlurCross() {
-		generator.GenerateTestCrossValuesMap ();
+//		generator.GenerateTestCrossValuesMap ();
 		generator.ApplyGaussianBlur ();
 		lastUsed = 4;
 	}
 
 	private void ButtonApplyContrast() {
-		generator.GeneratePerlinNoiseValuesMap ();
+//		generator.GeneratePerlinNoiseValuesMap ();
 		generator.ApplyContrast ();
 	}
 

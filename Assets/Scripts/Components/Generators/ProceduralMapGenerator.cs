@@ -5,6 +5,7 @@ using System;
 using System.Security.Policy;
 using System.Deployment.Internal;
 using UnityEditor;
+using System.Linq;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
@@ -51,7 +52,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private Vector3 mapResolutionVector;
 	private Vector3 graphResolutionVector;
 
-	private Vector3[] graphNodesPositions;
+//	private Vector3[] graphNodesPositions;
+	private Graph 	graph = new Graph();
+
 	private float	keyPoisSize;
 
 	private ComputationUtils 		utils;
@@ -101,11 +104,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ConvertGraphToValues() {
-		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValueMap (
-			graphNodesPositions, mapResolutionVector, graphResolutionVector
-		);
-
-		RenderValuesArray (graphValuesAsArray);
+//		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValueMap (
+//			graphNodesPositions, mapResolutionVector, graphResolutionVector
+//		);
+//
+//		mapValuesArray = graphValuesAsArray;
+//		RenderValuesArray (graphValuesAsArray);
 	}
 
 
@@ -125,9 +129,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ApplyContrast() {
-		if (mapValuesArray == null) {
-			GeneratePerlinNoiseValuesMap ();
-		}
+//		if (mapValuesArray == null) {
+//			GeneratePerlinNoiseValuesMap ();
+//		}
 
 		mapValuesArray = utils.GetUtilsMath ().ContrastValues (mapValuesArray, contrastPercent, 1f, 0f);
 		RenderValuesArray (mapValuesArray);
@@ -158,7 +162,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 //	https://en.wikipedia.org/wiki/Eulerian_path#Constructing_Eulerian_trails_and_circuits
 //	http://www.graph-magics.com/articles/euler.php
 	public void GenerateGraphPOIs() {
-		
+		CreateGraphPOIs ();
+		RenderGraphPOIs ();
+	}
+
+	private void CreateGraphPOIs() {
 		GenerateGraphMarkers ();
 		keyPoisCount = (int) (graphResolutionXZ * (keyPoisPerc / 100f));
 
@@ -178,18 +186,24 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			);
 		}
 
-		graphNodesPositions = graphKeyPoisPositions;
-		renderer.RenderGraphKeyPois (graphKeyPoisPositions, mapResolutionVector, graphResolutionVector);
+		//		graphNodesPositions = graphKeyPoisPositions;
+		graph.ConstructGraph (
+			graphKeyPoisPositions, 
+			Enumerable.Repeat (1f, graphKeyPoisPositions.Length).ToArray (),
+			Enumerable.Repeat (true, graphKeyPoisPositions.Length).ToArray ()
+		);
+	}
 
-
+	private void RenderGraphPOIs() {
+		renderer.RenderGraphKeyPois (graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector);
 	}
 
 	public void GenerateGraphEdges() {
-		for (int i = 0; i < graphNodesPositions.Length-1; ++i) {
-			Vector3 graphEdgeStart = graphNodesPositions [i];
-			Vector3 graphEdgeEnd = graphNodesPositions [i + 1];
-			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
-		}
+//		for (int i = 0; i < graphNodesPositions.Length-1; ++i) {
+//			Vector3 graphEdgeStart = graphNodesPositions [i];
+//			Vector3 graphEdgeEnd = graphNodesPositions [i + 1];
+//			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
+//		}
 	}
 
 
