@@ -116,39 +116,13 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		Vector3 prevPosA = positionA;
 		Vector3 prevPosB = positionB;
 
+		positionA = AlignToResolutons (positionA, mapResolutions, graphResolutions);
+		positionB = AlignToResolutons (positionB, mapResolutions, graphResolutions);
+
 		Vector3 deltaPosition = positionB - positionA;
 		deltaPosition.x /= 2f;
 		deltaPosition.y /= 2f;
 		deltaPosition.z /= 2f;
-
-		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-		float graphEntitiesDistanceY = mapResolutions.y / (float)graphResolutions.y;
-		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
-
-
-		positionA.x *= graphEntitiesDistanceX;
-		positionA.y *= graphEntitiesDistanceY;
-		positionA.z *= graphEntitiesDistanceZ;
-
-		positionA.x -= mapResolutions.x / 2f;
-		positionA.y -= mapResolutions.y / 2f;
-		positionA.z -= mapResolutions.z / 2f;
-
-		positionA.x += graphEntitiesDistanceX / 2f;
-		positionA.y += graphEntitiesDistanceY / 2f;
-		positionA.z += graphEntitiesDistanceZ / 2f;
-
-		positionB.x *= graphEntitiesDistanceX;
-		positionB.y *= graphEntitiesDistanceY;
-		positionB.z *= graphEntitiesDistanceZ;
-
-		positionB.x -= mapResolutions.x / 2f;
-		positionB.y -= mapResolutions.y / 2f;
-		positionB.z -= mapResolutions.z / 2f;
-
-		positionB.x += graphEntitiesDistanceX / 2f;
-		positionB.y += graphEntitiesDistanceY / 2f;
-		positionB.z += graphEntitiesDistanceZ / 2f;
 
 
 		view.AddGraphEdge (

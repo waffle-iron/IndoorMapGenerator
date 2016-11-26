@@ -116,7 +116,7 @@ public class MapOutputObject : MonoBehaviour {
 		}
 	}
 
-	public void AddGraphEdge(Vector3 position, Vector3 lookat,/*float rotationY,*/ float scaleY) {
+	public void AddGraphEdge(Vector3 position, Vector3 lookat, float scaleY) {
 		position += graphMarkerPrefab.bounds.size;
 		Renderer edge = Instantiate (graphEdgePrefab);
 		edge.transform.parent = graphEdgesView.transform;

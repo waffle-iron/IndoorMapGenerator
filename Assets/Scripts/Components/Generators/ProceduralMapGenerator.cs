@@ -6,6 +6,7 @@ using System.Security.Policy;
 using System.Deployment.Internal;
 using UnityEditor;
 using System.Linq;
+using System.Collections.Generic;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
@@ -162,11 +163,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 //	https://en.wikipedia.org/wiki/Eulerian_path#Constructing_Eulerian_trails_and_circuits
 //	http://www.graph-magics.com/articles/euler.php
 	public void GenerateGraphPOIs() {
-		CreateGraphPOIs ();
-		RenderGraphPOIs ();
+		GenerateGraphKeyPOIs ();
+		RenderGraphPOIs (); //todo: should it be separated or not? rest of the methods are not separated like that...
 	}
 
-	private void CreateGraphPOIs() {
+
+	private void GenerateGraphKeyPOIs() {
 		GenerateGraphMarkers ();
 		keyPoisCount = (int) (graphResolutionXZ * (keyPoisPerc / 100f));
 
@@ -185,8 +187,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				graphKeyHorizontalPositions[i].y
 			);
 		}
-
-		//		graphNodesPositions = graphKeyPoisPositions;
+			
 		graph.ConstructGraph (
 			graphKeyPoisPositions, 
 			Enumerable.Repeat (1f, graphKeyPoisPositions.Length).ToArray (),
@@ -194,22 +195,44 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		);
 	}
 
+
 	private void RenderGraphPOIs() {
 		renderer.RenderGraphKeyPois (graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector);
 	}
 
+
 	public void GenerateGraphEdges() {
-//		for (int i = 0; i < graphNodesPositions.Length-1; ++i) {
-//			Vector3 graphEdgeStart = graphNodesPositions [i];
-//			Vector3 graphEdgeEnd = graphNodesPositions [i + 1];
-//			renderer.RenderGraphEdge (graphEdgeStart, graphEdgeEnd);
-//		}
+
+		for (int i = 0; i < graph.GetVerticesCount ()-1; ++i) {
+			int graphEdgeStartVertexIndex = i;
+			int graphEdgeEndVertexIndex = i+1;
+
+			graph.AddEdge (graphEdgeStartVertexIndex, graphEdgeEndVertexIndex, true);
+		}
+
+
+		Vector2[] edgeVerticesIndexes = graph.GetEdgesStartEndIndexes ();
+		if (graph.GetEdgesCount () == edgeVerticesIndexes.Length) {
+			Debug.Log ("edge count correct");
+		} else {
+			Debug.LogError ("edge count NOT correct");
+		}
+
+		for (int i=0; i < edgeVerticesIndexes.Length; ++i) {
+			renderer.RenderGraphEdge (
+				graph.GetVertexPosition (Mathf.RoundToInt (edgeVerticesIndexes[i].x)),
+				graph.GetVertexPosition (Mathf.RoundToInt (edgeVerticesIndexes[i].y)),
+				mapResolutionVector,
+				graphResolutionVector
+			);
+		}
 	}
 
 
 	private void RenderValuesArray(float[,] mapValuesArray) {
 		renderer.RenderValuesArray (mapValuesArray);
 	}
+
 
 	void OnValidate() {
 		Debug.Log ("onvalidate");

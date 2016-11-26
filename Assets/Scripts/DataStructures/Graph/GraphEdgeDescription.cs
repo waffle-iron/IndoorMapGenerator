@@ -8,7 +8,7 @@ public class GraphEdgeDescription
 	enum DescriptionFunction {
 		LINEAR,
 		HALF_CIRCULAR,
-		BEZIER_QUADRATIC,
+		BEZIER_QUADRATIC, /* https://en.wikipedia.org/wiki/Bézier_curve */
 		BEZIER_CUBIC
 	}
 

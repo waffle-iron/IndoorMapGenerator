@@ -15,8 +15,7 @@ public class GraphEdgesInfo
 
 
 	public int IncrementConnectionCount(float edgeThickness) {
-		edgesThicknesses.Add (edgeThickness);
-		return IncrementConnectionCount (1);
+		return IncrementConnectionCount (1, new float[] { edgeThickness });
 	}
 
 	public int IncrementConnectionCount(int amount, float[] edgesThicknesses) {
@@ -32,6 +31,9 @@ public class GraphEdgesInfo
 		return connectionCount;
 	}
 
+	public int GetConnectionCount() {
+		return connectionCount;
+	}
 }
 
 
