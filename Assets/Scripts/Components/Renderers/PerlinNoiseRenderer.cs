@@ -64,21 +64,8 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	public void RenderGraphMarkers(Vector3[] graphMarkersPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 		ValidateGraphView ();
 		view.ClearGraphMarkers ();
-		Vector3 graphMarkerPosition;
-//		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-//		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
-//			graphMarkerPosition = graphMarkersPositions[m];
-
-//			graphMarkerPosition.x *= graphEntitiesDistanceX;
-//			graphMarkerPosition.z *= graphEntitiesDistanceZ; 
-
-//			graphMarkerPosition.x -= mapResolutions.x / 2f; 
-//			graphMarkerPosition.z -= mapResolutions.z / 2f;   	//todo: this code snipped is duplicated 3x already, make utils method or sth
-//			graphMarkerPosition.x += graphEntitiesDistanceX / 2f;
-//			graphMarkerPosition.z += graphEntitiesDistanceZ / 2f;
-
 			view.AddGraphMarker (
 				AlignToResolutons (graphMarkersPositions[m], mapResolutions, graphResolutions), 
 				true
@@ -87,23 +74,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 
 	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
-
-		Vector3 graphKeyPoiPosition;
-//		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-//		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
-
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
-//			graphKeyPoiPosition = graphKeyPoisPositions [p];
-
-//			graphKeyPoiPosition.x *= graphEntitiesDistanceX;
-//			graphKeyPoiPosition.z *= graphEntitiesDistanceZ;
-//
-//			graphKeyPoiPosition.x -= mapResolutions.x / 2f;
-//			graphKeyPoiPosition.z -= mapResolutions.z / 2f; 
-//			graphKeyPoiPosition.x += graphEntitiesDistanceX / 2f;
-//			graphKeyPoiPosition.z += graphEntitiesDistanceZ / 2f;
-
-//			view.AddGraphNode (graphKeyPoiPosition, true);
 			view.AddGraphNode (
 				AlignToResolutons (graphKeyPoisPositions [p], mapResolutions, graphResolutions),
 				true
@@ -112,9 +83,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 		
 	public void RenderGraphEdge(Vector3 positionA, Vector3 positionB, Vector3 mapResolutions, Vector3 graphResolutions) {
-
-		Vector3 prevPosA = positionA;
-		Vector3 prevPosB = positionB;
 
 		positionA = AlignToResolutons (positionA, mapResolutions, graphResolutions);
 		positionB = AlignToResolutons (positionB, mapResolutions, graphResolutions);

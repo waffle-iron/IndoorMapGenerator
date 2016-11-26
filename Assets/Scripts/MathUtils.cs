@@ -13,41 +13,32 @@ public class MathUtils {
 		float[] ranges = FindRangesMinMax (graphNodesPositions);
 		Debug.Log (ranges [0] + "|" + ranges [1] + "|" + ranges [2] + "|" + ranges [3]);
 
-//		float resolutionScaleOffsetX = mapResolutionX / graphResolutionX;
-//		float resolutionScaleOffsetZ = mapResolutionZ / graphResolutionZ;
-
 		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
-		for (int x = 0; x < mapResolutions.x; ++x) {
-			for (int z = 0; z < mapResolutions.z; ++z) {
-				valueMap [x, z] = 0f;
-			}
-		}
+//		for (int x = 0; x < mapResolutions.x; ++x) {
+//			for (int z = 0; z < mapResolutions.z; ++z) {
+//				valueMap [x, z] = 0f;
+//			}
+//		}
 
 		int i = 0;
 		float valX = 0;
 		float valZ = 0;
-		int boundingBoxRadius = 5;
+		int boundingBoxRadius = 3;
 		try {
-		for (i = 0; i < graphNodesPositions.Length; ++i) {
-//				valX = (int)(graphNodes[i].x + mapResolutionX/2);
-//				valZ = (int)(graphNodes[i].z + mapResolutionZ/2);
-
+			for (i = 0; i < graphNodesPositions.Length; ++i) {
 				valX = graphNodesPositions[i].x * graphEntitiesDistanceX;
 				valZ = graphNodesPositions[i].z * graphEntitiesDistanceZ;
 
-//				valX -= mapResolutions.x / 2f;
-//				valZ -= mapResolutions.z / 2f; 
 				valX += graphEntitiesDistanceX / 2f;
 				valZ += graphEntitiesDistanceZ / 2f;
 
+				//creating box with radius of (boundingBoxRadius)
 				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
 						x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
-						++x
-				) {
+						++x) {
 					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
 							z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
-							++z
-					) {
+							++z) {
 						valueMap [(int)x, (int)z] = Mathf.Lerp (
 							0f, 
 							1f, 
@@ -55,10 +46,8 @@ public class MathUtils {
 						);
 					}
 				}
-
-
-		}
-
+					
+			}
 		} catch (IndexOutOfRangeException exc) {
 			Debug.LogError ("(" + i + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"), " + exc.StackTrace);
 		}
