@@ -65,50 +65,91 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		ValidateGraphView ();
 		view.ClearGraphMarkers ();
 		Vector3 graphMarkerPosition;
-		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+//		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+//		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
-			graphMarkerPosition = graphMarkersPositions[m];
+//			graphMarkerPosition = graphMarkersPositions[m];
 
-			graphMarkerPosition.x *= graphEntitiesDistanceX;
-			graphMarkerPosition.z *= graphEntitiesDistanceZ; 
+//			graphMarkerPosition.x *= graphEntitiesDistanceX;
+//			graphMarkerPosition.z *= graphEntitiesDistanceZ; 
 
-			graphMarkerPosition.x -= mapResolutions.x / 2f; 
-			graphMarkerPosition.z -= mapResolutions.z / 2f;   	//todo: this code snipped is duplicated 3x already, make utils method or sth
-			graphMarkerPosition.x += graphEntitiesDistanceX / 2f;
-			graphMarkerPosition.z += graphEntitiesDistanceZ / 2f;
+//			graphMarkerPosition.x -= mapResolutions.x / 2f; 
+//			graphMarkerPosition.z -= mapResolutions.z / 2f;   	//todo: this code snipped is duplicated 3x already, make utils method or sth
+//			graphMarkerPosition.x += graphEntitiesDistanceX / 2f;
+//			graphMarkerPosition.z += graphEntitiesDistanceZ / 2f;
 
-			view.AddGraphMarker (graphMarkerPosition, true);
+			view.AddGraphMarker (
+				AlignToResolutons (graphMarkersPositions[m], mapResolutions, graphResolutions), 
+				true
+			);
 		}
 	}
 
 	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 
 		Vector3 graphKeyPoiPosition;
-		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+//		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+//		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
-			graphKeyPoiPosition = graphKeyPoisPositions [p];
+//			graphKeyPoiPosition = graphKeyPoisPositions [p];
 
-			graphKeyPoiPosition.x *= graphEntitiesDistanceX;
-			graphKeyPoiPosition.z *= graphEntitiesDistanceZ;
+//			graphKeyPoiPosition.x *= graphEntitiesDistanceX;
+//			graphKeyPoiPosition.z *= graphEntitiesDistanceZ;
+//
+//			graphKeyPoiPosition.x -= mapResolutions.x / 2f;
+//			graphKeyPoiPosition.z -= mapResolutions.z / 2f; 
+//			graphKeyPoiPosition.x += graphEntitiesDistanceX / 2f;
+//			graphKeyPoiPosition.z += graphEntitiesDistanceZ / 2f;
 
-			graphKeyPoiPosition.x -= mapResolutions.x / 2f;
-			graphKeyPoiPosition.z -= mapResolutions.z / 2f; 
-			graphKeyPoiPosition.x += graphEntitiesDistanceX / 2f;
-			graphKeyPoiPosition.z += graphEntitiesDistanceZ / 2f;
-
-			view.AddGraphNode (graphKeyPoiPosition, true);
+//			view.AddGraphNode (graphKeyPoiPosition, true);
+			view.AddGraphNode (
+				AlignToResolutons (graphKeyPoisPositions [p], mapResolutions, graphResolutions),
+				true
+			);
 		}
 	}
 		
-	public void RenderGraphEdge(Vector3 positionA, Vector3 positionB) {
+	public void RenderGraphEdge(Vector3 positionA, Vector3 positionB, Vector3 mapResolutions, Vector3 graphResolutions) {
+
+		Vector3 prevPosA = positionA;
+		Vector3 prevPosB = positionB;
+
 		Vector3 deltaPosition = positionB - positionA;
 		deltaPosition.x /= 2f;
 		deltaPosition.y /= 2f;
 		deltaPosition.z /= 2f;
+
+		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceY = mapResolutions.y / (float)graphResolutions.y;
+		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+
+
+		positionA.x *= graphEntitiesDistanceX;
+		positionA.y *= graphEntitiesDistanceY;
+		positionA.z *= graphEntitiesDistanceZ;
+
+		positionA.x -= mapResolutions.x / 2f;
+		positionA.y -= mapResolutions.y / 2f;
+		positionA.z -= mapResolutions.z / 2f;
+
+		positionA.x += graphEntitiesDistanceX / 2f;
+		positionA.y += graphEntitiesDistanceY / 2f;
+		positionA.z += graphEntitiesDistanceZ / 2f;
+
+		positionB.x *= graphEntitiesDistanceX;
+		positionB.y *= graphEntitiesDistanceY;
+		positionB.z *= graphEntitiesDistanceZ;
+
+		positionB.x -= mapResolutions.x / 2f;
+		positionB.y -= mapResolutions.y / 2f;
+		positionB.z -= mapResolutions.z / 2f;
+
+		positionB.x += graphEntitiesDistanceX / 2f;
+		positionB.y += graphEntitiesDistanceY / 2f;
+		positionB.z += graphEntitiesDistanceZ / 2f;
+
 
 		view.AddGraphEdge (
 			positionA + deltaPosition, 
@@ -143,6 +184,22 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		valueTexture.Apply ();
 
 		return valueTexture;
+	}
+
+	private Vector3 AlignToResolutons(Vector3 value, Vector3 mapResolutions, Vector3 graphResolutions) {
+		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+
+		value.x *= graphEntitiesDistanceX;
+		value.z *= graphEntitiesDistanceZ;
+
+		value.x -= mapResolutions.x / 2f;
+		value.z -= mapResolutions.z / 2f; 
+
+		value.x += graphEntitiesDistanceX / 2f;
+		value.z += graphEntitiesDistanceZ / 2f;
+
+		return value;
 	}
 
 }
