@@ -245,7 +245,7 @@ public class MathUtils {
 		);
 
 		Vector3[] bresenham3dWithFakeY = new Vector3[bresenham.Count];
-		float[] fakeY = RangeEvenSteps (lineStart.y, lineEnd.y, bresenham.Count);
+		float[] fakeY = RangeEvenSteps (lineStart.y, lineEnd.y, bresenham.Count, 0f, 1f);
 
 		for (int b = 0; b < bresenham.Count; ++b) {
 			bresenham3dWithFakeY[b] = bresenham [b];
@@ -378,14 +378,18 @@ public class MathUtils {
 		return line;
 	}
 
-	private float[] RangeEvenSteps(float rangeMin, float rangeMax, int steps) {
+	private float[] RangeEvenSteps(float rangeMin, float rangeMax, int steps, float outputValueMin, float outputValueMax) {
 		float[] rangeEvenSteps = new float[steps + 1];
 
 		float deltaRange = rangeMax - rangeMin;
 		float step = deltaRange / (float)steps;
 
 		for (int s = 0; s <= steps; ++s) {
-			rangeEvenSteps [s] = rangeMin + (s * step);
+			rangeEvenSteps [s] = Mathf.Lerp (
+				outputValueMin, 
+				outputValueMax, 
+				Mathf.InverseLerp (rangeMin, rangeMax, rangeMin + (s * step))
+			);
 //			rangeEvenSteps[s] = 1;
 		}
 
