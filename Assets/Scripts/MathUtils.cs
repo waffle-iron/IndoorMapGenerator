@@ -6,6 +6,91 @@ using System.Collections.Generic;
 
 public class MathUtils {
 
+//	http://answers.unity3d.com/questions/805970/intvector2-struct-useful.html
+	//todo: make custom Vector2 and Vector3 -- Vector2Int and Vector3Int!!
+
+	public float[,] AddValuesToValueMap(float[,] valueMap, float[,] addValueMap, float rangeMin, float rangeMax) {
+		for (int x = 0; x < valueMap.GetLength (0); ++x) {
+			for (int z = 0; z < valueMap.GetLength (1); ++z) {	
+				valueMap [x, z] = Mathf.Clamp (valueMap [x, z] + addValueMap [x, z], rangeMin, rangeMax);
+
+			}
+		}
+
+		return valueMap;
+	}
+
+	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+
+		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+
+		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
+
+
+		for (int i=0; i < edgesStartEndPositions.GetLength(0); ++i) {
+			Vector3 startpos = edgesStartEndPositions [i, 0];
+			Vector3 endpos = edgesStartEndPositions [i, 1];
+
+			startpos.x = startpos.x * graphEntitiesDistanceX;
+			startpos.z = startpos.z * graphEntitiesDistanceZ;
+
+			startpos.x += graphEntitiesDistanceX / 2f;
+			startpos.z += graphEntitiesDistanceZ / 2f;
+
+			endpos.x = endpos.x * graphEntitiesDistanceX;
+			endpos.z = endpos.z * graphEntitiesDistanceZ;
+
+			endpos.x += graphEntitiesDistanceX / 2f;
+			endpos.z += graphEntitiesDistanceZ / 2f;
+
+
+			Vector3[] line = BresenhamAlgorithm3DInt (
+				startpos,
+				endpos
+			);
+
+			int boundingBoxRadius = 3;
+			float valX = -1;
+			float valZ = -1;
+			int l = -1;
+			try {
+			for (l = 0; l < line.Length; ++l) {
+
+				valX = line[l].x;
+				valZ = line[l].z;
+//				float valX = line[l].x * graphEntitiesDistanceX;
+//				float valZ = line[l].z * graphEntitiesDistanceZ;
+//
+//				valX += graphEntitiesDistanceX / 2f;
+//				valZ += graphEntitiesDistanceZ / 2f;
+
+//				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
+//					x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
+//					++x) {
+//					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
+//						z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
+//						++z) {
+//						valueMap [(int)x, (int)z] = Mathf.Lerp (
+//							0f, 
+//							1f, 
+//							Mathf.InverseLerp (0f, mapResolutions.y, line[l].y)
+//						);
+//					}
+//				}
+
+				valueMap [Mathf.FloorToInt (line[l].x), Mathf.FloorToInt (line[l].z)] = line [l].y;
+			}
+			} catch (IndexOutOfRangeException exc) {
+				Debug.LogError (
+					"[i:("+i+"), startpos:" + startpos.ToString () + ", endpos: " + endpos.ToString () +"], " +
+					"[l:(" + l + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"]), \t" + exc.StackTrace);
+			}
+		}
+
+		return valueMap;
+	}
+
 	public float[,] ConvertGraphToValueMap(Vector3[] graphNodesPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
@@ -20,7 +105,7 @@ public class MathUtils {
 		float valX = 0;
 		float valZ = 0;
 		int boundingBoxRadius = 3;
-		try {
+//		try {
 			for (i = 0; i < graphNodesPositions.Length; ++i) {
 				valX = graphNodesPositions[i].x * graphEntitiesDistanceX;
 				valZ = graphNodesPositions[i].z * graphEntitiesDistanceZ;
@@ -44,9 +129,9 @@ public class MathUtils {
 				}
 					
 			}
-		} catch (IndexOutOfRangeException exc) {
-			Debug.LogError ("(" + i + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"), " + exc.StackTrace);
-		}
+//		} catch (IndexOutOfRangeException exc) {
+////			Debug.LogError ("(" + i + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"), " + exc.StackTrace);
+//		}
 			
 		return valueMap;
 	}
@@ -151,7 +236,29 @@ public class MathUtils {
 		return new float[4]{rangesMinMaxX[0], rangesMinMaxX[1], rangesMinMaxY[0], rangesMinMaxY[1]};
 	}
 
-	public List<Vector2> BresenhamAlgorithmInt (Vector2 lineStart, Vector2 lineEnd) {
+	public Vector3[] BresenhamAlgorithm3DInt(Vector3 lineStart, Vector3 lineEnd) {
+		//todo: make separate 3d algorithm!, not this improv shit
+
+		List<Vector2> bresenham = BresenhamAlgorithm2DInt (
+			new Vector2 (lineStart.x, lineStart.z),
+			new Vector3 (lineEnd.x, lineEnd.z)
+		);
+
+		Vector3[] bresenham3dWithFakeY = new Vector3[bresenham.Count];
+		float[] fakeY = RangeEvenSteps (lineStart.y, lineEnd.y, bresenham.Count);
+
+		for (int b = 0; b < bresenham.Count; ++b) {
+			bresenham3dWithFakeY[b] = bresenham [b];
+			bresenham3dWithFakeY[b].z = bresenham3dWithFakeY[b].y;
+			bresenham3dWithFakeY [b].y = fakeY [b];
+		}
+
+		return bresenham3dWithFakeY;
+	}
+
+
+	//todo: make this return array, not list (overhead)
+	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
 		List<Vector2> line = new List<Vector2> ();
 		Vector2 tileInLine = Vector2.zero;
 
@@ -210,6 +317,81 @@ public class MathUtils {
 		}
 		return line;
 	}
+
+	public List<Vector2> BresenhamAlgorithm2DFloat (Vector2 lineStart, Vector2 lineEnd) {
+		List<Vector2> line = new List<Vector2> ();
+		Vector2 tileInLine = Vector2.zero;
+
+		//Vector coordinates (x, y) that we will start computation from
+		float x = Mathf.FloorToInt (lineStart.x);
+		float y = Mathf.FloorToInt (lineStart.y);
+
+		//difference in length between points in the same dimension (x or y)
+		float dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
+		float dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
+
+		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
+		//in every algorithm iteration or SUBTRACT "-1" from it.
+		//(varying depending on lineStart and lineEnd position on a grid)
+		float incrementValue = Math.Sign (dx);
+		float gradientIncrementValue = Math.Sign (dy);
+
+		float longerCalculationSide, shorterCalculationSide;
+		bool sidesInversion;
+
+		//if distance from line starting and ending point on Y-axis is greater than
+		//distance on X-axis, then we iterate this algorithm other way around.
+		//(incrementing y values and checking for boundary condition for ++x bump,
+		// instead of incrementing x values and checking if ++y bump is valid).
+		if (Math.Abs (dx) < Math.Abs (dy)) {
+			sidesInversion = true;
+			longerCalculationSide = Math.Abs (dy);
+			shorterCalculationSide = Math.Abs (dx);
+			incrementValue = Math.Sign (dy);
+			gradientIncrementValue = Math.Sign (dx);
+		} else {
+			sidesInversion = false;
+			longerCalculationSide = Math.Abs (dx);
+			shorterCalculationSide = Math.Abs (dy);
+		}
+
+		//because reasons, check wiki for algorithm walkthrough
+		float gradientAccumulation = longerCalculationSide / 2;
+
+		for (int i = 0; i < longerCalculationSide; ++i) {
+			tileInLine.Set (x, y);
+			if (x != lineStart.x && y != lineEnd.y) {
+				line.Add (tileInLine);
+			}
+
+			if (sidesInversion) { y += incrementValue; } 
+			else { x += incrementValue; }
+
+			gradientAccumulation += shorterCalculationSide;
+			if (gradientAccumulation >= longerCalculationSide) {
+				if (sidesInversion) { x += gradientIncrementValue; } 
+				else { y += gradientIncrementValue; }
+				gradientAccumulation -= longerCalculationSide;
+			}
+
+		}
+		return line;
+	}
+
+	private float[] RangeEvenSteps(float rangeMin, float rangeMax, int steps) {
+		float[] rangeEvenSteps = new float[steps + 1];
+
+		float deltaRange = rangeMax - rangeMin;
+		float step = deltaRange / (float)steps;
+
+		for (int s = 0; s <= steps; ++s) {
+			rangeEvenSteps [s] = rangeMin + (s * step);
+//			rangeEvenSteps[s] = 1;
+		}
+
+		return rangeEvenSteps;
+	}
+
 
 	/**
 	  Returning list (list) of square elements in 2d space, which are creating a 'circle' of given radius

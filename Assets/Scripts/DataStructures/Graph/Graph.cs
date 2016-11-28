@@ -99,17 +99,28 @@ public class Graph
 		Vector2 pair = new Vector2 ();
 		for (int x = 0; x < verticesList.Length; ++x) {
 			for (int z = 0; z <= x; ++z) {
-				
 				for (int i=0; i < adjacencyMatrix[x, z].GetConnectionCount (); ++i) {
 					pair.x = x;
 					pair.y = z;
 					indexPairs.Add (pair);
 				}
 			}
-
 		}
 
 		return indexPairs.ToArray ();
+	}
+
+	public Vector3[,] GetEdgesStartEndPositions() {
+		Vector2[] edgesStartEndIndexes = GetEdgesStartEndIndexes ();
+
+		Vector3[,] edgesStartEndPositions = new Vector3[edgesStartEndIndexes.Length, 2];
+
+		for (int i=0 ; i < edgesStartEndIndexes.Length; ++i) {
+			edgesStartEndPositions [i, 0] = GetVertexPosition((int)edgesStartEndIndexes [i].x);
+			edgesStartEndPositions [i, 1] = GetVertexPosition((int)edgesStartEndIndexes [i].y);
+		}
+
+		return edgesStartEndPositions;
 	}
 
 	public Vector3 GetVertexPosition(int vertexIndex) {

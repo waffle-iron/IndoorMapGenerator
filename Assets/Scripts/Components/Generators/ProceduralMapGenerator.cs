@@ -105,12 +105,28 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ConvertGraphToValues() {
+		ConvertGraphVerticesToValues ();
+	}
+
+	public void ConvertGraphVerticesToValues() {
 		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValueMap (
 			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector
 		);
 
 		mapValuesArray = graphValuesAsArray;
-		RenderValuesArray (graphValuesAsArray);
+		RenderValuesArray (mapValuesArray);
+	}
+
+	public void ConvertGraphEdgesToValues() {
+		float[,] graphEdgeValuesAsArray = utils.GetUtilsMath ().ConvertGraphEdgesToValueMap (
+			graph.GetEdgesStartEndPositions (),
+			mapResolutionVector,
+			graphResolutionVector
+		);
+
+		mapValuesArray = utils.GetUtilsMath ().AddValuesToValueMap (
+			mapValuesArray, graphEdgeValuesAsArray, 0f, 1f);
+		RenderValuesArray (mapValuesArray);
 	}
 
 

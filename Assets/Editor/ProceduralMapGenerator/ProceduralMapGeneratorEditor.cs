@@ -76,6 +76,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 		if (GUILayout.Button("mapGraphToValues")) {
 			generator.ConvertGraphToValues ();
 		}
+
+		if (GUILayout.Button("mapGraphEdgesToValues")) {
+			generator.ConvertGraphEdgesToValues ();
+		}
 	}
 
 	private void ButtonPerlin() {
