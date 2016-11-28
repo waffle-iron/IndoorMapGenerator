@@ -22,6 +22,11 @@ public class MathUtils {
 
 	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 
+		float[] asd = RangeEvenSteps (8, 10, 10);
+		float[] asd2 = RangeEvenSteps (10, 8, 10);
+		float[] asd3 = RangeEvenSteps (-10, -8, 10);
+		float[] asd4 = RangeEvenSteps (-8, -10, 10);
+
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
@@ -318,6 +323,66 @@ public class MathUtils {
 		return line;
 	}
 
+//	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
+//		List<Vector2> line = new List<Vector2> ();
+//		Vector2 tileInLine = Vector2.zero;
+//
+//		//Vector coordinates (x, y) that we will start computation from
+//		int x = Mathf.FloorToInt (lineStart.x);
+//		int y = Mathf.FloorToInt (lineStart.y);
+//
+//		//difference in length between points in the same dimension (x or y)
+//		int dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
+//		int dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
+//
+//		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
+//		//in every algorithm iteration or SUBTRACT "-1" from it.
+//		//(varying depending on lineStart and lineEnd position on a grid)
+//		int incrementValue = Math.Sign (dx);
+//		int gradientIncrementValue = Math.Sign (dy);
+//
+//		int longerCalculationSide, shorterCalculationSide;
+//		bool sidesInversion;
+//
+//		//if distance from line starting and ending point on Y-axis is greater than
+//		//distance on X-axis, then we iterate this algorithm other way around.
+//		//(incrementing y values and checking for boundary condition for ++x bump,
+//		// instead of incrementing x values and checking if ++y bump is valid).
+//		if (Math.Abs (dx) < Math.Abs (dy)) {
+//			sidesInversion = true;
+//			longerCalculationSide = Math.Abs (dy);
+//			shorterCalculationSide = Math.Abs (dx);
+//			incrementValue = Math.Sign (dy);
+//			gradientIncrementValue = Math.Sign (dx);
+//		} else {
+//			sidesInversion = false;
+//			longerCalculationSide = Math.Abs (dx);
+//			shorterCalculationSide = Math.Abs (dy);
+//		}
+//
+//		//because reasons, check wiki for algorithm walkthrough
+//		int gradientAccumulation = longerCalculationSide / 2;
+//
+//		for (int i = 0; i < longerCalculationSide; ++i) {
+//			tileInLine.Set (x, y);
+//			if (x != lineStart.x && y != lineEnd.y) {
+//				line.Add (tileInLine);
+//			}
+//
+//			if (sidesInversion) { y += incrementValue; } 
+//			else { x += incrementValue; }
+//
+//			gradientAccumulation += shorterCalculationSide;
+//			if (gradientAccumulation >= longerCalculationSide) {
+//				if (sidesInversion) { x += gradientIncrementValue; } 
+//				else { y += gradientIncrementValue; }
+//				gradientAccumulation -= longerCalculationSide;
+//			}
+//
+//		}
+//		return line;
+//	}
+
 	public List<Vector2> BresenhamAlgorithm2DFloat (Vector2 lineStart, Vector2 lineEnd) {
 		List<Vector2> line = new List<Vector2> ();
 		Vector2 tileInLine = Vector2.zero;
@@ -378,19 +443,31 @@ public class MathUtils {
 		return line;
 	}
 
-	private float[] RangeEvenSteps(float rangeMin, float rangeMax, int steps, float outputValueMin, float outputValueMax) {
+	private float[] RangeEvenSteps(float valueA, float valueB, int steps) {
 		float[] rangeEvenSteps = new float[steps + 1];
 
-		float deltaRange = rangeMax - rangeMin;
+		float deltaRange = valueB - valueA;
+		float step = deltaRange / (float)steps;
+
+		for (int s = 0; s <= steps; ++s) {
+			rangeEvenSteps [s] = valueA + (s * step);
+		}
+
+		return rangeEvenSteps;
+	}
+
+	private float[] RangeEvenSteps(float valueA, float valueB, int steps, float outputValueMin, float outputValueMax) {
+		float[] rangeEvenSteps = new float[steps + 1];
+
+		float deltaRange = valueB - valueA;
 		float step = deltaRange / (float)steps;
 
 		for (int s = 0; s <= steps; ++s) {
 			rangeEvenSteps [s] = Mathf.Lerp (
 				outputValueMin, 
 				outputValueMax, 
-				Mathf.InverseLerp (rangeMin, rangeMax, rangeMin + (s * step))
+				Mathf.InverseLerp (valueA, valueB, valueA + (s * step))
 			);
-//			rangeEvenSteps[s] = 1;
 		}
 
 		return rangeEvenSteps;
