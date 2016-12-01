@@ -7,6 +7,7 @@ using System.Deployment.Internal;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
@@ -15,13 +16,15 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 //	public MapOutputObject mapOutputObject;
 
-	public int 		mapResolutionX = 250;
-	public int 		mapResolutionZ = 250;
+	public int 		mapResolutionX = 150;
+	public int 		mapResolutionZ = 150;
 	public int 		mapResolutionY;
+	public int 		perlinResolutionX = 50;
+	public int		perlinResolutionY = 50;
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
-	public int 		graphResolutionX = 25;
-	public int 		graphResolutionZ = 25;
+	public int 		graphResolutionX = 20;
+	public int 		graphResolutionZ = 20;
 	private int 	graphResolutionXZ;
 	public int 		graphResolutionY = 5;
 
@@ -47,8 +50,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(-200, 100)]public int contrastPercent = 0;
 
 
-	//this should be in some model class (Repository pattern?)
-	private float[,] mapValuesArray;
+	//this should be in some model class (Repository pattern?) !!!!!!!!!!!!!!!!!
+	private float[,] noiseValuesArray;
+	private float[,] graphValuesArray;
+	private float[,] finalValuesArray;
+	private int activeValuesArray = 0;
 
 	private Vector3 mapResolutionVector;
 	private Vector3 graphResolutionVector;
@@ -92,16 +98,16 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			mapResolutionX, mapResolutionZ, perlinNoiseScale
 		);
 
-		mapValuesArray = perlinNoiseMap;
-		RenderValuesArray (mapValuesArray);
+		SetNoiseValuesArray (perlinNoiseMap);
+		RenderValuesArray ();
 	}
 
 
 	public void GenerateTestCrossValuesMap() {
 		float[,] testCrossMap = utils.CreateTestCrossValues (mapResolutionX, mapResolutionZ);
 
-		mapValuesArray = testCrossMap;
-		RenderValuesArray (mapValuesArray);
+		SetNoiseValuesArray (testCrossMap);
+		RenderValuesArray ();
 	}
 
 	public void ConvertGraphToValues() {
@@ -113,8 +119,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector
 		);
 
-		mapValuesArray = graphValuesAsArray;
-		RenderValuesArray (mapValuesArray);
+		SetGraphValuesArray (graphValuesAsArray);
+		RenderValuesArray ();
 	}
 
 	public void ConvertGraphEdgesToValues() {
@@ -124,9 +130,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			graphResolutionVector
 		);
 
-		mapValuesArray = utils.GetUtilsMath ().AddValuesToValueMap (
-			mapValuesArray, graphEdgeValuesAsArray, 0f, 1f);
-		RenderValuesArray (mapValuesArray);
+		SetGraphValuesArray (utils.GetUtilsMath ().AddValuesToValueMap (graphValuesArray, graphEdgeValuesAsArray, 0f, 1f));
+		RenderValuesArray ();
 	}
 
 
@@ -135,23 +140,20 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ApplyGaussianBlur() {
-		mapValuesArray = utils.GetGaussianBlur ().CreateGaussianBlur (
-			mapValuesArray, 
+		SetActiveValuesArray (utils.GetGaussianBlur ().CreateGaussianBlur (
+			GetActiveValuesArray (), 
 			blurRadius, 
 			blurIterations, 
 			blurSolidification
+		)
 		);
-
-		RenderValuesArray (mapValuesArray);
+		RenderValuesArray ();
 	}
 
 	public void ApplyContrast() {
-//		if (mapValuesArray == null) {
-//			GeneratePerlinNoiseValuesMap ();
-//		}
-
-		mapValuesArray = utils.GetUtilsMath ().ContrastValues (mapValuesArray, contrastPercent, 1f, 0f);
-		RenderValuesArray (mapValuesArray);
+		SetActiveValuesArray (utils.GetUtilsMath ().ContrastValues (GetActiveValuesArray (), contrastPercent, 1f, 0f));
+//		mapValuesArray = utils.GetUtilsMath ().ContrastValues (mapValuesArray, contrastPercent, 1f, 0f);
+		RenderValuesArray ();
 	}
 
 
@@ -244,11 +246,65 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		}
 	}
 
-
-	private void RenderValuesArray(float[,] mapValuesArray) {
-		renderer.RenderValuesArray (mapValuesArray);
+	private void RenderValuesArray() {
+		renderer.RenderValuesArray (GetActiveValuesArray ());
 	}
 
+	public void RenderNoiseValuesArray() {
+		renderer.RenderValuesArray (noiseValuesArray);
+	}
+
+	public void RenderGraphValuesArray() {
+		renderer.RenderValuesArray (graphValuesArray);
+	}
+
+	public void RenderFinalValuesArray() {
+		renderer.RenderValuesArray (finalValuesArray);
+	}
+
+//	private void RenderValuesArray(float[,] mapValuesArray) {
+//		renderer.RenderValuesArray (mapValuesArray);
+//	}
+
+	private float[,] GetActiveValuesArray() {
+		switch(activeValuesArray) {
+			case 0:
+				return noiseValuesArray;
+			case 1: 
+				return graphValuesArray;
+			default:
+				return finalValuesArray;
+		}
+	}
+
+	private void SetNoiseValuesArray(float[,] values) {
+		noiseValuesArray = values;
+		activeValuesArray = 0;
+	}
+
+	private void SetGraphValuesArray(float[,] values) {
+		graphValuesArray = values;
+		activeValuesArray = 1;
+	}
+
+	private void SetFinalValuesArray(float[,] values) {
+		finalValuesArray = values;
+		activeValuesArray = 2;
+	}
+
+	private void SetActiveValuesArray(float[,] values) {
+		switch(activeValuesArray) {
+			case 0:
+				SetNoiseValuesArray (values);
+				break;
+			case 1: 
+				SetGraphValuesArray (values);
+				break;
+			default:
+				SetFinalValuesArray (values);
+				break;
+		}
+	}
 
 	void OnValidate() {
 		Debug.Log ("onvalidate");

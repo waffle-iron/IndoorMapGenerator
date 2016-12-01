@@ -5,8 +5,8 @@ public class GaussianBlur {
 
 	//1 channel implementation of Gaussian Blur
 	public float[,] CreateGaussianBlur(float[,] inputValuesArray, int blurRadius = 5, int blurIterations = 3, int blurSolidifications = 0) {
+		
 		float[,] blurredValuesArray = new float[inputValuesArray.GetLength (0), inputValuesArray.GetLength (1)];
-
 		int[] blurBoxes = GaussianBlurBoxSizes (blurRadius, blurIterations);
 
 		for (int i = 0; i < blurIterations; ++i) {
@@ -62,8 +62,6 @@ public class GaussianBlur {
 		var mIdeal = (12*standardDeviation*standardDeviation - boxCount*wl*wl - 4*boxCount*wl - 3*boxCount)/(-4*wl - 4);
 		var m = UnityEngine.Mathf.Round(mIdeal);
 		// var sigmaActual = Math.sqrt( (m*wl*wl + (n-m)*wu*wu - n)/12 );
-
-
 
 		for(var i=0; i<boxCount; i++) {
 			boxSizes.Add((int)(i<m?wl:wu));

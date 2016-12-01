@@ -258,12 +258,13 @@ public class MathUtils {
 		List<Vector3> line = new List<Vector3> ();
 		Vector3 tileInLine = Vector3.zero;
 
-		outputYRangeMin = Mathf.Lerp(
+		float properOutputYRangeMin = Mathf.Lerp(
 			outputYRangeMin, 
 			outputYRangeMax, 
 			Mathf.InverseLerp (inputYRangeMin, inputYRangeMax, lineStart.y) 
 		);
-		outputYRangeMax = Mathf.Lerp(
+
+		float properOutputYRangeMax = Mathf.Lerp(
 			outputYRangeMin, 
 			outputYRangeMax, 
 			Mathf.InverseLerp (inputYRangeMin, inputYRangeMax, lineEnd.y) 
@@ -292,9 +293,9 @@ public class MathUtils {
 			gradientIncrementValue = Math.Sign (dx);
 			y = lineEnd.y;
 			dy = -dy;
-			float temp = outputYRangeMin;
-			outputYRangeMin = outputYRangeMax;
-			outputYRangeMax = temp;
+			float temp = properOutputYRangeMin;
+			properOutputYRangeMin = outputYRangeMax;
+			properOutputYRangeMax = temp;
 		} else {
 			sidesInversion = false;
 			longerCalculationSide = Math.Abs (dx);
@@ -306,9 +307,9 @@ public class MathUtils {
 
 		for (int i = 0; i < longerCalculationSide; ++i) {
 			float tempY = Mathf.Lerp (
-				outputYRangeMin, 
-				outputYRangeMax, 
-				Mathf.InverseLerp (lineStart.y, lineEnd.y, y + (i*dy))
+				properOutputYRangeMin, 
+				properOutputYRangeMax, 
+				Mathf.InverseLerp (lineStart.y, lineEnd.y, y + (i*dy)) //probably here is inverted something
 			);
 
 			tileInLine.Set (x, tempY, z);

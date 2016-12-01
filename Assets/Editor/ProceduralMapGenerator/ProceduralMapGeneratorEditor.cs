@@ -41,25 +41,25 @@ public class ProceduralMapGeneratorEditor : Editor {
 			}
 		}
 
+		if (GUILayout.Button("RENDER: noise")) {
+			generator.RenderNoiseValuesArray ();
+		}
+
+		if (GUILayout.Button("RENDER: graph")) {
+			generator.RenderGraphValuesArray ();
+		}
+
+		if (GUILayout.Button("RENDER: final")) {
+			generator.RenderFinalValuesArray ();
+		}
+
 		if (GUILayout.Button("perlin")) {
 			ButtonPerlin ();
 		}
 
-		if (GUILayout.Button("test cross")) {
-			ButtonTestCross ();
-		}
-
-		if (GUILayout.Button("Gaussian Blur (perlin)")) {
-			ButtonGaussianBlurPerlin ();
-		}
-
-		if (GUILayout.Button("Gaussian Blur (Cross)")) {
-			ButtonGaussianBlurCross ();
-		}
-
-		if (GUILayout.Button("Apply Contrast")) {
-			ButtonApplyContrast ();
-		}
+//		if (GUILayout.Button("test cross")) {
+//			ButtonTestCross ();
+//		}
 
 		if (GUILayout.Button("graph markers")) {
 			generator.GenerateGraphMarkers ();
@@ -79,6 +79,18 @@ public class ProceduralMapGeneratorEditor : Editor {
 
 		if (GUILayout.Button("mapGraphEdgesToValues")) {
 			generator.ConvertGraphEdgesToValues ();
+		}
+
+		if (GUILayout.Button("Gaussian Blur")) {
+			generator.ApplyGaussianBlur ();
+		}
+
+		//		if (GUILayout.Button("Gaussian Blur (Cross)")) {
+		//			ButtonGaussianBlurCross ();
+		//		}
+
+		if (GUILayout.Button("Apply Contrast")) {
+			generator.ApplyContrast ();
 		}
 	}
 
