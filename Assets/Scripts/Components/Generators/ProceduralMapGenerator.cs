@@ -20,7 +20,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		mapResolutionZ = 150;
 	public int 		mapResolutionY;
 	public int 		perlinResolutionX = 50;
-	public int		perlinResolutionY = 50;
+	public int		perlinResolutionZ = 50;
+	public float	perlinScaleX = 1;
+	public float 	perlinScaleZ = 1;
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
 	public int 		graphResolutionX = 20;
@@ -50,17 +52,20 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(-200, 100)]public int contrastPercent = 0;
 
 
-	//this should be in some model class (Repository pattern?) !!!!!!!!!!!!!!!!!
+	//this all should be in some model class (Repository pattern?) !!!!!!!!!!!!!!!!!
 	private float[,] noiseValuesArray;
 	private float[,] graphValuesArray;
 	private float[,] finalValuesArray;
 	private int activeValuesArray = 0;
+	private Graph 	graph = new Graph();
+
+
 
 	private Vector3 mapResolutionVector;
 	private Vector3 graphResolutionVector;
 
 //	private Vector3[] graphNodesPositions;
-	private Graph 	graph = new Graph();
+
 
 	private float	keyPoisSize;
 
@@ -95,7 +100,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
-			mapResolutionX, mapResolutionZ, perlinNoiseScale
+			mapResolutionX, mapResolutionZ, perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ
 		);
 
 		SetNoiseValuesArray (perlinNoiseMap);
@@ -112,9 +117,10 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void ConvertGraphToValues() {
 		ConvertGraphVerticesToValues ();
+		ConvertGraphEdgesToValues ();
 	}
 
-	public void ConvertGraphVerticesToValues() {
+	private void ConvertGraphVerticesToValues() {
 		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValueMap (
 			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector
 		);
@@ -123,14 +129,20 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		RenderValuesArray ();
 	}
 
-	public void ConvertGraphEdgesToValues() {
+	private void ConvertGraphEdgesToValues() {
 		float[,] graphEdgeValuesAsArray = utils.GetUtilsMath ().ConvertGraphEdgesToValueMap (
 			graph.GetEdgesStartEndPositions (),
 			mapResolutionVector,
 			graphResolutionVector
 		);
 
-		SetGraphValuesArray (utils.GetUtilsMath ().AddValuesToValueMap (graphValuesArray, graphEdgeValuesAsArray, 0f, 1f));
+		SetGraphValuesArray (
+			utils.GetUtilsMath ().MergeArrays (
+				graphValuesArray, 
+				graphEdgeValuesAsArray, 
+				0f, 1f, 
+				MathUtils.MergeArrayMode.XOR)
+		);
 		RenderValuesArray ();
 	}
 
@@ -308,6 +320,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	void OnValidate() {
 		Debug.Log ("onvalidate");
+
 
 		graphResolutionVector.x = graphResolutionX;
 		graphResolutionVector.y = graphResolutionY;

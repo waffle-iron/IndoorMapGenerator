@@ -3,22 +3,22 @@ using UnityEngine;
 using System;
 using UnityEditor;
 using System.Collections.Generic;
+using System.Configuration;
 
 public class MathUtils {
 
 //	http://answers.unity3d.com/questions/805970/intvector2-struct-useful.html
 	//todo: make custom Vector2 and Vector3 -- Vector2Int and Vector3Int!!
 
-	public float[,] AddValuesToValueMap(float[,] valueMap, float[,] addValueMap, float rangeMin, float rangeMax) {
-		for (int x = 0; x < valueMap.GetLength (0); ++x) {
-			for (int z = 0; z < valueMap.GetLength (1); ++z) {	
-				valueMap [x, z] = Mathf.Clamp (valueMap [x, z] + addValueMap [x, z], rangeMin, rangeMax);
-
-			}
-		}
-
-		return valueMap;
-	}
+//	public float[,] AddValuesToValueMap(float[,] valueMap, float[,] addValueMap, float rangeMin, float rangeMax) {
+//		for (int x = 0; x < valueMap.GetLength (0); ++x) {
+//			for (int z = 0; z < valueMap.GetLength (1); ++z) {	
+//				valueMap [x, z] = Mathf.Clamp (valueMap [x, z] + addValueMap [x, z], rangeMin, rangeMax);
+//
+//			}
+//		}
+//		return valueMap;
+//	}
 
 	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 
@@ -710,6 +710,49 @@ public class MathUtils {
 
 	public Vector2 VectorsDifference (float vecAX, float vecAY, float vecBX, float vecBY) {
 		return new Vector2 (Mathf.Abs (vecAX - vecBX), Mathf.Abs (vecAY - vecBY));
+	}
+
+	//todo: this in another class
+	public enum MergeArrayMode {
+		ADD,
+		ADD_MULTIPLIER,
+		SUBTRACT,
+		SUBTRACT_MULTIPLIER,
+		XOR, 
+	}
+
+	public float[,] MergeArrays(
+		float[,] baseLayer, float[,] topAlphaLayer, 
+		float rangeYMin = 0f, float rangeYMax = 1f, 
+		MergeArrayMode mergeMode = MergeArrayMode.XOR, float mergeModeMultiplier = 1f) {
+
+		for(int x = 0; x < baseLayer.GetLength (0); ++x){
+			for(int z = 0; z < baseLayer.GetLength (1); ++z){
+				
+				switch(mergeMode) {
+					case MergeArrayMode.XOR:
+						if (baseLayer[x,z] == 0) {
+							baseLayer [x, z] = Mathf.Lerp(
+								rangeYMin, 
+								rangeYMax, 
+								topAlphaLayer [x, z]
+							);
+						}
+						break;
+
+					case (MergeArrayMode.ADD | MergeArrayMode.ADD_MULTIPLIER):
+						baseLayer [x, z] = Mathf.Lerp (
+							rangeYMin, 
+							rangeYMax, 
+							baseLayer [x, z] + (mergeModeMultiplier * topAlphaLayer [x, z])
+						);
+						break;
+				}
+
+			}
+		}
+
+		return baseLayer;
 	}
 
 }

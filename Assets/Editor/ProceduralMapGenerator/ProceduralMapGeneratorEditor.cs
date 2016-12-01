@@ -53,8 +53,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 			generator.RenderFinalValuesArray ();
 		}
 
+		GUILayout.Space (20);
+
 		if (GUILayout.Button("perlin")) {
-			ButtonPerlin ();
+			generator.GeneratePerlinNoiseValuesMap ();
 		}
 
 //		if (GUILayout.Button("test cross")) {
@@ -77,9 +79,12 @@ public class ProceduralMapGeneratorEditor : Editor {
 			generator.ConvertGraphToValues ();
 		}
 
-		if (GUILayout.Button("mapGraphEdgesToValues")) {
-			generator.ConvertGraphEdgesToValues ();
-		}
+//		if (GUILayout.Button("Combine Arrays")) {
+//			
+//		}
+
+		GUILayout.Space (20);
+
 
 		if (GUILayout.Button("Gaussian Blur")) {
 			generator.ApplyGaussianBlur ();
@@ -92,34 +97,6 @@ public class ProceduralMapGeneratorEditor : Editor {
 		if (GUILayout.Button("Apply Contrast")) {
 			generator.ApplyContrast ();
 		}
-	}
-
-	private void ButtonPerlin() {
-		generator.GeneratePerlinNoiseValuesMap ();
-		generator.GenerateVolumeBlock ();
-		lastUsed = 1;
-	}
-
-	private void ButtonTestCross() {
-		generator.GenerateTestCrossValuesMap ();
-		lastUsed = 2;
-	}
-
-	private void ButtonGaussianBlurPerlin() {
-//		generator.GeneratePerlinNoiseValuesMap ();
-		generator.ApplyGaussianBlur ();
-		lastUsed = 3;
-	}
-
-	private void ButtonGaussianBlurCross() {
-//		generator.GenerateTestCrossValuesMap ();
-		generator.ApplyGaussianBlur ();
-		lastUsed = 4;
-	}
-
-	private void ButtonApplyContrast() {
-//		generator.GeneratePerlinNoiseValuesMap ();
-		generator.ApplyContrast ();
 	}
 
 }
