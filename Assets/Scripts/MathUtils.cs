@@ -50,9 +50,11 @@ public class MathUtils {
 			endpos.z += graphEntitiesDistanceZ / 2f;
 
 
-			Vector3[] line = BresenhamAlgorithm3DInt (
+			Vector3[] line = BresenhamAlgorithm3DIntLinear (
 				startpos,
-				endpos
+				endpos,
+				0,
+				mapResolutions.y
 			);
 
 			int boundingBoxRadius = 3;
@@ -241,24 +243,93 @@ public class MathUtils {
 		return new float[4]{rangesMinMaxX[0], rangesMinMaxX[1], rangesMinMaxY[0], rangesMinMaxY[1]};
 	}
 
-	public Vector3[] BresenhamAlgorithm3DInt(Vector3 lineStart, Vector3 lineEnd) {
-		//todo: make separate 3d algorithm!, not this improv shit
+	public Vector3[] BresenhamAlgorithm3DIntLinear(Vector3 lineStart, Vector3 lineEnd, float inputYRangeMin = 0, float inputYRangeMax = 50, float outputYRangeMin = 0, float outputYRangeMax = 1) {
+//		float[] rangeEvenSteps = new float[steps + 1];
+//
+//		float deltaRange = valueB - valueA;
+//		float step = deltaRange / (float)steps;
+//
+//		for (int s = 0; s <= steps; ++s) {
+//			rangeEvenSteps [s] = valueA + (s * step);
+//		}
+//
+//		return rangeEvenSteps;
 
-		List<Vector2> bresenham = BresenhamAlgorithm2DInt (
-			new Vector2 (lineStart.x, lineStart.z),
-			new Vector3 (lineEnd.x, lineEnd.z)
+		List<Vector3> line = new List<Vector3> ();
+		Vector3 tileInLine = Vector3.zero;
+
+		outputYRangeMin = Mathf.Lerp(
+			outputYRangeMin, 
+			outputYRangeMax, 
+			Mathf.InverseLerp (inputYRangeMin, inputYRangeMax, lineStart.y) 
+		);
+		outputYRangeMax = Mathf.Lerp(
+			outputYRangeMin, 
+			outputYRangeMax, 
+			Mathf.InverseLerp (inputYRangeMin, inputYRangeMax, lineEnd.y) 
 		);
 
-		Vector3[] bresenham3dWithFakeY = new Vector3[bresenham.Count];
-		float[] fakeY = RangeEvenSteps (lineStart.y, lineEnd.y, bresenham.Count, 0f, 1f);
+		int x = Mathf.FloorToInt (lineStart.x);
+		int z = Mathf.FloorToInt (lineStart.z);
+		float y = lineStart.y;
 
-		for (int b = 0; b < bresenham.Count; ++b) {
-			bresenham3dWithFakeY[b] = bresenham [b];
-			bresenham3dWithFakeY[b].z = bresenham3dWithFakeY[b].y;
-			bresenham3dWithFakeY [b].y = fakeY [b];
+		int dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
+		int dz = Mathf.CeilToInt (lineEnd.z - lineStart.z);
+		float dy = lineEnd.y - lineStart.y;
+	
+
+		int incrementValue = Math.Sign (dx);
+		int gradientIncrementValue = Math.Sign (dz);
+
+		int longerCalculationSide, shorterCalculationSide;
+		bool sidesInversion;
+
+		if (Math.Abs (dx) < Math.Abs (dz)) {
+			sidesInversion = true;
+			longerCalculationSide = Math.Abs (dz);
+			shorterCalculationSide = Math.Abs (dx);
+			incrementValue = Math.Sign (dz);
+			gradientIncrementValue = Math.Sign (dx);
+			y = lineEnd.y;
+			dy = -dy;
+			float temp = outputYRangeMin;
+			outputYRangeMin = outputYRangeMax;
+			outputYRangeMax = temp;
+		} else {
+			sidesInversion = false;
+			longerCalculationSide = Math.Abs (dx);
+			shorterCalculationSide = Math.Abs (dz);
 		}
 
-		return bresenham3dWithFakeY;
+		dy /= (float)longerCalculationSide;
+		int gradientAccumulation = longerCalculationSide / 2;
+
+		for (int i = 0; i < longerCalculationSide; ++i) {
+			float tempY = Mathf.Lerp (
+				outputYRangeMin, 
+				outputYRangeMax, 
+				Mathf.InverseLerp (lineStart.y, lineEnd.y, y + (i*dy))
+			);
+
+			tileInLine.Set (x, tempY, z);
+			if (x != lineStart.x && z != lineEnd.z) {
+				line.Add (tileInLine);
+			}
+
+			if (sidesInversion) { z += incrementValue; } 
+			else { x += incrementValue; }
+
+			gradientAccumulation += shorterCalculationSide;
+			if (gradientAccumulation >= longerCalculationSide) {
+				if (sidesInversion) { x += gradientIncrementValue; } 
+				else { z += gradientIncrementValue; }
+//				dy += dy;
+				gradientAccumulation -= longerCalculationSide;
+			}
+
+		}
+
+		return line.ToArray ();
 	}
 
 
@@ -383,6 +454,8 @@ public class MathUtils {
 //		return line;
 //	}
 
+
+	//todo: does this do anything?
 	public List<Vector2> BresenhamAlgorithm2DFloat (Vector2 lineStart, Vector2 lineEnd) {
 		List<Vector2> line = new List<Vector2> ();
 		Vector2 tileInLine = Vector2.zero;
