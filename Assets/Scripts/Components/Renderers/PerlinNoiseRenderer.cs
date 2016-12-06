@@ -46,6 +46,17 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 	}
 
+	private void ValidateMeshView() {
+		if (view.GetMeshView() == null) {
+			view.InstantiateMeshView ();
+		}
+	}
+
+	public void RenderMesh(Mesh mesh, float[,] heightMap) {
+		ValidateMeshView ();
+		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f));
+	}
+
 	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
 		ValidateView ();
 		ValidatePlaneView ();

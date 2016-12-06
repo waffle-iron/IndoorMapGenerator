@@ -20,12 +20,8 @@ public class MathUtils {
 //		return valueMap;
 //	}
 
-	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions, float edgeThickness) {
 
-		float[] asd = RangeEvenSteps (8, 10, 10);
-		float[] asd2 = RangeEvenSteps (10, 8, 10);
-		float[] asd3 = RangeEvenSteps (-10, -8, 10);
-		float[] asd4 = RangeEvenSteps (-8, -10, 10);
 
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
@@ -54,7 +50,8 @@ public class MathUtils {
 				startpos,
 				endpos,
 				0,
-				mapResolutions.y
+				mapResolutions.y,
+				edgeThickness
 			);
 
 			int boundingBoxRadius = 3;
@@ -243,7 +240,7 @@ public class MathUtils {
 		return new float[4]{rangesMinMaxX[0], rangesMinMaxX[1], rangesMinMaxY[0], rangesMinMaxY[1]};
 	}
 
-	public Vector3[] BresenhamAlgorithm3DIntLinear(Vector3 lineStart, Vector3 lineEnd, float inputYRangeMin = 0, float inputYRangeMax = 50, float outputYRangeMin = 0, float outputYRangeMax = 1) {
+	public Vector3[] BresenhamAlgorithm3DIntLinear(Vector3 lineStart, Vector3 lineEnd, int lineThickness = 1, float inputYRangeMin = 0, float inputYRangeMax = 50, float outputYRangeMin = 0, float outputYRangeMax = 1) {
 //		float[] rangeEvenSteps = new float[steps + 1];
 //
 //		float deltaRange = valueB - valueA;
@@ -313,7 +310,10 @@ public class MathUtils {
 			);
 
 			tileInLine.Set (x, tempY, z);
-			if (x != lineStart.x && z != lineEnd.z) {
+			line.Add (tileInLine);
+
+			for (int t = (x-lineThickness); t < (x+lineThickness); ++t) {
+				tileInLine.Set (t, tempY, t);
 				line.Add (tileInLine);
 			}
 
@@ -322,9 +322,9 @@ public class MathUtils {
 
 			gradientAccumulation += shorterCalculationSide;
 			if (gradientAccumulation >= longerCalculationSide) {
+
 				if (sidesInversion) { x += gradientIncrementValue; } 
 				else { z += gradientIncrementValue; }
-//				dy += dy;
 				gradientAccumulation -= longerCalculationSide;
 			}
 
@@ -334,67 +334,7 @@ public class MathUtils {
 	}
 
 
-	//todo: make this return array, not list (overhead)
-	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
-		List<Vector2> line = new List<Vector2> ();
-		Vector2 tileInLine = Vector2.zero;
-
-		//Vector coordinates (x, y) that we will start computation from
-		int x = Mathf.FloorToInt (lineStart.x);
-		int y = Mathf.FloorToInt (lineStart.y);
-
-		//difference in length between points in the same dimension (x or y)
-		int dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
-		int dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
-
-		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
-		//in every algorithm iteration or SUBTRACT "-1" from it.
-		//(varying depending on lineStart and lineEnd position on a grid)
-		int incrementValue = Math.Sign (dx);
-		int gradientIncrementValue = Math.Sign (dy);
-
-		int longerCalculationSide, shorterCalculationSide;
-		bool sidesInversion;
-
-		//if distance from line starting and ending point on Y-axis is greater than
-		//distance on X-axis, then we iterate this algorithm other way around.
-		//(incrementing y values and checking for boundary condition for ++x bump,
-		// instead of incrementing x values and checking if ++y bump is valid).
-		if (Math.Abs (dx) < Math.Abs (dy)) {
-			sidesInversion = true;
-			longerCalculationSide = Math.Abs (dy);
-			shorterCalculationSide = Math.Abs (dx);
-			incrementValue = Math.Sign (dy);
-			gradientIncrementValue = Math.Sign (dx);
-		} else {
-			sidesInversion = false;
-			longerCalculationSide = Math.Abs (dx);
-			shorterCalculationSide = Math.Abs (dy);
-		}
-
-		//because reasons, check wiki for algorithm walkthrough
-		int gradientAccumulation = longerCalculationSide / 2;
-
-		for (int i = 0; i < longerCalculationSide; ++i) {
-			tileInLine.Set (x, y);
-			if (x != lineStart.x && y != lineEnd.y) {
-				line.Add (tileInLine);
-			}
-
-			if (sidesInversion) { y += incrementValue; } 
-			else { x += incrementValue; }
-
-			gradientAccumulation += shorterCalculationSide;
-			if (gradientAccumulation >= longerCalculationSide) {
-				if (sidesInversion) { x += gradientIncrementValue; } 
-				else { y += gradientIncrementValue; }
-				gradientAccumulation -= longerCalculationSide;
-			}
-
-		}
-		return line;
-	}
-
+//	//todo: make this return array, not list (overhead)
 //	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
 //		List<Vector2> line = new List<Vector2> ();
 //		Vector2 tileInLine = Vector2.zero;
@@ -454,68 +394,128 @@ public class MathUtils {
 //		}
 //		return line;
 //	}
-
-
-	//todo: does this do anything?
-	public List<Vector2> BresenhamAlgorithm2DFloat (Vector2 lineStart, Vector2 lineEnd) {
-		List<Vector2> line = new List<Vector2> ();
-		Vector2 tileInLine = Vector2.zero;
-
-		//Vector coordinates (x, y) that we will start computation from
-		float x = Mathf.FloorToInt (lineStart.x);
-		float y = Mathf.FloorToInt (lineStart.y);
-
-		//difference in length between points in the same dimension (x or y)
-		float dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
-		float dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
-
-		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
-		//in every algorithm iteration or SUBTRACT "-1" from it.
-		//(varying depending on lineStart and lineEnd position on a grid)
-		float incrementValue = Math.Sign (dx);
-		float gradientIncrementValue = Math.Sign (dy);
-
-		float longerCalculationSide, shorterCalculationSide;
-		bool sidesInversion;
-
-		//if distance from line starting and ending point on Y-axis is greater than
-		//distance on X-axis, then we iterate this algorithm other way around.
-		//(incrementing y values and checking for boundary condition for ++x bump,
-		// instead of incrementing x values and checking if ++y bump is valid).
-		if (Math.Abs (dx) < Math.Abs (dy)) {
-			sidesInversion = true;
-			longerCalculationSide = Math.Abs (dy);
-			shorterCalculationSide = Math.Abs (dx);
-			incrementValue = Math.Sign (dy);
-			gradientIncrementValue = Math.Sign (dx);
-		} else {
-			sidesInversion = false;
-			longerCalculationSide = Math.Abs (dx);
-			shorterCalculationSide = Math.Abs (dy);
-		}
-
-		//because reasons, check wiki for algorithm walkthrough
-		float gradientAccumulation = longerCalculationSide / 2;
-
-		for (int i = 0; i < longerCalculationSide; ++i) {
-			tileInLine.Set (x, y);
-			if (x != lineStart.x && y != lineEnd.y) {
-				line.Add (tileInLine);
-			}
-
-			if (sidesInversion) { y += incrementValue; } 
-			else { x += incrementValue; }
-
-			gradientAccumulation += shorterCalculationSide;
-			if (gradientAccumulation >= longerCalculationSide) {
-				if (sidesInversion) { x += gradientIncrementValue; } 
-				else { y += gradientIncrementValue; }
-				gradientAccumulation -= longerCalculationSide;
-			}
-
-		}
-		return line;
-	}
+//
+////	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
+////		List<Vector2> line = new List<Vector2> ();
+////		Vector2 tileInLine = Vector2.zero;
+////
+////		//Vector coordinates (x, y) that we will start computation from
+////		int x = Mathf.FloorToInt (lineStart.x);
+////		int y = Mathf.FloorToInt (lineStart.y);
+////
+////		//difference in length between points in the same dimension (x or y)
+////		int dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
+////		int dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
+////
+////		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
+////		//in every algorithm iteration or SUBTRACT "-1" from it.
+////		//(varying depending on lineStart and lineEnd position on a grid)
+////		int incrementValue = Math.Sign (dx);
+////		int gradientIncrementValue = Math.Sign (dy);
+////
+////		int longerCalculationSide, shorterCalculationSide;
+////		bool sidesInversion;
+////
+////		//if distance from line starting and ending point on Y-axis is greater than
+////		//distance on X-axis, then we iterate this algorithm other way around.
+////		//(incrementing y values and checking for boundary condition for ++x bump,
+////		// instead of incrementing x values and checking if ++y bump is valid).
+////		if (Math.Abs (dx) < Math.Abs (dy)) {
+////			sidesInversion = true;
+////			longerCalculationSide = Math.Abs (dy);
+////			shorterCalculationSide = Math.Abs (dx);
+////			incrementValue = Math.Sign (dy);
+////			gradientIncrementValue = Math.Sign (dx);
+////		} else {
+////			sidesInversion = false;
+////			longerCalculationSide = Math.Abs (dx);
+////			shorterCalculationSide = Math.Abs (dy);
+////		}
+////
+////		//because reasons, check wiki for algorithm walkthrough
+////		int gradientAccumulation = longerCalculationSide / 2;
+////
+////		for (int i = 0; i < longerCalculationSide; ++i) {
+////			tileInLine.Set (x, y);
+////			if (x != lineStart.x && y != lineEnd.y) {
+////				line.Add (tileInLine);
+////			}
+////
+////			if (sidesInversion) { y += incrementValue; } 
+////			else { x += incrementValue; }
+////
+////			gradientAccumulation += shorterCalculationSide;
+////			if (gradientAccumulation >= longerCalculationSide) {
+////				if (sidesInversion) { x += gradientIncrementValue; } 
+////				else { y += gradientIncrementValue; }
+////				gradientAccumulation -= longerCalculationSide;
+////			}
+////
+////		}
+////		return line;
+////	}
+//
+//
+//	//todo: does this do anything?
+//	public List<Vector2> BresenhamAlgorithm2DFloat (Vector2 lineStart, Vector2 lineEnd) {
+//		List<Vector2> line = new List<Vector2> ();
+//		Vector2 tileInLine = Vector2.zero;
+//
+//		//Vector coordinates (x, y) that we will start computation from
+//		float x = Mathf.FloorToInt (lineStart.x);
+//		float y = Mathf.FloorToInt (lineStart.y);
+//
+//		//difference in length between points in the same dimension (x or y)
+//		float dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
+//		float dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
+//
+//		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
+//		//in every algorithm iteration or SUBTRACT "-1" from it.
+//		//(varying depending on lineStart and lineEnd position on a grid)
+//		float incrementValue = Math.Sign (dx);
+//		float gradientIncrementValue = Math.Sign (dy);
+//
+//		float longerCalculationSide, shorterCalculationSide;
+//		bool sidesInversion;
+//
+//		//if distance from line starting and ending point on Y-axis is greater than
+//		//distance on X-axis, then we iterate this algorithm other way around.
+//		//(incrementing y values and checking for boundary condition for ++x bump,
+//		// instead of incrementing x values and checking if ++y bump is valid).
+//		if (Math.Abs (dx) < Math.Abs (dy)) {
+//			sidesInversion = true;
+//			longerCalculationSide = Math.Abs (dy);
+//			shorterCalculationSide = Math.Abs (dx);
+//			incrementValue = Math.Sign (dy);
+//			gradientIncrementValue = Math.Sign (dx);
+//		} else {
+//			sidesInversion = false;
+//			longerCalculationSide = Math.Abs (dx);
+//			shorterCalculationSide = Math.Abs (dy);
+//		}
+//
+//		//because reasons, check wiki for algorithm walkthrough
+//		float gradientAccumulation = longerCalculationSide / 2;
+//
+//		for (int i = 0; i < longerCalculationSide; ++i) {
+//			tileInLine.Set (x, y);
+//			if (x != lineStart.x && y != lineEnd.y) {
+//				line.Add (tileInLine);
+//			}
+//
+//			if (sidesInversion) { y += incrementValue; } 
+//			else { x += incrementValue; }
+//
+//			gradientAccumulation += shorterCalculationSide;
+//			if (gradientAccumulation >= longerCalculationSide) {
+//				if (sidesInversion) { x += gradientIncrementValue; } 
+//				else { y += gradientIncrementValue; }
+//				gradientAccumulation -= longerCalculationSide;
+//			}
+//
+//		}
+//		return line;
+//	}
 
 	private float[] RangeEvenSteps(float valueA, float valueB, int steps) {
 		float[] rangeEvenSteps = new float[steps + 1];
@@ -740,11 +740,21 @@ public class MathUtils {
 						}
 						break;
 
-					case (MergeArrayMode.ADD | MergeArrayMode.ADD_MULTIPLIER):
+					case MergeArrayMode.ADD: 
+					case MergeArrayMode.ADD_MULTIPLIER:
 						baseLayer [x, z] = Mathf.Lerp (
 							rangeYMin, 
 							rangeYMax, 
 							baseLayer [x, z] + (mergeModeMultiplier * topAlphaLayer [x, z])
+						);
+						break;
+
+					case MergeArrayMode.SUBTRACT:
+					case MergeArrayMode.SUBTRACT_MULTIPLIER:
+						baseLayer [x, z] = Mathf.Lerp (
+							rangeYMin, 
+							rangeYMax, 
+							baseLayer [x, z] - (mergeModeMultiplier * topAlphaLayer [x, z])
 						);
 						break;
 				}
@@ -753,6 +763,16 @@ public class MathUtils {
 		}
 
 		return baseLayer;
+	}
+
+	public bool ContainsXZ(List<Vector3> container, Vector3 value) {
+		for (int i = 0;i < container.Count; ++i) {
+			if (container[i].x == value.x && container[i].z == value.z) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

@@ -79,9 +79,13 @@ public class ProceduralMapGeneratorEditor : Editor {
 			generator.ConvertGraphToValues ();
 		}
 
-//		if (GUILayout.Button("Combine Arrays")) {
-//			
-//		}
+		if (GUILayout.Button("Combine Arrays")) {
+			generator.MergeIntoFinalArray ();
+		}
+
+		if (GUILayout.Button("Generate Mesh")) {
+			generator.GenerateMesh ();
+		}
 
 		GUILayout.Space (20);
 

@@ -23,6 +23,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int		perlinResolutionZ = 50;
 	public float	perlinScaleX = 1;
 	public float 	perlinScaleZ = 1;
+	public float 	perlinNoiseScale = 0.3f;
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
 	public int 		graphResolutionX = 20;
@@ -30,20 +31,19 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private int 	graphResolutionXZ;
 	public int 		graphResolutionY = 5;
 
+	public float 	vertexSize = 1;
+	[Range(-200,200)] public int vertexSizeRndOffset = 0;
+	public int		edgeThickness = 1;
+
 	public int 		keyPoisPerc = 5;
 
 	public int 		keyPoisRandomOffsetPerc = 0;
 	private int 	keyPoisCount;
-
 	public float 	keyPoisSizePerc = 1;
 	public int 		keyPoisSizeRandomOffsetPerc = 0;
-
 	public int		keyPoisConnectionsPerc = 100;
 
 	public int 		nonKeyPoisPerc = 8;
-
-
-	public float 	perlinNoiseScale = 0.3f;
 
 	[Range(0f, 10f)] public int	blurRadius = 3;
 	[Range(0f, 10f)] public int blurIterations = 4;
@@ -58,7 +58,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private float[,] finalValuesArray;
 	private int activeValuesArray = 0;
 	private Graph 	graph = new Graph();
-
+	private MeshWrapper meshWrapper = new MeshWrapper ();
 
 
 	private Vector3 mapResolutionVector;
@@ -97,6 +97,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 
+	public void GenerateMesh() {
+		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (finalValuesArray);
+		renderer.RenderMesh (meshWrapper.GenerateMesh (), GetActiveValuesArray ());
+	}
+
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
 		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
@@ -133,7 +138,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		float[,] graphEdgeValuesAsArray = utils.GetUtilsMath ().ConvertGraphEdgesToValueMap (
 			graph.GetEdgesStartEndPositions (),
 			mapResolutionVector,
-			graphResolutionVector
+			graphResolutionVector,
+			edgeThickness
 		);
 
 		SetGraphValuesArray (
@@ -225,9 +231,23 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		);
 	}
 
+	//todo; check hardcoded values that go into some math methods - maybe they can be parameters
 
-	private void RenderGraphPOIs() {
-		renderer.RenderGraphKeyPois (graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector);
+	//todo: thicker bresenham line (for every iteration colour position (x,z) and (x+1,z) and (x+2,z) or add to Z instead of X, depends on inversion)
+
+	//todo: calculate base size of a graph vertex (1)
+	//todo: make editor variable 'rand size perc' etc
+
+	public void MergeIntoFinalArray() {
+		SetFinalValuesArray (utils.GetUtilsMath ().MergeArrays (
+			noiseValuesArray, graphValuesArray,
+			0f, 1f,
+			MathUtils.MergeArrayMode.SUBTRACT,
+			2f
+		));
+//		SetFinalValuesArray (new float[mapResolutionX, mapResolutionZ]);
+
+		RenderValuesArray ();
 	}
 
 
@@ -256,6 +276,10 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				graphResolutionVector
 			);
 		}
+	}
+
+	private void RenderGraphPOIs() {
+		renderer.RenderGraphKeyPois (graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector);
 	}
 
 	private void RenderValuesArray() {

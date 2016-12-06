@@ -8,6 +8,7 @@ public class MapOutputObject : MonoBehaviour {
 	public Renderer		graphMarkerPrefab;
 	public Renderer		graphNodePrefab;
 	public Renderer		graphEdgePrefab;
+	public Renderer		meshPrefab;
 
 	private GameObject 	planeView;
 	private GameObject	volumeView;
@@ -16,6 +17,7 @@ public class MapOutputObject : MonoBehaviour {
 	private GameObject 	graphMarkersView;
 	private GameObject	graphNodesView;
 	private GameObject	graphEdgesView;
+	private GameObject 	meshView;
 
 
 	//instantiating stuff:
@@ -44,6 +46,10 @@ public class MapOutputObject : MonoBehaviour {
 		volumeView.transform.parent = gameObject.transform;
 	}
 
+	public void InstantiateMeshView() {
+		meshView = new GameObject("Mesh");
+		meshView.transform.parent = gameObject.transform;
+	}
 
 	//______________________________________________________________________________
 	//adding primitives:
@@ -79,6 +85,18 @@ public class MapOutputObject : MonoBehaviour {
 		marker.transform.position = markerPosition;
 		marker.transform.localScale = new Vector3 (5f, 5f, 5f); //todo: computUtils.VectorDivide(scale, 2)!
 		return marker;
+	}
+
+	public void AddMesh(Mesh mesh, Texture texture) {
+		Renderer meshInstance = Instantiate (meshPrefab);
+		meshInstance.transform.parent = meshView.transform;
+		meshInstance.GetComponent <MeshFilter>().sharedMesh = mesh;
+		meshInstance.GetComponent <MeshRenderer>().sharedMaterial.mainTexture = texture ;
+	}
+
+	public void ReplaceMesh(Mesh mesh, Texture texture) {
+		DeleteChildAssets (meshView);
+		AddMesh (mesh, texture);
 	}
 
 
@@ -162,6 +180,10 @@ public class MapOutputObject : MonoBehaviour {
 
 	public GameObject GetVolumeView() {
 		return volumeView;
+	}
+
+	public GameObject GetMeshView() {
+		return meshView;
 	}
 
 	public bool CheckGraphChildrenExistence() {

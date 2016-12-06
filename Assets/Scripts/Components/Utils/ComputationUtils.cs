@@ -10,6 +10,7 @@ public class ComputationUtils : MonoBehaviour {
 	private MathUtils 	utilsMath = new MathUtils();
 	private RandomUtils utilsRandom = new RandomUtils();
 	private VectorUtils utilsVector = new VectorUtils();
+	private GFXUtils	utilsGfx = new GFXUtils();
 
 
 	//dev only
@@ -39,6 +40,10 @@ public class ComputationUtils : MonoBehaviour {
 
 	public VectorUtils GetUtilsVector() {
 		return utilsVector;
+	}
+
+	public GFXUtils GetUtilsGFX() {
+		return utilsGfx;
 	}
 
 }
