@@ -2,7 +2,9 @@
 using UnityEngine;
 
 public class GFXUtils {
-
+	
+	//todo: refactor this
+	//todo; fix PerlinRenderer (similar method with 2 fors)
 	public MeshWrapper GenerateMesh(float[,] heightMap) {
 		int width = heightMap.GetLength (0);
 		int height = heightMap.GetLength (1);
@@ -23,7 +25,7 @@ public class GFXUtils {
 
 //				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[x, y], y);
 
-				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[x, y], -topLeftZ + y);
+				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[width -1 - x, height-1 - y], -topLeftZ + y);
 
 				mesh.AddUV (verticeCount, x / (float)width, y / (float)height);
 

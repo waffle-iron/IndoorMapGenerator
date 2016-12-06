@@ -79,7 +79,7 @@ public class MeshWrapper {
 		mapMesh.uv = meshUvs;
 		mapMesh.RecalculateNormals ();
 		mapMesh.RecalculateBounds ();
-//		mapMesh.Optimize ();
+		mapMesh.Optimize ();
 
 		return mapMesh;
 	}
