@@ -65,3 +65,7 @@ ExportedObj/
 
 # Unity3D Generated File On Crash Reports
 sysinfo.txt
+
+
+#Proprietary Asset Packs:
+/Assets/LowPolyLandscape
