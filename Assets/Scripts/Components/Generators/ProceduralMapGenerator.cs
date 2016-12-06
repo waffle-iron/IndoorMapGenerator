@@ -99,7 +99,10 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void GenerateMesh() {
 		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (finalValuesArray);
-		renderer.RenderMesh (meshWrapper.GenerateMesh (), GetActiveValuesArray ());
+		renderer.RenderMesh (
+			meshWrapper.GenerateMesh (), 
+			GetActiveValuesArray ()
+		);
 	}
 
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
