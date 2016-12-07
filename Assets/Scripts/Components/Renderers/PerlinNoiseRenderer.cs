@@ -52,9 +52,9 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 	}
 
-	public void RenderMesh(Mesh mesh, float[,] heightMap) {
+	public void RenderMesh(Mesh mesh, float[,] heightMap, float meshScaleY) {
 		ValidateMeshView ();
-		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f));
+		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f), meshScaleY);
 	}
 
 	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {

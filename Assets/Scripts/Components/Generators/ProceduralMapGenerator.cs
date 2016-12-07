@@ -24,12 +24,19 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public float	perlinScaleX = 1;
 	public float 	perlinScaleZ = 1;
 	public float 	perlinNoiseScale = 0.3f;
+	public int 		perlinLayers = 3;
+	[Range(0,1)] public float perlinPersistence = 0.5f;
+	[Range(1, 10)] public float perlinLacunarity = 1.5f;
+
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
 	public int 		graphResolutionX = 20;
 	public int 		graphResolutionZ = 20;
 	private int 	graphResolutionXZ;
 	public int 		graphResolutionY = 5;
+
+	public int 		meshResolutionX = 75;
+	public int 		meshResolutionZ = 75;
 
 	public float 	vertexSize = 1;
 	[Range(-200,200)] public int vertexSizeRndOffset = 0;
@@ -97,24 +104,32 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 
-	public void GenerateMesh() {
-		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (finalValuesArray);
-		renderer.RenderMesh (
-			meshWrapper.GenerateMesh (), 
-			GetActiveValuesArray ()
-		);
-	}
-
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
+		//		finalValuesArray = new float[,];
 		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
-			mapResolutionX, mapResolutionZ, perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ
+			mapResolutionX, mapResolutionZ, perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ,
+			perlinLayers, perlinPersistence, perlinLacunarity
 		);
 
 		SetNoiseValuesArray (perlinNoiseMap);
 		RenderValuesArray ();
 	}
 
+
+	public void GenerateMesh() {
+		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (
+//			finalValuesArray != null ? finalValuesArray : GetActiveValuesArray (), 
+			GetActiveValuesArray (),
+			mapResolutionX/meshResolutionX, 
+			mapResolutionZ/meshResolutionZ
+		);
+		renderer.RenderMesh (
+			meshWrapper.GenerateMesh (), 
+			GetActiveValuesArray (),
+			mapResolutionY
+		);
+	}
 
 	public void GenerateTestCrossValuesMap() {
 		float[,] testCrossMap = utils.CreateTestCrossValues (mapResolutionX, mapResolutionZ);
@@ -255,22 +270,14 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 
 	public void GenerateGraphEdges() {
-
 		for (int i = 0; i < graph.GetVerticesCount ()-1; ++i) {
 			int graphEdgeStartVertexIndex = i;
 			int graphEdgeEndVertexIndex = i+1;
-
 			graph.AddEdge (graphEdgeStartVertexIndex, graphEdgeEndVertexIndex, true);
 		}
 
 
 		Vector2[] edgeVerticesIndexes = graph.GetEdgesStartEndIndexes ();
-		if (graph.GetEdgesCount () == edgeVerticesIndexes.Length) {
-			Debug.Log ("edge count correct");
-		} else {
-			Debug.LogError ("edge count NOT correct");
-		}
-
 		for (int i=0; i < edgeVerticesIndexes.Length; ++i) {
 			renderer.RenderGraphEdge (
 				graph.GetVertexPosition (Mathf.RoundToInt (edgeVerticesIndexes[i].x)),

@@ -87,16 +87,17 @@ public class MapOutputObject : MonoBehaviour {
 		return marker;
 	}
 
-	public void AddMesh(Mesh mesh, Texture texture) {
+	public void AddMesh(Mesh mesh, Texture texture, float meshScaleY) {
 		Renderer meshInstance = Instantiate (meshPrefab);
 		meshInstance.transform.parent = meshView.transform;
+		meshInstance.transform.localScale = new Vector3 (1f, meshScaleY, 1f);
 		meshInstance.GetComponent <MeshFilter>().sharedMesh = mesh;
-		meshInstance.GetComponent <MeshRenderer>().sharedMaterial.mainTexture = texture ;
+		meshInstance.GetComponent <MeshRenderer>().sharedMaterial.mainTexture = texture;
 	}
 
-	public void ReplaceMesh(Mesh mesh, Texture texture) {
+	public void ReplaceMesh(Mesh mesh, Texture texture, float meshScaleY) {
 		DeleteChildAssets (meshView);
-		AddMesh (mesh, texture);
+		AddMesh (mesh, texture, meshScaleY);
 	}
 
 

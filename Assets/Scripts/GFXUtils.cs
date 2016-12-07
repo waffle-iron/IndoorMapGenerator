@@ -5,40 +5,49 @@ public class GFXUtils {
 	
 	//todo: refactor this
 	//todo; fix PerlinRenderer (similar method with 2 fors)
-	public MeshWrapper GenerateMesh(float[,] heightMap) {
-		int width = heightMap.GetLength (0);
-		int height = heightMap.GetLength (1);
+	//todo: random fluctuation percent (USE MATH METHOD - RANDOM MIDDLE RANGE!)
+	public MeshWrapper GenerateMesh(float[,] heightMap, int magnitudeDividerX = 1, int magnitudeDividerZ = 1) {
+		int dimensionX = heightMap.GetLength (0);
+		int dimensionZ = heightMap.GetLength (1);
 		int verticeCount = 0;
 
-		float topLeftX = (width - 1) / -2f;
-		float topLeftZ = (height - 1) / 2f;
+		float topLeftX = (dimensionX - 1) / -2f;
+		float topLeftZ = (dimensionZ - 1) / 2f;
 
 		MeshWrapper mesh = new MeshWrapper ();
-		mesh.InitializeMeshWrapper (width, height);
+		mesh.InitializeMeshWrapper (dimensionX, dimensionZ);
 
-
-		for (int y = 0; y < height; ++y) {
-			for (int x = 0; x < width; ++x) {
+		for (int z = 0; z < dimensionZ; z+=magnitudeDividerZ) {
+			for (int x = 0; x < dimensionX; x+=magnitudeDividerX) {
 				//todo: implement SMALL fluctuations in positions here (to make mesh less rectangly)
 //				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[x, y], topLeftZ -y);
 //				mesh.AddVertex (verticeCount, x, heightMap[x, y], topLeftZ -y);
 
 //				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[x, y], y);
+//				float tempX = topLeftX + x + UnityEngine.Random.Range (0, 1f);
+//				float tempZ = -topLeftZ + z + UnityEngine.Random.Range (0, 1f);
+				float tempX = topLeftX + x;
+				float tempZ = -topLeftZ + z;
 
-				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[width -1 - x, height-1 - y], -topLeftZ + y);
+				mesh.AddVertex (verticeCount, tempX, heightMap[dimensionX -1 - x, dimensionZ-1 - z], tempZ);
 
-				mesh.AddUV (verticeCount, x / (float)width, y / (float)height);
+				mesh.AddUV (verticeCount, x / (float)dimensionX, z / (float)dimensionZ);
 
-				if (x < width - 1 && 0 < x
-					&& y < height - 1 && 0 < y) {
+
+
+				if (x < dimensionX - magnitudeDividerX && magnitudeDividerX <= x
+					&& z < dimensionZ - magnitudeDividerX  && magnitudeDividerZ <= z) {
+
+
+
 //					mesh.AddTriangle (verticeCount, verticeCount + width + 1, verticeCount + width);
 //					mesh.AddTriangle (verticeCount + width + 1, verticeCount, verticeCount + 1);
-					mesh.AddTriangle (verticeCount + width, verticeCount + width + 1, verticeCount);
-					mesh.AddTriangle (verticeCount + 1, verticeCount, verticeCount + width + 1);
+					mesh.AddTriangle (verticeCount + dimensionX, verticeCount + dimensionX + 1, verticeCount);
+					mesh.AddTriangle (verticeCount + 1, verticeCount, verticeCount + dimensionX + 1);
 
 				}
-
 				++verticeCount;
+
 			}
 		}
 			
