@@ -18,7 +18,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public int 		mapSizeX = 150;
 	public int 		mapSizeZ = 150;
-	public int 		mapSizeY;
+	public int 		mapSizeY = 15;
 	public int 		perlinResolutionX = 50;
 	public int		perlinResolutionZ = 50;
 	public float	perlinScaleX = 1;
@@ -106,6 +106,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
+
 		//		finalValuesArray = new float[,];
 		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
 			perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ,
@@ -261,7 +262,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			noiseValuesArray, graphValuesArray,
 			0f, 1f,
 			MathUtils.MergeArrayMode.SUBTRACT,
-			2f
+			1f
 		));
 //		SetFinalValuesArray (new float[mapResolutionX, mapResolutionZ]);
 
@@ -354,6 +355,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	void OnValidate() {
 		Debug.Log ("onvalidate");
+
+
 
 		graphResolutionVector.x = graphResolutionX;
 		graphResolutionVector.y = graphResolutionY;

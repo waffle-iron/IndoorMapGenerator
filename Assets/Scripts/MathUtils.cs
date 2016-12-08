@@ -21,8 +21,6 @@ public class MathUtils {
 //	}
 
 	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions, float edgeThickness) {
-
-
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
@@ -54,7 +52,7 @@ public class MathUtils {
 				edgeThickness
 			);
 
-			int boundingBoxRadius = 3;
+			int boundingBoxRadius = 5;
 			float valX = -1;
 			float valZ = -1;
 			int l = -1;
@@ -69,19 +67,20 @@ public class MathUtils {
 //				valX += graphEntitiesDistanceX / 2f;
 //				valZ += graphEntitiesDistanceZ / 2f;
 
-//				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
-//					x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
-//					++x) {
-//					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
-//						z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
-//						++z) {
-//						valueMap [(int)x, (int)z] = Mathf.Lerp (
-//							0f, 
-//							1f, 
-//							Mathf.InverseLerp (0f, mapResolutions.y, line[l].y)
-//						);
-//					}
-//				}
+				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
+					x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
+					++x) {
+					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
+						z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
+						++z) {
+//							valueMap [(int)x, (int)z] = Mathf.Lerp (
+//								0f, 
+//								1f, 
+//								Mathf.InverseLerp (0f, mapResolutions.y, line[l].y)
+//							);
+							valueMap [(int)x, (int)z] = line [l].y;
+					}
+				}
 
 				valueMap [Mathf.FloorToInt (line[l].x), Mathf.FloorToInt (line[l].z)] = line [l].y;
 			}
@@ -108,7 +107,7 @@ public class MathUtils {
 		int i = 0;
 		float valX = 0;
 		float valZ = 0;
-		int boundingBoxRadius = 3;
+		int boundingBoxRadius = 8;
 //		try {
 			for (i = 0; i < graphNodesPositions.Length; ++i) {
 				valX = graphNodesPositions[i].x * graphEntitiesDistanceX;
@@ -241,16 +240,6 @@ public class MathUtils {
 	}
 
 	public Vector3[] BresenhamAlgorithm3DIntLinear(Vector3 lineStart, Vector3 lineEnd, int lineThickness = 1, float inputYRangeMin = 0, float inputYRangeMax = 50, float outputYRangeMin = 0, float outputYRangeMax = 1) {
-//		float[] rangeEvenSteps = new float[steps + 1];
-//
-//		float deltaRange = valueB - valueA;
-//		float step = deltaRange / (float)steps;
-//
-//		for (int s = 0; s <= steps; ++s) {
-//			rangeEvenSteps [s] = valueA + (s * step);
-//		}
-//
-//		return rangeEvenSteps;
 
 		List<Vector3> line = new List<Vector3> ();
 		Vector3 tileInLine = Vector3.zero;
@@ -721,13 +710,49 @@ public class MathUtils {
 		XOR, 
 	}
 
+
+//	public float[,] ResizeArray(float[,] inputArray, int outputArrayDimensionX, int outputArrayDimensionZ) {
+//		
+//	}
+
 	public float[,] MergeArrays(
 		float[,] baseLayer, float[,] topAlphaLayer, 
 		float rangeYMin = 0f, float rangeYMax = 1f, 
 		MergeArrayMode mergeMode = MergeArrayMode.XOR, float mergeModeMultiplier = 1f) {
 
+
+		int layersScaleDifferenceX = Mathf.RoundToInt (topAlphaLayer.GetLength (0) / (float)baseLayer.GetLength (0));
+		int layersScaleDifferenceZ = Mathf.RoundToInt (topAlphaLayer.GetLength (1) / (float)baseLayer.GetLength (1));
+
+		float topAlphaLayerValueSum;
+		float topAlphaLayerValue;
+
 		for(int x = 0; x < baseLayer.GetLength (0); ++x){
 			for(int z = 0; z < baseLayer.GetLength (1); ++z){
+
+				topAlphaLayerValue = 0;
+				topAlphaLayerValueSum = 0;
+//				topAlphaLayerValue = topAlphaLayer [x, z];
+
+				for (int scalingX = 0; scalingX < layersScaleDifferenceX; ++scalingX) {
+					for (int scalingZ = 0; scalingZ < layersScaleDifferenceZ; ++scalingZ) {
+						int scalingSampleX = x * layersScaleDifferenceX + scalingX;
+						int scalingSampleZ = z * layersScaleDifferenceZ + scalingZ;
+						if (scalingSampleX < topAlphaLayer.GetLength (0) && scalingSampleZ < topAlphaLayer.GetLength (1)) {
+							try {
+								topAlphaLayerValueSum += topAlphaLayer [scalingSampleX, scalingSampleZ];
+							} catch(IndexOutOfRangeException exc) {
+								topAlphaLayerValue += 0f;
+							}
+						} 
+
+					}
+				}
+
+				topAlphaLayerValue = topAlphaLayerValueSum;
+				topAlphaLayerValue /= (float) (layersScaleDifferenceX * layersScaleDifferenceZ);
+//
+//				Debug.Log ("topalphalayer val: " + topAlphaLayerValue);
 				
 				switch(mergeMode) {
 					case MergeArrayMode.XOR:
@@ -735,7 +760,7 @@ public class MathUtils {
 							baseLayer [x, z] = Mathf.Lerp(
 								rangeYMin, 
 								rangeYMax, 
-								topAlphaLayer [x, z]
+								topAlphaLayerValue
 							);
 						}
 						break;
@@ -745,7 +770,7 @@ public class MathUtils {
 						baseLayer [x, z] = Mathf.Lerp (
 							rangeYMin, 
 							rangeYMax, 
-							baseLayer [x, z] + (mergeModeMultiplier * topAlphaLayer [x, z])
+							baseLayer [x, z] + (mergeModeMultiplier * topAlphaLayerValue)
 						);
 						break;
 
@@ -754,7 +779,7 @@ public class MathUtils {
 						baseLayer [x, z] = Mathf.Lerp (
 							rangeYMin, 
 							rangeYMax, 
-							baseLayer [x, z] - (mergeModeMultiplier * topAlphaLayer [x, z])
+							baseLayer [x, z] - (mergeModeMultiplier * topAlphaLayerValue)
 						);
 						break;
 				}
