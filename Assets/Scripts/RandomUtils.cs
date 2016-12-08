@@ -6,6 +6,7 @@ using System;
 using System.Security;
 using System.Globalization;
 using System.ComponentModel;
+using UnityEngine.Serialization;
 
 public class RandomUtils {
 
@@ -22,51 +23,48 @@ public class RandomUtils {
 
 	//PERSISTENCE IN RANGE 0-1
 	//LACUNARITY IN RANGE >1
-	public float[,] CreatePerlinNoise(int mapDimensionX, int mapDimensionZ, int perlinResolutionX, int perlinResolutionZ, 
+	public float[,] CreatePerlinNoise(int perlinResolutionX, int perlinResolutionZ, 
 		float noiseScaleFactorX, float noiseScaleFactorZ, 
 		int noiseLayers, float persistence, float lacunarity) {
 
-		float[,] perlinNoiseValues = new float[mapDimensionX, mapDimensionZ];
+		float[,] perlinNoiseValues = new float[perlinResolutionX, perlinResolutionZ];
 
-
-
-		int resolutionsScaleOffsetX = Mathf.CeilToInt (mapDimensionX / perlinResolutionX);
-		int resolutionsScaleOffsetZ = Mathf.CeilToInt (mapDimensionZ / perlinResolutionZ);
+		float outputMinVal = float.MaxValue;
+		float outputMaxVal = float.MinValue;
 
 		float noiseAmplitude, noiseFrequency;
-		float noiseSamplePointX, noiseSamplePointZ;
+		float perlinSamplePointX, perlinSamplePointZ;
 		float perlinValue;
 		for (int x = 0; x < perlinResolutionX; ++x) {
 			for (int z = 0; z < perlinResolutionZ; ++z) {
-
-
-
-				for (int scaleX = 0; scaleX < resolutionsScaleOffsetX; ++scaleX) { //so that we can create a map with data resolution of PerlinRes with array resolution of MapRes
-					for (int scaleZ = 0; scaleZ < resolutionsScaleOffsetZ; ++scaleZ) {
 						
-						perlinValue = 0;
-						noiseAmplitude = 1;
-						noiseFrequency = 1;
+				perlinValue = 0;
+//				noiseAmplitude = 1;
+				noiseFrequency = 1;
 
-						for (int l = 0; l < noiseLayers; ++l) {
-							noiseAmplitude = Mathf.Pow (persistence, l);
-							noiseFrequency = Mathf.Pow (lacunarity, l);
-							noiseSamplePointX = x / noiseScaleFactorX * noiseFrequency;
-							noiseSamplePointZ = z / noiseScaleFactorZ * noiseFrequency;
+				for (int l = 0; l < noiseLayers; ++l) {
+//					noiseAmplitude = Mathf.Pow (persistence, l);
+					noiseFrequency = Mathf.Pow (lacunarity, l);
+					perlinSamplePointX = x / noiseScaleFactorX * noiseFrequency;
+					perlinSamplePointZ = z / noiseScaleFactorZ * noiseFrequency;
 
-							perlinValue += UnityEngine.Mathf.PerlinNoise (noiseSamplePointX, noiseSamplePointZ) * noiseAmplitude;
-						}
-
-						perlinNoiseValues [x * resolutionsScaleOffsetX + scaleX, z * resolutionsScaleOffsetZ + scaleZ] = perlinValue;
-
-						//	perlinNoiseValues [x, z] = UnityEngine.Mathf.PerlinNoise (x / scaleFactorX, z / scaleFactorZ);
-//							perlinNoiseValues [x * resolutionsScaleOffsetX + scaleX, z * resolutionsScaleOffsetZ + scaleZ] = UnityEngine.Mathf.PerlinNoise (
-//								x / noiseScaleFactorX,
-//								z / noiseScaleFactorZ
-//							);
-					}
+//					perlinValue += UnityEngine.Mathf.PerlinNoise (perlinSamplePointX, perlinSamplePointZ) * noiseAmplitude;
+					perlinValue += UnityEngine.Mathf.PerlinNoise (perlinSamplePointX, perlinSamplePointZ);
 				}
 
+				perlinNoiseValues [x, z] = perlinValue;
+				if (perlinValue < outputMinVal) {
+					outputMinVal = perlinValue;
+				} 
+				if (perlinValue > outputMaxVal) {
+					outputMaxVal = perlinValue;
+				}
+			}
+		}
+
+		for (int x = 0; x < perlinNoiseValues.GetLength (0); ++x) {
+			for (int z = 0; z < perlinNoiseValues.GetLength(1); ++z) {
+				perlinNoiseValues [x, z] = Mathf.InverseLerp (outputMinVal, outputMaxVal, perlinNoiseValues [x, z]);
 			}
 		}
 

@@ -11,14 +11,14 @@ using System.Security.Cryptography;
 
 [RequireComponent (typeof (ComputationUtils))]
 [RequireComponent (typeof (PerlinNoiseRenderer))]
-[ExecuteInEditMode] //https://docs.unity3d.com/ScriptReference/ExecuteInEditMode.html
+[ExecuteInEditMode]
 public class ProceduralMapGenerator : MonoBehaviour {
 
 //	public MapOutputObject mapOutputObject;
 
-	public int 		mapResolutionX = 150;
-	public int 		mapResolutionZ = 150;
-	public int 		mapResolutionY;
+	public int 		mapSizeX = 150;
+	public int 		mapSizeZ = 150;
+	public int 		mapSizeY;
 	public int 		perlinResolutionX = 50;
 	public int		perlinResolutionZ = 50;
 	public float	perlinScaleX = 1;
@@ -108,7 +108,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public void GeneratePerlinNoiseValuesMap() {
 		//		finalValuesArray = new float[,];
 		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
-			mapResolutionX, mapResolutionZ, perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ,
+			perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ,
 			perlinLayers, perlinPersistence, perlinLacunarity
 		);
 
@@ -121,18 +121,18 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (
 //			finalValuesArray != null ? finalValuesArray : GetActiveValuesArray (), 
 			GetActiveValuesArray (),
-			mapResolutionX/meshResolutionX, 
-			mapResolutionZ/meshResolutionZ
+			mapSizeX/meshResolutionX, 
+			mapSizeZ/meshResolutionZ
 		);
 		renderer.RenderMesh (
 			meshWrapper.GenerateMesh (), 
 			GetActiveValuesArray (),
-			mapResolutionY
+			mapSizeY
 		);
 	}
 
 	public void GenerateTestCrossValuesMap() {
-		float[,] testCrossMap = utils.CreateTestCrossValues (mapResolutionX, mapResolutionZ);
+		float[,] testCrossMap = utils.CreateTestCrossValues (mapSizeX, mapSizeZ);
 
 		SetNoiseValuesArray (testCrossMap);
 		RenderValuesArray ();
@@ -149,7 +149,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		);
 
 		SetGraphValuesArray (graphValuesAsArray);
-		RenderValuesArray ();
+		RenderGraphValuesArray ();
 	}
 
 	private void ConvertGraphEdgesToValues() {
@@ -167,12 +167,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				0f, 1f, 
 				MathUtils.MergeArrayMode.XOR)
 		);
-		RenderValuesArray ();
+		RenderGraphValuesArray ();
 	}
 
 
 	public void GenerateVolumeBlock() {
-		renderer.RenderVolumeBlock (new Vector3(mapResolutionX, mapResolutionY, mapResolutionZ));
+		renderer.RenderVolumeBlock (new Vector3(mapSizeX, mapSizeY, mapSizeZ));
 	}
 
 	public void ApplyGaussianBlur() {
@@ -199,7 +199,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 		for(int x = 0; x < graphResolutionX; ++x) {
 			for(int z = 0; z < graphResolutionZ; ++z) {
-				Vector3 position = new Vector3 (x, mapResolutionY / 2f, z);
+				Vector3 position = new Vector3 (x, mapSizeY / 2f, z);
 				graphMarkersPositions [x * graphResolutionZ + z] = position;
 			}
 		}
@@ -293,11 +293,11 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	private void RenderValuesArray() {
-		renderer.RenderValuesArray (GetActiveValuesArray ());
+		renderer.RenderValuesArray (GetActiveValuesArray (), mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ);
 	}
 
 	public void RenderNoiseValuesArray() {
-		renderer.RenderValuesArray (noiseValuesArray);
+		renderer.RenderValuesArray (noiseValuesArray, mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ);
 	}
 
 	public void RenderGraphValuesArray() {
@@ -305,7 +305,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void RenderFinalValuesArray() {
-		renderer.RenderValuesArray (finalValuesArray);
+		renderer.RenderValuesArray (finalValuesArray, mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ);
 	}
 
 //	private void RenderValuesArray(float[,] mapValuesArray) {
@@ -355,14 +355,13 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	void OnValidate() {
 		Debug.Log ("onvalidate");
 
-
 		graphResolutionVector.x = graphResolutionX;
 		graphResolutionVector.y = graphResolutionY;
 		graphResolutionVector.z = graphResolutionZ;
 
-		mapResolutionVector.x = mapResolutionX;
-		mapResolutionVector.y = mapResolutionY;
-		mapResolutionVector.z = mapResolutionZ;
+		mapResolutionVector.x = mapSizeX;
+		mapResolutionVector.y = mapSizeY;
+		mapResolutionVector.z = mapSizeZ;
 	}
 
 }

@@ -57,12 +57,12 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f), meshScaleY);
 	}
 
-	public void RenderValuesArray(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
+	public void RenderValuesArray(float[,] valuesArray, float outputRenderSizeX = 1f, float outputRenderSizeZ = 1f, float rangeMin = 0f, float rangeMax = 1f) {
 		ValidateView ();
 		ValidatePlaneView ();
 		view.ReplacePlane (
 			CreateValuesTexture (valuesArray, rangeMin, rangeMax),
-			new Vector3(valuesArray.GetLength(0), 1, valuesArray.GetLength(1))
+			new Vector3(valuesArray.GetLength (0) * (float)outputRenderSizeX, 1, valuesArray.GetLength (1) * (float)outputRenderSizeZ)
 		);
 	}
 
@@ -113,7 +113,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 
 	//2D
-	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin, float rangeMax) {
+	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
 
 		int mapDimensionX = valuesArray.GetLength (0);
 		int mapDimensionZ = valuesArray.GetLength (1); 

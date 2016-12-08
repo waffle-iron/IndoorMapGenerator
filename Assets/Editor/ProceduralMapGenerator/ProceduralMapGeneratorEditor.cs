@@ -57,6 +57,7 @@ public class ProceduralMapGeneratorEditor : Editor {
 
 		if (GUILayout.Button("perlin")) {
 			generator.GeneratePerlinNoiseValuesMap ();
+			generator.GenerateVolumeBlock ();
 		}
 
 //		if (GUILayout.Button("test cross")) {
