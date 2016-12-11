@@ -59,6 +59,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public int 		nonKeyPoisPerc = 8;
 
+	public Constants.TextureType textureRenderType = Constants.TextureType.TEXTURE_MAP_STANDARD;
+
 	[Range(0f, 10f)] public int	blurRadius = 3;
 	[Range(0f, 10f)] public int blurIterations = 4;
 	[Range(0f, 5f)]  public int	blurSolidification = 2;
@@ -112,7 +114,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	void OnRenderObject() {
 	}
-
 
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
@@ -305,7 +306,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	private void RenderValuesArray() {
-		renderer.RenderValuesArray (GetActiveValuesArray (), mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ);
+		renderer.RenderValuesArray (GetActiveValuesArray (), mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ, 0f, 1f, textureRenderType, Constants.TERRAINSET_STANDARD);
 	}
 
 	public void RenderNoiseValuesArray() {
@@ -319,10 +320,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public void RenderFinalValuesArray() {
 		renderer.RenderValuesArray (finalValuesArray, mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ);
 	}
-
-//	private void RenderValuesArray(float[,] mapValuesArray) {
-//		renderer.RenderValuesArray (mapValuesArray);
-//	}
 
 	private float[,] GetActiveValuesArray() {
 		switch(activeValuesArray) {

@@ -11,6 +11,8 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	public  MapOutputObject viewPrefab;
 	private MapOutputObject view;
 
+	public Texture 			mapTexture = null;
+
 	void Reset() {
 //		ValidateView ();
 	}
@@ -52,16 +54,19 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 	}
 
+
 	public void RenderMesh(Mesh mesh, float[,] heightMap, Vector3 meshScale) {
 		ValidateMeshView ();
-		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f), meshScale);
+//		mapTexture = CreateValuesTexture (heightMap, 0f, 1f);
+		view.ReplaceMesh (mesh, mapTexture, meshScale);
 	}
 
-	public void RenderValuesArray(float[,] valuesArray, float outputRenderSizeX = 1f, float outputRenderSizeZ = 1f, float rangeMin = 0f, float rangeMax = 1f) {
+	public void RenderValuesArray(float[,] valuesArray, float outputRenderSizeX = 1f, float outputRenderSizeZ = 1f, float rangeMin = 0f, float rangeMax = 1f, Constants.TextureType textureType = Constants.TextureType.TEXTURE_DEBUG_HEIGHT, Constants.TerrainSet terrainSet = null) {
 		ValidateView ();
 		ValidatePlaneView ();
+		mapTexture = CreateValuesTexture (valuesArray, rangeMin, rangeMax, textureType, terrainSet);
 		view.ReplacePlane (
-			CreateValuesTexture (valuesArray, rangeMin, rangeMax),
+			mapTexture,
 			new Vector3(valuesArray.GetLength (0) * (float)outputRenderSizeX, 1, valuesArray.GetLength (1) * (float)outputRenderSizeZ)
 		);
 	}
@@ -115,9 +120,55 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		);
 	}
 
+	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f, Constants.TextureType textureType = Constants.TextureType.TEXTURE_DEBUG_HEIGHT, Constants.TerrainSet terrainSet = null) {
+		if (textureType == Constants.TextureType.TEXTURE_MAP_STANDARD) {
+			return CreateValuesTextureMap (valuesArray, terrainSet, rangeMin, rangeMax);
+		}
+		return CreateValuesTextureDebug (valuesArray, rangeMin, rangeMax);
+	}
 
-	//2D
-	private Texture CreateValuesTexture(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
+
+	private Texture CreateValuesTextureMap(float[,] valuesArray, Constants.TerrainSet terrainSet, float rangeMin = 0f, float rangeMax = 1f) {
+
+		int mapDimensionX = valuesArray.GetLength (0);
+		int mapDimensionZ = valuesArray.GetLength (1); 
+
+		Texture2D valueTexture = new Texture2D (mapDimensionX, mapDimensionZ);
+		Color[] valueTextureColorMap = new Color[mapDimensionX * mapDimensionZ];
+
+		for (int z = mapDimensionZ-1; z >= 0; --z) {
+			for(int x = mapDimensionX-1; x >= 0; --x) {
+
+				for (int l = 0; l < terrainSet.terrainTypes.Length; ++l) {
+					float actualVal = Mathf.InverseLerp (rangeMin, rangeMax, valuesArray [x, z]);
+					float terrainMaxVal = terrainSet.terrainTypes [l].rangeMaxHeight;
+
+					bool statement = actualVal < terrainMaxVal;
+
+					if (statement) {
+						valueTextureColorMap [((mapDimensionX) * (mapDimensionZ)) - 1 - z * (mapDimensionX) - x] = Color.Lerp (
+							terrainSet.terrainTypes[l].rangeMinColour, 
+							terrainSet.terrainTypes[l].rangeMaxColour,
+							Mathf.InverseLerp (
+								l-1>=0f? terrainSet.terrainTypes[l-1].rangeMaxHeight : 0f, terrainSet.terrainTypes[l].rangeMaxHeight, valuesArray [x, z])
+						);
+						break;
+					}
+				}
+
+			}
+		}
+
+		valueTexture.SetPixels (valueTextureColorMap);
+
+		valueTexture.filterMode = FilterMode.Point;
+		valueTexture.Apply ();
+
+		return valueTexture;
+	}
+
+
+	private Texture CreateValuesTextureDebug(float[,] valuesArray, float rangeMin = 0f, float rangeMax = 1f) {
 
 		int mapDimensionX = valuesArray.GetLength (0);
 		int mapDimensionZ = valuesArray.GetLength (1); 
