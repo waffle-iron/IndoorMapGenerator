@@ -86,6 +86,7 @@ public class MapOutputObject : MonoBehaviour {
 		meshInstance.transform.localScale = meshScale;
 		meshInstance.GetComponent <MeshFilter>().sharedMesh = mesh;
 		meshInstance.GetComponent <MeshRenderer>().sharedMaterial.mainTexture = texture;
+		meshInstance.GetComponent <Transform>().Translate (new Vector3(0f, -meshScale.y/2f + 0.01f, 0f));
 	}
 
 	public void ReplaceMesh(Mesh mesh, Texture texture, Vector3 meshScale) {

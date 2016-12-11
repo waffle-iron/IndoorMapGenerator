@@ -19,12 +19,19 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		mapSizeX = 150;
 	public int 		mapSizeZ = 150;
 	public int 		mapSizeY = 15;
+
 	public int 		perlinResolutionX = 50;
 	public int		perlinResolutionZ = 50;
+
 	public float	perlinScaleX = 1;
 	public float 	perlinScaleZ = 1;
-	public float 	perlinNoiseScale = 0.3f;
+
+	public float	perlinOffsetX = 0;
+	public float	perlinOffsetZ = 0;
+	public bool 	useFixedPerlinOffset = false;
+
 	public int 		perlinLayers = 3;
+	public float	perlinFauxRange = 1f;
 	[Range(0,1)] public float perlinPersistence = 0.5f;
 	[Range(1, 10)] public float perlinLacunarity = 1.5f;
 
@@ -41,12 +48,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		meshResolutionX = 75;
 	public int 		meshResolutionZ = 75;
 
-	public float 	vertexSize = 1;
-	[Range(-200,200)] public int vertexSizeRndOffset = 0;
 	public float	edgeThicknessMul = 1f;
 
 	public int 		keyPoisPerc = 5;
-
 	public int 		keyPoisRandomOffsetPerc = 0;
 	private int 	keyPoisCount;
 	public float 	keyPoisSizeMul = 1;
@@ -60,6 +64,9 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(0f, 5f)]  public int	blurSolidification = 2;
 
 	[Range(-200, 100)]public int contrastPercent = 0;
+
+	public String 	seedValue;
+	public String 	mapSignature;
 
 
 	//this all should be in some model class (Repository pattern?) !!!!!!!!!!!!!!!!!
@@ -109,14 +116,15 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	//TODO: maybe separate Generators? Creating graph, perlin noise, map etc (this script will be GIGANTIC)
 	public void GeneratePerlinNoiseValuesMap() {
-
-		//		finalValuesArray = new float[,];
-		float[,] perlinNoiseMap = utils.GetUtilsRandom ().CreatePerlinNoise (
-			perlinResolutionX, perlinResolutionZ, perlinScaleX, perlinScaleZ,
-			perlinLayers, perlinPersistence, perlinLacunarity
+		SetNoiseValuesArray (
+			utils.GetUtilsRandom ().CreatePerlinNoise (
+				perlinResolutionX, perlinResolutionZ, 
+				perlinScaleX, perlinScaleZ,
+				perlinLayers, perlinFauxRange, 
+				perlinPersistence, perlinLacunarity,
+				useFixedPerlinOffset, perlinOffsetX, perlinOffsetZ
+			)
 		);
-
-		SetNoiseValuesArray (perlinNoiseMap);
 		RenderValuesArray ();
 	}
 
@@ -358,8 +366,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	void OnValidate() {
 		Debug.Log ("onvalidate");
-
-
 
 		graphResolutionVector.x = graphResolutionX;
 		graphResolutionVector.y = graphResolutionY;
