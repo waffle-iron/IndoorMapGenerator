@@ -79,59 +79,60 @@ public class MapOutputObject : MonoBehaviour {
 		AddVolumeBlock (addPosition, scale);
 	}
 
-	public Renderer AddGraphMarker(Vector3 markerPosition) {
-		Renderer marker = Instantiate (graphMarkerPrefab);
-		marker.transform.parent = graphMarkersView.transform;
-		marker.transform.position = markerPosition;
-		marker.transform.localScale = new Vector3 (5f, 5f, 5f); //todo: computUtils.VectorDivide(scale, 2)!
-		return marker;
-	}
 
-	public void AddMesh(Mesh mesh, Texture texture, float meshScaleY) {
+	public void AddMesh(Mesh mesh, Texture texture, Vector3 meshScale) {
 		Renderer meshInstance = Instantiate (meshPrefab);
 		meshInstance.transform.parent = meshView.transform;
-		meshInstance.transform.localScale = new Vector3 (1f, meshScaleY, 1f);
+		meshInstance.transform.localScale = meshScale;
 		meshInstance.GetComponent <MeshFilter>().sharedMesh = mesh;
 		meshInstance.GetComponent <MeshRenderer>().sharedMaterial.mainTexture = texture;
 	}
 
-	public void ReplaceMesh(Mesh mesh, Texture texture, float meshScaleY) {
+	public void ReplaceMesh(Mesh mesh, Texture texture, Vector3 meshScale) {
 		DeleteChildAssets (meshView);
-		AddMesh (mesh, texture, meshScaleY);
+		AddMesh (mesh, texture, meshScale);
 	}
 
 
 	//TODO: THIS SHOULD BE THE ENTIRE METHOD IN STATIC UTILS CLASS!
-	public void AddGraphMarker(Vector3 markerPosition, bool centerObject) {
+	public void AddGraphMarker(Vector3 markerPosition, Vector3 markerScale, bool centerObject) {
 		if (centerObject) {
 			Vector3 centeredMarkerPosition = markerPosition;
 			Vector3 graphMarkerDimensions = graphMarkerPrefab.bounds.size;
 			centeredMarkerPosition += graphMarkerDimensions;
-			AddGraphMarker (centeredMarkerPosition);
+			AddGraphMarker (centeredMarkerPosition, markerScale);
 		} else {
-			AddGraphMarker (markerPosition);
+			AddGraphMarker (markerPosition, markerScale);
 		}
+	}
+
+	public Renderer AddGraphMarker(Vector3 markerPosition, Vector3 markerScale) {
+		Renderer marker = Instantiate (graphMarkerPrefab);
+		marker.transform.parent = graphMarkersView.transform;
+		marker.transform.position = markerPosition;
+		marker.transform.localScale = markerScale;
+		return marker;
 	}
 		
 	// TODO: refactor to AddGraphNodeBold / NodeLight etc (this script should not know about POIs and other logic stuff)
 	// TODO: node radius
-	private Renderer AddGraphNode(Vector3 nodePosition) {
+	private Renderer AddGraphNode(Vector3 nodePosition, Vector3 nodeScale) {
 		Renderer poi = Instantiate (graphNodePrefab);
 		poi.transform.parent = graphNodesView.transform;
 		poi.transform.position = nodePosition;
-		poi.transform.localScale = new Vector3 (10f, 10f, 10f);
+		poi.transform.localScale = nodeScale;
 		return poi;
 	}
 
 	//todo: figure out separation into light / bold nodes later
-	public void AddGraphNode(Vector3 nodePosition, bool centerObject) {
+	public void AddGraphNode(Vector3 nodePosition, Vector3 nodeScale, bool centerObject) {
 		if (centerObject) {
 			Vector3 centeredNodePosition = nodePosition;
 			Vector3 graphNodeDimensions = graphMarkerPrefab.bounds.size;
 			centeredNodePosition += graphNodeDimensions;
-			AddGraphNode (centeredNodePosition);
+			AddGraphNode (centeredNodePosition, nodeScale);
 		} else {
-			AddGraphNode (nodePosition);
+			AddGraphNode (nodePosition, nodeScale);
 		}
 	}
 

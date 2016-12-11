@@ -52,9 +52,9 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 	}
 
-	public void RenderMesh(Mesh mesh, float[,] heightMap, float meshScaleY) {
+	public void RenderMesh(Mesh mesh, float[,] heightMap, Vector3 meshScale) {
 		ValidateMeshView ();
-		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f), meshScaleY);
+		view.ReplaceMesh (mesh, CreateValuesTexture (heightMap, 0f, 1f), meshScale);
 	}
 
 	public void RenderValuesArray(float[,] valuesArray, float outputRenderSizeX = 1f, float outputRenderSizeZ = 1f, float rangeMin = 0f, float rangeMax = 1f) {
@@ -72,6 +72,8 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 
 
+	//todo: renderer classes should get high level data info (like mapResVector and graphResVector) and then
+	//calculating low level graphical info (like scale of objects, based on vectors difference) and passing that into views
 	public void RenderGraphMarkers(Vector3[] graphMarkersPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
 		ValidateGraphView ();
 		view.ClearGraphMarkers ();
@@ -79,15 +81,18 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
 			view.AddGraphMarker (
 				AlignToResolutons (graphMarkersPositions[m], mapResolutions, graphResolutions), 
+				new Vector3(mapResolutions.x/(graphResolutions.x * 1.5f), mapResolutions.y / 1.5f, mapResolutions.z/(graphResolutions.z * 1.5f)),
 				true
 			);
 		}
 	}
 
 	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+		float nodeScaleValue = Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z);
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
 			view.AddGraphNode (
 				AlignToResolutons (graphKeyPoisPositions [p], mapResolutions, graphResolutions),
+				new Vector3(nodeScaleValue, nodeScaleValue, nodeScaleValue),
 				true
 			);
 		}
@@ -102,7 +107,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		deltaPosition.x /= 2f;
 		deltaPosition.y /= 2f;
 		deltaPosition.z /= 2f;
-
 
 		view.AddGraphEdge (
 			positionA + deltaPosition, 

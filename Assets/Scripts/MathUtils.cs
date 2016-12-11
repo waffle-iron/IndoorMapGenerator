@@ -4,8 +4,14 @@ using System;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Collections.Specialized;
 
 public class MathUtils {
+
+	public enum BoundingBoxStyle {
+		SQUARE,
+		CIRCLE
+	}
 
 //	http://answers.unity3d.com/questions/805970/intvector2-struct-useful.html
 	//todo: make custom Vector2 and Vector3 -- Vector2Int and Vector3Int!!
@@ -20,14 +26,14 @@ public class MathUtils {
 //		return valueMap;
 //	}
 
-	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions, float edgeThickness) {
+	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions, float edgeSizeMultiplier) {
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
 		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
 
-
-		for (int i=0; i < edgesStartEndPositions.GetLength(0); ++i) {
+		//iterate over every graph node
+		for (int i = 0; i < edgesStartEndPositions.GetLength (0); ++i) {
 			Vector3 startpos = edgesStartEndPositions [i, 0];
 			Vector3 endpos = edgesStartEndPositions [i, 1];
 
@@ -44,57 +50,37 @@ public class MathUtils {
 			endpos.z += graphEntitiesDistanceZ / 2f;
 
 
-			Vector3[] line = BresenhamAlgorithm3DIntLinear (
-				startpos,
-				endpos,
-				0,
-				mapResolutions.y,
-				edgeThickness
-			);
+			//create a line 
+			Vector3[] line = BresenhamAlgorithm3DIntLinear (startpos, endpos, 0, 0f, mapResolutions.y);
 
-			int boundingBoxRadius = 5;
-			float valX = -1;
-			float valZ = -1;
-			int l = -1;
-			try {
-			for (l = 0; l < line.Length; ++l) {
+			//iterate over every line (create thickness)
+			List<Vector3> linePointWithThickess = new List<Vector3> ();
+			for (int l = 0; l < line.Length; ++l) {
 
-				valX = line[l].x;
-				valZ = line[l].z;
-//				float valX = line[l].x * graphEntitiesDistanceX;
-//				float valZ = line[l].z * graphEntitiesDistanceZ;
-//
-//				valX += graphEntitiesDistanceX / 2f;
-//				valZ += graphEntitiesDistanceZ / 2f;
+				linePointWithThickess.Clear ();
+				linePointWithThickess.AddRange (
+					MidPointCircle3dLinear (
+						(int)line[l].x, (int)line[l].z,
+						(int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 3),
+						0, 0,
+						(int)mapResolutions.x -1, 
+						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y),
+						(int)mapResolutions.z -1,
+						false
+					)
+				);
 
-				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
-					x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
-					++x) {
-					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
-						z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
-						++z) {
-//							valueMap [(int)x, (int)z] = Mathf.Lerp (
-//								0f, 
-//								1f, 
-//								Mathf.InverseLerp (0f, mapResolutions.y, line[l].y)
-//							);
-							valueMap [(int)x, (int)z] = line [l].y;
-					}
+				for (int t = 0; t < linePointWithThickess.Count; ++t) {
+					valueMap [(int)linePointWithThickess [t].x, (int)linePointWithThickess [t].z] += linePointWithThickess [t].y;
 				}
 
-				valueMap [Mathf.FloorToInt (line[l].x), Mathf.FloorToInt (line[l].z)] = line [l].y;
-			}
-			} catch (IndexOutOfRangeException exc) {
-				Debug.LogError (
-					"[i:("+i+"), startpos:" + startpos.ToString () + ", endpos: " + endpos.ToString () +"], " +
-					"[l:(" + l + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"]), \t" + exc.StackTrace);
 			}
 		}
 
 		return valueMap;
 	}
 
-	public float[,] ConvertGraphToValueMap(Vector3[] graphNodesPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+	public float[,] ConvertGraphNodesToValueMap(Vector3[] graphNodesPositions, Vector3 mapResolutions, Vector3 graphResolutions, float sizeMultiplier, BoundingBoxStyle boundingBoxStyle = BoundingBoxStyle.CIRCLE) {
 
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
@@ -104,38 +90,45 @@ public class MathUtils {
 
 		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
 
-		int i = 0;
+
 		float valX = 0;
 		float valZ = 0;
-		int boundingBoxRadius = 8;
-//		try {
-			for (i = 0; i < graphNodesPositions.Length; ++i) {
-				valX = graphNodesPositions[i].x * graphEntitiesDistanceX;
-				valZ = graphNodesPositions[i].z * graphEntitiesDistanceZ;
+		List<Vector3> nodesBoundingBoxValues = new List<Vector3>();
+		for (int i = 0; i < graphNodesPositions.Length; ++i) {
+			valX = graphNodesPositions [i].x * graphEntitiesDistanceX;
+			valZ = graphNodesPositions [i].z * graphEntitiesDistanceZ;
 
-				valX += graphEntitiesDistanceX / 2f;
-				valZ += graphEntitiesDistanceZ / 2f;
+			valX += graphEntitiesDistanceX / 2f;
+			valZ += graphEntitiesDistanceZ / 2f;
 
-				//creating box with radius of (boundingBoxRadius)
-				for (float x = Mathf.Clamp (valX-boundingBoxRadius, 0, mapResolutions.x); 
-						x < Mathf.Clamp (valX+boundingBoxRadius, 0, mapResolutions.x);
-						++x) {
-					for (float z = Mathf.Clamp (valZ-boundingBoxRadius, 0, mapResolutions.z);
-							z < Mathf.Clamp (valZ+boundingBoxRadius, 0, mapResolutions.z);
-							++z) {
-						valueMap [(int)x, (int)z] = Mathf.Lerp (
-							0f, 
-							1f, 
-							Mathf.InverseLerp (0f, mapResolutions.y, graphNodesPositions[i].y)
-						);
-					}
+			nodesBoundingBoxValues.Clear ();
+
+			if (boundingBoxStyle == BoundingBoxStyle.CIRCLE) {
+				nodesBoundingBoxValues.AddRange (
+					MidPointCircle3dLinear (
+						(int)valX, (int)valZ,
+						(int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * sizeMultiplier / 2),
+						0,
+						0f,
+						(int)mapResolutions.x - 1,
+						Mathf.InverseLerp (0f, mapResolutions.y, graphNodesPositions [i].y),
+						(int)mapResolutions.z - 1,
+						false
+					)
+				);
+			} else if (boundingBoxStyle == BoundingBoxStyle.SQUARE) {
+								
+				//	TODO!
+
 				}
-					
+
+
+			for (int n = 0; n < nodesBoundingBoxValues.Count; ++n) {
+				valueMap [(int)nodesBoundingBoxValues [n].x, (int)nodesBoundingBoxValues [n].z] += nodesBoundingBoxValues [n].y;
 			}
-//		} catch (IndexOutOfRangeException exc) {
-////			Debug.LogError ("(" + i + "), " + "(" + (int)valX +"), " + "(" + (int)valZ +"), " + exc.StackTrace);
-//		}
-			
+
+		}
+				
 		return valueMap;
 	}
 
@@ -239,6 +232,7 @@ public class MathUtils {
 		return new float[4]{rangesMinMaxX[0], rangesMinMaxX[1], rangesMinMaxY[0], rangesMinMaxY[1]};
 	}
 
+	//	//todo: make this return array, not list (overhead)
 	public Vector3[] BresenhamAlgorithm3DIntLinear(Vector3 lineStart, Vector3 lineEnd, int lineThickness = 1, float inputYRangeMin = 0, float inputYRangeMax = 50, float outputYRangeMin = 0, float outputYRangeMax = 1) {
 
 		List<Vector3> line = new List<Vector3> ();
@@ -322,189 +316,8 @@ public class MathUtils {
 		return line.ToArray ();
 	}
 
-
 //	//todo: make this return array, not list (overhead)
-//	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
-//		List<Vector2> line = new List<Vector2> ();
-//		Vector2 tileInLine = Vector2.zero;
-//
-//		//Vector coordinates (x, y) that we will start computation from
-//		int x = Mathf.FloorToInt (lineStart.x);
-//		int y = Mathf.FloorToInt (lineStart.y);
-//
-//		//difference in length between points in the same dimension (x or y)
-//		int dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
-//		int dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
-//
-//		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
-//		//in every algorithm iteration or SUBTRACT "-1" from it.
-//		//(varying depending on lineStart and lineEnd position on a grid)
-//		int incrementValue = Math.Sign (dx);
-//		int gradientIncrementValue = Math.Sign (dy);
-//
-//		int longerCalculationSide, shorterCalculationSide;
-//		bool sidesInversion;
-//
-//		//if distance from line starting and ending point on Y-axis is greater than
-//		//distance on X-axis, then we iterate this algorithm other way around.
-//		//(incrementing y values and checking for boundary condition for ++x bump,
-//		// instead of incrementing x values and checking if ++y bump is valid).
-//		if (Math.Abs (dx) < Math.Abs (dy)) {
-//			sidesInversion = true;
-//			longerCalculationSide = Math.Abs (dy);
-//			shorterCalculationSide = Math.Abs (dx);
-//			incrementValue = Math.Sign (dy);
-//			gradientIncrementValue = Math.Sign (dx);
-//		} else {
-//			sidesInversion = false;
-//			longerCalculationSide = Math.Abs (dx);
-//			shorterCalculationSide = Math.Abs (dy);
-//		}
-//
-//		//because reasons, check wiki for algorithm walkthrough
-//		int gradientAccumulation = longerCalculationSide / 2;
-//
-//		for (int i = 0; i < longerCalculationSide; ++i) {
-//			tileInLine.Set (x, y);
-//			if (x != lineStart.x && y != lineEnd.y) {
-//				line.Add (tileInLine);
-//			}
-//
-//			if (sidesInversion) { y += incrementValue; } 
-//			else { x += incrementValue; }
-//
-//			gradientAccumulation += shorterCalculationSide;
-//			if (gradientAccumulation >= longerCalculationSide) {
-//				if (sidesInversion) { x += gradientIncrementValue; } 
-//				else { y += gradientIncrementValue; }
-//				gradientAccumulation -= longerCalculationSide;
-//			}
-//
-//		}
-//		return line;
-//	}
-//
-////	public List<Vector2> BresenhamAlgorithm2DInt (Vector2 lineStart, Vector2 lineEnd) {
-////		List<Vector2> line = new List<Vector2> ();
-////		Vector2 tileInLine = Vector2.zero;
-////
-////		//Vector coordinates (x, y) that we will start computation from
-////		int x = Mathf.FloorToInt (lineStart.x);
-////		int y = Mathf.FloorToInt (lineStart.y);
-////
-////		//difference in length between points in the same dimension (x or y)
-////		int dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
-////		int dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
-////
-////		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
-////		//in every algorithm iteration or SUBTRACT "-1" from it.
-////		//(varying depending on lineStart and lineEnd position on a grid)
-////		int incrementValue = Math.Sign (dx);
-////		int gradientIncrementValue = Math.Sign (dy);
-////
-////		int longerCalculationSide, shorterCalculationSide;
-////		bool sidesInversion;
-////
-////		//if distance from line starting and ending point on Y-axis is greater than
-////		//distance on X-axis, then we iterate this algorithm other way around.
-////		//(incrementing y values and checking for boundary condition for ++x bump,
-////		// instead of incrementing x values and checking if ++y bump is valid).
-////		if (Math.Abs (dx) < Math.Abs (dy)) {
-////			sidesInversion = true;
-////			longerCalculationSide = Math.Abs (dy);
-////			shorterCalculationSide = Math.Abs (dx);
-////			incrementValue = Math.Sign (dy);
-////			gradientIncrementValue = Math.Sign (dx);
-////		} else {
-////			sidesInversion = false;
-////			longerCalculationSide = Math.Abs (dx);
-////			shorterCalculationSide = Math.Abs (dy);
-////		}
-////
-////		//because reasons, check wiki for algorithm walkthrough
-////		int gradientAccumulation = longerCalculationSide / 2;
-////
-////		for (int i = 0; i < longerCalculationSide; ++i) {
-////			tileInLine.Set (x, y);
-////			if (x != lineStart.x && y != lineEnd.y) {
-////				line.Add (tileInLine);
-////			}
-////
-////			if (sidesInversion) { y += incrementValue; } 
-////			else { x += incrementValue; }
-////
-////			gradientAccumulation += shorterCalculationSide;
-////			if (gradientAccumulation >= longerCalculationSide) {
-////				if (sidesInversion) { x += gradientIncrementValue; } 
-////				else { y += gradientIncrementValue; }
-////				gradientAccumulation -= longerCalculationSide;
-////			}
-////
-////		}
-////		return line;
-////	}
-//
-//
-//	//todo: does this do anything?
-//	public List<Vector2> BresenhamAlgorithm2DFloat (Vector2 lineStart, Vector2 lineEnd) {
-//		List<Vector2> line = new List<Vector2> ();
-//		Vector2 tileInLine = Vector2.zero;
-//
-//		//Vector coordinates (x, y) that we will start computation from
-//		float x = Mathf.FloorToInt (lineStart.x);
-//		float y = Mathf.FloorToInt (lineStart.y);
-//
-//		//difference in length between points in the same dimension (x or y)
-//		float dx = Mathf.CeilToInt (lineEnd.x - lineStart.x);
-//		float dy = Mathf.CeilToInt (lineEnd.y - lineStart.y);
-//
-//		//checking whether we should ADD "+1" (to longerCalculationSide dimension value)
-//		//in every algorithm iteration or SUBTRACT "-1" from it.
-//		//(varying depending on lineStart and lineEnd position on a grid)
-//		float incrementValue = Math.Sign (dx);
-//		float gradientIncrementValue = Math.Sign (dy);
-//
-//		float longerCalculationSide, shorterCalculationSide;
-//		bool sidesInversion;
-//
-//		//if distance from line starting and ending point on Y-axis is greater than
-//		//distance on X-axis, then we iterate this algorithm other way around.
-//		//(incrementing y values and checking for boundary condition for ++x bump,
-//		// instead of incrementing x values and checking if ++y bump is valid).
-//		if (Math.Abs (dx) < Math.Abs (dy)) {
-//			sidesInversion = true;
-//			longerCalculationSide = Math.Abs (dy);
-//			shorterCalculationSide = Math.Abs (dx);
-//			incrementValue = Math.Sign (dy);
-//			gradientIncrementValue = Math.Sign (dx);
-//		} else {
-//			sidesInversion = false;
-//			longerCalculationSide = Math.Abs (dx);
-//			shorterCalculationSide = Math.Abs (dy);
-//		}
-//
-//		//because reasons, check wiki for algorithm walkthrough
-//		float gradientAccumulation = longerCalculationSide / 2;
-//
-//		for (int i = 0; i < longerCalculationSide; ++i) {
-//			tileInLine.Set (x, y);
-//			if (x != lineStart.x && y != lineEnd.y) {
-//				line.Add (tileInLine);
-//			}
-//
-//			if (sidesInversion) { y += incrementValue; } 
-//			else { x += incrementValue; }
-//
-//			gradientAccumulation += shorterCalculationSide;
-//			if (gradientAccumulation >= longerCalculationSide) {
-//				if (sidesInversion) { x += gradientIncrementValue; } 
-//				else { y += gradientIncrementValue; }
-//				gradientAccumulation -= longerCalculationSide;
-//			}
-//
-//		}
-//		return line;
-//	}
+
 
 	private float[] RangeEvenSteps(float valueA, float valueB, int steps) {
 		float[] rangeEvenSteps = new float[steps + 1];
@@ -542,63 +355,101 @@ public class MathUtils {
 	  (circleRadius) given certain 'Mid-Point', that is center of the circle of (X, Z) coordinates of
 	  (midPointX, midPointZ).
 	 */
-	public List<Vector2> MidPointCircle (int midPointX, int midPointZ, int circleRadius) {
+	public Vector2[] MidPointCircle (int midPointX, int midPointZ, int circleRadius, bool excludeMidPoint = false) {
 		List<Vector2> list = new List<Vector2> ();
 		Vector2 listElement = new Vector2 ();
 
 		for (int x = midPointX - circleRadius; x <= midPointX + circleRadius; ++x) {
-			for (int y = midPointZ - circleRadius; y <= midPointZ + circleRadius; ++y) {
-				listElement = VectorsDifference (midPointX, midPointZ, x, y);
+			for (int z = midPointZ - circleRadius; z <= midPointZ + circleRadius; ++z) {
+				listElement = VectorsDifference (midPointX, midPointZ, x, z);
 				if (Mathf.Pow (listElement.x, 2) + Mathf.Pow (listElement.y, 2) <= Mathf.Pow (circleRadius, 2)) {
-					listElement.Set (x, y);
+					listElement.Set (x, z);
 					list.Add (listElement);
 				}
 			}
 		}
 
-		return list;
+		if (excludeMidPoint) { list.Remove (new Vector2 (midPointX, midPointZ)); }
+		return list.ToArray ();
 	}
+		
+	public Vector2[] MidPointCircle (int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ, bool excludeMidPoint = false){
+		List<Vector2> list = new List<Vector2> ();
+		Vector2 listElement = new Vector2 ();
 
-	/**
-	  Returning list (list) of square elements in 2d space, which are creating a 'circle' of given radius
-	  (circleRadius) given certain 'Mid-Point', that is center of the circle of (X, Z) coordinates of
-	  (midPointX, midPointZ).
-	  List of coordinates is cropped when conditions for minimum and maximum index are not met, preventing 
-	  IndexOutOfRange exception. 
-	  Minimum allowed coordinate pair for any given element in 2d space (X, Z) is determined by (min, min) parameter,
-	  and maximum allowed coordinate pair (X, Z) is (maxX, maxZ)
-	 */
-	public List<Vector2> MidPointCircle (int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ){
-		List<Vector2> coords = MidPointCircle (midPointX, midPointZ, circleRadius);
-		Vector2 coord;
-		for (int c = 0; c < coords.Count; c++) {
-			coord = coords[c];
-			if (coord.x < min || coord.x >= maxX || coord.y < min || coord.y >= maxZ) {
-				coords.RemoveAt (c);
-				--c;
+		for (int x = midPointX - circleRadius; x <= midPointX + circleRadius; ++x) {
+			for (int z = midPointZ - circleRadius; z <= midPointZ + circleRadius; ++z) {
+				listElement = VectorsDifference (midPointX, midPointZ, x, z);
+				if (Mathf.Pow (listElement.x, 2) + Mathf.Pow (listElement.y, 2) <= Mathf.Pow (circleRadius, 2)) {
+					listElement.Set (Mathf.Clamp (x, min, maxX),Mathf.Clamp (z, min, maxZ));
+					list.Add (listElement);
+				}
 			}
 		}
 
-		return coords;
+		if (excludeMidPoint) { list.Remove (new Vector2 (midPointX, midPointZ)); }
+		return list.ToArray ();
 	}
 
-	/**
-	  Returning list (list) of square elements in 2d space, which are creating a 'circle' of given radius
-	  (circleRadius) given certain 'Mid-Point', that is center of the circle of (X, Z) coordinates of
-	  (midPointX, midPointZ).
-	  List of coordinates is cropped when conditions for minimum and maximum index are not met, preventing 
-	  IndexOutOfRange exception. 
-	  Minimum allowed coordinate pair for any given element in 2d space (X, Z) is determined by (min, min) parameter,
-	  and maximum allowed coordinate pair (X, Z) is (maxX, maxZ)
-	  Additionally, if (excludeMidPoint) flag is 'true', then center of the circle is not present in output coordinate list.
-	 */
-	public List<Vector2> MidPointCircle (int midPointX, int midPointZ, int circleRadius, int min, int maxX, int maxZ, bool excludeMidPoint){
-		if (!excludeMidPoint) {
-			return MidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
+	public Vector3[] MidPointCircle3d (int midPointX, int midPointZ, float circleYVal, int circleRadius, int min, int maxX, int maxZ, bool excludeMidPoint = false) {
+		List<Vector3> list = new List<Vector3> ();
+		Vector3 listElement = new Vector3 ();
+
+		for (int x = midPointX - circleRadius; x <= midPointX + circleRadius; ++x) {
+			for (int z = midPointZ - circleRadius; z <= midPointZ + circleRadius; ++z) {
+				listElement = VectorsDifference3d (midPointX, midPointZ, x, z);
+				if (Mathf.Pow (listElement.x, 2) + Mathf.Pow (listElement.y, 2) <= Mathf.Pow (circleRadius, 2)) {
+					if (x >= min && x < maxX && z >= min && z < maxZ) {
+						listElement.Set (x, circleYVal, z);
+					}
+					list.Add (listElement);
+				}
+			}
 		}
-		List<Vector2> coords = MidPointCircle (midPointX, midPointZ, circleRadius, min, maxX, maxZ);
-		coords.Remove (new Vector2 (midPointX, midPointZ));
-		return coords;
+
+		if (excludeMidPoint) { list.Remove (new Vector2 (midPointX, midPointZ)); }
+		return list.ToArray ();
+	}
+
+	public Vector3[] MidPointCircle3dRandom (int midPointX, int midPointZ, int circleRadius, int minXZ, float minY, int maxX, float maxY, int maxZ, bool excludeMidPoint = false) {
+		List<Vector3> list = new List<Vector3> ();
+		Vector3 listElement = new Vector3 ();
+
+		for (int x = midPointX - circleRadius; x <= midPointX + circleRadius; ++x) {
+			for (int z = midPointZ - circleRadius; z <= midPointZ + circleRadius; ++z) {
+				listElement = VectorsDifference3d (midPointX, midPointZ, x, z);
+				if (Mathf.Pow (listElement.x, 2) + Mathf.Pow (listElement.y, 2) <= Mathf.Pow (circleRadius, 2)) {
+					if (x >= minXZ && x < maxX && z >= minXZ && z < maxZ) {
+						listElement.Set (x, UnityEngine.Random.Range (minY, maxY), z);
+					}
+					list.Add (listElement);
+				}
+			}
+		}
+
+		if (excludeMidPoint) { list.Remove (new Vector2 (midPointX, midPointZ)); }
+		return list.ToArray ();
+	}
+
+	public Vector3[] MidPointCircle3dLinear (int midPointX, int midPointZ, int circleRadius, int minXZ, float minY, int maxX, float maxY, int maxZ, bool excludeMidPoint = false) {
+		List<Vector3> list = new List<Vector3> ();
+		Vector3 listElement = new Vector3 ();
+
+
+		for (int x = midPointX - circleRadius; x <= midPointX + circleRadius; ++x) {
+			for (int z = midPointZ - circleRadius; z <= midPointZ + circleRadius; ++z) {
+				listElement = VectorsDifference3d (midPointX, midPointZ, x, z);
+				if (Mathf.Pow (listElement.x, 2) + Mathf.Pow (listElement.y, 2) <= Mathf.Pow (circleRadius, 2)) {
+					if (x >= minXZ && x < maxX && z >= minXZ && z < maxZ) {
+						listElement.Set (x, Mathf.Lerp(maxY, minY, Mathf.InverseLerp (0, Mathf.Pow(circleRadius, 2), listElement.sqrMagnitude)), z);
+					}
+					list.Add (listElement);
+				}
+			}
+		}
+
+		if (excludeMidPoint) { list.Remove (new Vector2 (midPointX, midPointZ)); }
+		return list.ToArray ();
 	}
 
 	/**
@@ -699,6 +550,10 @@ public class MathUtils {
 
 	public Vector2 VectorsDifference (float vecAX, float vecAY, float vecBX, float vecBY) {
 		return new Vector2 (Mathf.Abs (vecAX - vecBX), Mathf.Abs (vecAY - vecBY));
+	}
+
+	public Vector3 VectorsDifference3d (float vecAX, float vecAY, float vecBX, float vecBY) {
+		return new Vector3 (Mathf.Abs (vecAX - vecBX), 0f, Mathf.Abs (vecAY - vecBY));
 	}
 
 	//todo: this in another class

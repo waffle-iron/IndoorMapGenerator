@@ -35,18 +35,21 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private int 	graphResolutionXZ;
 	public int 		graphResolutionY = 5;
 
+	public MathUtils.BoundingBoxStyle graphNodesBoundBox = MathUtils.BoundingBoxStyle.CIRCLE;
+	public MathUtils.MergeArrayMode graphMergeMode = MathUtils.MergeArrayMode.SUBTRACT;
+
 	public int 		meshResolutionX = 75;
 	public int 		meshResolutionZ = 75;
 
 	public float 	vertexSize = 1;
 	[Range(-200,200)] public int vertexSizeRndOffset = 0;
-	public int		edgeThickness = 1;
+	public float	edgeThicknessMul = 1f;
 
 	public int 		keyPoisPerc = 5;
 
 	public int 		keyPoisRandomOffsetPerc = 0;
 	private int 	keyPoisCount;
-	public float 	keyPoisSizePerc = 1;
+	public float 	keyPoisSizeMul = 1;
 	public int 		keyPoisSizeRandomOffsetPerc = 0;
 	public int		keyPoisConnectionsPerc = 100;
 
@@ -121,14 +124,14 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public void GenerateMesh() {
 		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (
 //			finalValuesArray != null ? finalValuesArray : GetActiveValuesArray (), 
-			GetActiveValuesArray (),
-			mapSizeX/meshResolutionX, 
-			mapSizeZ/meshResolutionZ
+			GetActiveValuesArray ()
+//			mapSizeX/meshResolutionX, 
+//			mapSizeZ/meshResolutionZ
 		);
 		renderer.RenderMesh (
 			meshWrapper.GenerateMesh (), 
 			GetActiveValuesArray (),
-			mapSizeY
+			new Vector3 (mapSizeX/perlinResolutionX, mapSizeY, mapSizeZ/perlinResolutionZ)
 		);
 	}
 
@@ -145,8 +148,8 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	private void ConvertGraphVerticesToValues() {
-		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphToValueMap (
-			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector
+		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphNodesToValueMap (
+			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector, keyPoisSizeMul
 		);
 
 		SetGraphValuesArray (graphValuesAsArray);
@@ -158,7 +161,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			graph.GetEdgesStartEndPositions (),
 			mapResolutionVector,
 			graphResolutionVector,
-			edgeThickness
+			edgeThicknessMul
 		);
 
 		SetGraphValuesArray (
@@ -166,7 +169,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				graphValuesArray, 
 				graphEdgeValuesAsArray, 
 				0f, 1f, 
-				MathUtils.MergeArrayMode.XOR)
+				MathUtils.MergeArrayMode.ADD)
 		);
 		RenderGraphValuesArray ();
 	}
@@ -177,12 +180,13 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void ApplyGaussianBlur() {
-		SetActiveValuesArray (utils.GetGaussianBlur ().CreateGaussianBlur (
-			GetActiveValuesArray (), 
-			blurRadius, 
-			blurIterations, 
-			blurSolidification
-		)
+		SetActiveValuesArray (
+			utils.GetGaussianBlur ().CreateGaussianBlur (
+				GetActiveValuesArray (), 
+				blurRadius, 
+				blurIterations, 
+				blurSolidification
+			)
 		);
 		RenderValuesArray ();
 	}
@@ -224,7 +228,6 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 
 	private void GenerateGraphKeyPOIs() {
-		GenerateGraphMarkers ();
 		keyPoisCount = (int) (graphResolutionXZ * (keyPoisPerc / 100f));
 
 		Vector3[] graphKeyPoisPositions = new Vector3[keyPoisCount];
@@ -261,7 +264,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		SetFinalValuesArray (utils.GetUtilsMath ().MergeArrays (
 			noiseValuesArray, graphValuesArray,
 			0f, 1f,
-			MathUtils.MergeArrayMode.SUBTRACT,
+			graphMergeMode,
 			1f
 		));
 //		SetFinalValuesArray (new float[mapResolutionX, mapResolutionZ]);

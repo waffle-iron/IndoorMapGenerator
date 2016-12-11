@@ -17,8 +17,10 @@ public class GFXUtils {
 		MeshWrapper mesh = new MeshWrapper ();
 		mesh.InitializeMeshWrapper (dimensionX, dimensionZ);
 
+
 		for (int z = 0; z < dimensionZ; z+=magnitudeDividerZ) {
 			for (int x = 0; x < dimensionX; x+=magnitudeDividerX) {
+			
 				//todo: implement SMALL fluctuations in positions here (to make mesh less rectangly)
 //				mesh.AddVertex (verticeCount, topLeftX + x, heightMap[x, y], topLeftZ -y);
 //				mesh.AddVertex (verticeCount, x, heightMap[x, y], topLeftZ -y);
@@ -37,8 +39,6 @@ public class GFXUtils {
 
 				if (x < dimensionX - magnitudeDividerX && magnitudeDividerX <= x
 					&& z < dimensionZ - magnitudeDividerX  && magnitudeDividerZ <= z) {
-
-
 
 //					mesh.AddTriangle (verticeCount, verticeCount + width + 1, verticeCount + width);
 //					mesh.AddTriangle (verticeCount + width + 1, verticeCount, verticeCount + 1);

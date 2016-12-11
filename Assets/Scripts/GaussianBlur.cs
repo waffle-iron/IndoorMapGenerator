@@ -11,11 +11,8 @@ public class GaussianBlur {
 
 		for (int i = 0; i < blurIterations; ++i) {
 			blurredValuesArray = BoxBlur (
-				inputValuesArray,
-				inputValuesArray.GetLength (0), 
-				inputValuesArray.GetLength (1), 
-				(blurBoxes[i]-1)/2,
-				blurSolidifications
+				inputValuesArray, inputValuesArray.GetLength (0), inputValuesArray.GetLength (1), 
+				(blurBoxes[i]-1)/2, blurSolidifications
 			);
 		}
 
@@ -28,14 +25,17 @@ public class GaussianBlur {
 
 		for(var i=0; i<boxHeight; i++) {
 			for(var j=0; j<boxWidth; j++) {
-
+				
 				float val = 0;
 				for(var iy=i-blurRadius; iy<i+blurRadius+1; iy++) {
 					for(var ix=j-blurRadius; ix<j+blurRadius+1; ix++) {
+						
 						int x = UnityEngine.Mathf.Min(boxWidth-1, UnityEngine.Mathf.Max(0, ix));
 						int y = UnityEngine.Mathf.Min(boxHeight-1, UnityEngine.Mathf.Max(0, iy));
-						for (int s = 0; s < solidifyBlurIterations+1; ++s) {
-							val += inputValuesArray [x, y] * (solidifyBlurIterations==0?1:0.5f);
+						if (x < boxWidth && x >= 0 && y < boxHeight && y >= 0) {
+							for (int s = 0; s < solidifyBlurIterations + 1; ++s) {
+								val += inputValuesArray [x, y] * (solidifyBlurIterations == 0 ? 1 : 0.5f);
+							}
 						}
 					}
 				}
