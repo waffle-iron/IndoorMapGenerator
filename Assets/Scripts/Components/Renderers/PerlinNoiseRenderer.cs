@@ -140,12 +140,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 			for(int x = mapDimensionX-1; x >= 0; --x) {
 
 				for (int l = 0; l < terrainSet.terrainTypes.Length; ++l) {
-					float actualVal = Mathf.InverseLerp (rangeMin, rangeMax, valuesArray [x, z]);
-					float terrainMaxVal = terrainSet.terrainTypes [l].rangeMaxHeight;
-
-					bool statement = actualVal < terrainMaxVal;
-
-					if (statement) {
+					if (Mathf.InverseLerp (rangeMin, rangeMax, valuesArray [x, z]) < terrainSet.terrainTypes [l].rangeMaxHeight) {
 						valueTextureColorMap [((mapDimensionX) * (mapDimensionZ)) - 1 - z * (mapDimensionX) - x] = Color.Lerp (
 							terrainSet.terrainTypes[l].rangeMinColour, 
 							terrainSet.terrainTypes[l].rangeMaxColour,
@@ -160,7 +155,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 
 		valueTexture.SetPixels (valueTextureColorMap);
-
 		valueTexture.filterMode = FilterMode.Point;
 		valueTexture.Apply ();
 
@@ -187,7 +181,6 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		}
 
 		valueTexture.SetPixels (valueTextureColorMap);
-
 		valueTexture.filterMode = FilterMode.Point;
 		valueTexture.Apply ();
 

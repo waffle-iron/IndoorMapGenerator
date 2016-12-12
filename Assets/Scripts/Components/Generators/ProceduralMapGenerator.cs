@@ -44,6 +44,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public MathUtils.BoundingBoxStyle graphNodesBoundBox = MathUtils.BoundingBoxStyle.CIRCLE;
 	public MathUtils.MergeArrayMode graphMergeMode = MathUtils.MergeArrayMode.SUBTRACT;
+	public float 	graphMergeModeMul = 0.5f;
 
 	public int 		meshResolutionX = 75;
 	public int 		meshResolutionZ = 75;
@@ -274,7 +275,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			noiseValuesArray, graphValuesArray,
 			0f, 1f,
 			graphMergeMode,
-			1f
+			graphMergeModeMul
 		));
 //		SetFinalValuesArray (new float[mapResolutionX, mapResolutionZ]);
 
