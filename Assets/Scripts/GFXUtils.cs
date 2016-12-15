@@ -32,7 +32,6 @@ public class GFXUtils {
 				float tempZ = -topLeftZ + z;
 
 				mesh.AddVertex (verticeCount, tempX, heightMap[dimensionX -1 - x, dimensionZ-1 - z], tempZ);
-
 				mesh.AddUV (verticeCount, x / (float)dimensionX, z / (float)dimensionZ);
 
 
