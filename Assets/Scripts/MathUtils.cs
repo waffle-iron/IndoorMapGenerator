@@ -13,6 +13,33 @@ public class MathUtils {
 		CIRCLE
 	}
 
+	public enum PerlinProjectionFunction {
+		LINEAR,
+		QUADRATIC, 
+		QUADRATIC_FROM1
+	}
+
+
+	public float[,] AssignProjection(float[,] inputArray, PerlinProjectionFunction projectionFunction, float projectionActivation = 0f, float projectionDeactivation = 1f) {
+		for (int x = 0; x < inputArray.GetLength (0); ++x) {
+			for (int z = 0; z < inputArray.GetLength (1); ++z) {	
+				if (inputArray[x,z] >= projectionActivation && inputArray[x,z] <= projectionDeactivation) {
+					switch (projectionFunction) {
+						case PerlinProjectionFunction.QUADRATIC:
+							inputArray [x, z] = Mathf.Pow (inputArray [x, z], 2);
+							break;
+						case PerlinProjectionFunction.QUADRATIC_FROM1:
+							inputArray [x, z] = Mathf.Lerp (0f, 1f, Mathf.Pow (inputArray [x, z] * 10, 2));
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		}
+		return inputArray;
+	}
+
 //	http://answers.unity3d.com/questions/805970/intvector2-struct-useful.html
 	//todo: make custom Vector2 and Vector3 -- Vector2Int and Vector3Int!!
 
@@ -24,7 +51,7 @@ public class MathUtils {
 //			}
 //		}
 //		return valueMap;
-//	}
+//	
 
 	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions, float edgeSizeMultiplier) {
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
@@ -61,10 +88,11 @@ public class MathUtils {
 				linePointWithThickess.AddRange (
 					MidPointCircle3dLinear (
 						(int)line[l].x, (int)line[l].z,
-						(int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 3),
+						(int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 2),
 						0, 0,
 						(int)mapResolutions.x -1, 
-						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y),
+						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
+//						line[l].y,
 						(int)mapResolutions.z -1,
 						false
 					)
@@ -560,8 +588,10 @@ public class MathUtils {
 	public enum MergeArrayMode {
 		ADD,
 		ADD_MULTIPLIER,
+		ADD_MULTIPLIER_LIMIT,
 		SUBTRACT,
 		SUBTRACT_MULTIPLIER,
+		SUBTRACT_MULTIPLIER_LIMIT,
 		XOR, 
 	}
 
@@ -573,7 +603,7 @@ public class MathUtils {
 	public float[,] MergeArrays(
 		float[,] baseLayer, float[,] topAlphaLayer, 
 		float rangeYMin = 0f, float rangeYMax = 1f, 
-		MergeArrayMode mergeMode = MergeArrayMode.XOR, float mergeModeMultiplier = 1f) {
+		MergeArrayMode mergeMode = MergeArrayMode.XOR, float mergeModeMultiplier = 1f, bool graphMergeLimitLand = true, float graphMergeLimitLandValue = 0f) {
 
 
 		int layersScaleDifferenceX = Mathf.RoundToInt (topAlphaLayer.GetLength (0) / (float)baseLayer.GetLength (0));
@@ -636,6 +666,24 @@ public class MathUtils {
 							rangeYMax, 
 							baseLayer [x, z] - (mergeModeMultiplier * topAlphaLayerValue)
 						);
+						break;
+
+					case MergeArrayMode.ADD_MULTIPLIER_LIMIT:
+						baseLayer [x, z] = Mathf.Lerp (
+							rangeYMin, 
+							rangeYMax, 
+							baseLayer [x, z] + (mergeModeMultiplier * topAlphaLayerValue)
+						);
+						baseLayer [x, z] = Mathf.Clamp (baseLayer [x, z], graphMergeLimitLandValue, rangeYMax);
+						break;
+
+					case MergeArrayMode.SUBTRACT_MULTIPLIER_LIMIT:
+						baseLayer [x, z] = Mathf.Lerp (
+							rangeYMin, 
+							rangeYMax, 
+							baseLayer [x, z] - (mergeModeMultiplier * topAlphaLayerValue)
+						);
+						baseLayer [x, z] = Mathf.Clamp (baseLayer [x, z], graphMergeLimitLandValue, rangeYMax);
 						break;
 				}
 

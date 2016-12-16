@@ -86,8 +86,7 @@ public class MapOutputObject : MonoBehaviour {
 		meshInstance.transform.localScale = meshScale;
 		meshInstance.GetComponent <MeshFilter>().sharedMesh = mesh;
 		meshInstance.GetComponent <MeshRenderer>().sharedMaterial.mainTexture = texture;
-//		meshInstance.GetComponent <Transform>().Translate (new Vector3(0f, -meshScale.y/2f + 0.01f, 0f));
-		meshInstance.GetComponent<Transform>().position = new Vector3(0, 0.001f, 0);
+		meshInstance.GetComponent<Transform>().position = new Vector3(0, 1f, 0);
 	}
 
 	public void ReplaceMesh(Mesh mesh, Texture texture, Vector3 meshScale) {
@@ -160,6 +159,10 @@ public class MapOutputObject : MonoBehaviour {
 	public void ClearGraph() {
 		GameObject.DestroyImmediate (graphView); //todo: DestroyImmediate ONLY IN EDITOR!
 //		InstantiateGraphView (); //temporary
+	}
+
+	public void DestroyGraphNodes() {
+		DeleteChildAssets (graphNodesView);
 	}
 
 	public void ClearGraphMarkers() {

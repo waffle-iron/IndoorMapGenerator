@@ -4,14 +4,16 @@ using System.Collections.Generic;
 public class GaussianBlur {
 
 	//1 channel implementation of Gaussian Blur
-	public float[,] CreateGaussianBlur(float[,] inputValuesArray, int blurRadius = 5, int blurIterations = 3, int blurSolidifications = 0) {
-		
+	public float[,] CreateGaussianBlur(float[,] inputValuesArray, int blurPower, int blurRadius = 5, int blurIterations = 3, int blurSolidifications = 0) {
+
+		float blurPowerVal = blurPower / 100f;
+
 		float[,] blurredValuesArray = new float[inputValuesArray.GetLength (0), inputValuesArray.GetLength (1)];
 		int[] blurBoxes = GaussianBlurBoxSizes (blurRadius, blurIterations);
 
 		for (int i = 0; i < blurIterations; ++i) {
 			blurredValuesArray = BoxBlur (
-				inputValuesArray, inputValuesArray.GetLength (0), inputValuesArray.GetLength (1), 
+				inputValuesArray, blurPowerVal, inputValuesArray.GetLength (0), inputValuesArray.GetLength (1), 
 				(blurBoxes[i]-1)/2, blurSolidifications
 			);
 		}
@@ -20,7 +22,7 @@ public class GaussianBlur {
 	}
 
 
-	private float[,] BoxBlur(float[,] inputValuesArray, int boxWidth, int boxHeight, int blurRadius, int solidifyBlurIterations = 0) {
+	private float[,] BoxBlur(float[,] inputValuesArray, float blurPowerVal, int boxWidth, int boxHeight, int blurRadius, int solidifyBlurIterations = 0) {
 		float[,] blurredValues = new float[boxWidth, boxHeight];
 
 		for(var i=0; i<boxHeight; i++) {
@@ -32,7 +34,7 @@ public class GaussianBlur {
 						
 						int x = UnityEngine.Mathf.Min(boxWidth-1, UnityEngine.Mathf.Max(0, ix));
 						int y = UnityEngine.Mathf.Min(boxHeight-1, UnityEngine.Mathf.Max(0, iy));
-						if (x < boxWidth && x >= 0 && y < boxHeight && y >= 0) {
+						if (x < boxWidth-1 && x >= 0 && y < boxHeight-1 && y >= 0) {
 							for (int s = 0; s < solidifyBlurIterations + 1; ++s) {
 								val += inputValuesArray [x, y] * (solidifyBlurIterations == 0 ? 1 : 0.5f);
 							}
@@ -40,8 +42,10 @@ public class GaussianBlur {
 					}
 				}
 
-				//todo: Mathf.Clamp(rangeMin, rangeMax)
-				blurredValues[i,j] = val/((blurRadius+blurRadius+1)*(blurRadius+blurRadius+1));
+
+				blurredValues [i, j] = val;
+				blurredValues [i, j] /= blurPowerVal * ((blurRadius + blurRadius + 1) * (blurRadius + blurRadius + 1));
+//				blurredValues [i, j] /= ((blurRadius + blurRadius + 1) * (blurRadius + blurRadius + 1));
 			}
 		}
 

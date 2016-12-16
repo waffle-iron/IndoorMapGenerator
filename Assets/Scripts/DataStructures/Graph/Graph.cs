@@ -48,14 +48,14 @@ public class Graph
 	}
 
 	public void AddEdge(int vertexAIndex, int vertexBIndex, bool clampValues) {
-		if (vertexAIndex < 0 && vertexAIndex < verticesList.Length) {
+		if (vertexAIndex < 0 && vertexAIndex >= verticesList.Length) {
 			if (clampValues)
 				vertexAIndex = Mathf.Clamp (vertexAIndex, 0, verticesList.Length-1);
 			else
 				return;
 		}
 
-		if (vertexBIndex < 0 && vertexBIndex < verticesList.Length) {
+		if (vertexBIndex < 0 && vertexBIndex >= verticesList.Length) {
 			if (clampValues)
 				vertexAIndex = Mathf.Clamp (vertexBIndex, 0, verticesList.Length-1);
 			else

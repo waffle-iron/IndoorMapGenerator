@@ -55,9 +55,9 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 
 
+
 	public void RenderMesh(Mesh mesh, float[,] heightMap, Vector3 meshScale) {
 		ValidateMeshView ();
-//		mapTexture = CreateValuesTexture (heightMap, 0f, 1f);
 		view.ReplaceMesh (mesh, mapTexture, meshScale);
 	}
 
@@ -93,6 +93,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 
 	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+		view.DestroyGraphNodes ();
 		float nodeScaleValue = Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z);
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
 			view.AddGraphNode (

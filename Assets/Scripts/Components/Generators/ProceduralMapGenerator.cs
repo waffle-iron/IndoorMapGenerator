@@ -35,6 +35,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(0,1)] public float perlinPersistence = 0.5f;
 	[Range(1, 10)] public float perlinLacunarity = 1.5f;
 
+	public MathUtils.PerlinProjectionFunction perlinProjection = MathUtils.PerlinProjectionFunction.QUADRATIC;
+	public float 	projectionActivation;
+	public bool 	projectionActivationLand = true;
+	public float 	projectionDeactivation;
+
+
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
 	public int 		graphResolutionX = 20;
@@ -43,8 +49,10 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	public int 		graphResolutionY = 5;
 
 	public MathUtils.BoundingBoxStyle graphNodesBoundBox = MathUtils.BoundingBoxStyle.CIRCLE;
-	public MathUtils.MergeArrayMode graphMergeMode = MathUtils.MergeArrayMode.SUBTRACT;
+	public MathUtils.MergeArrayMode graphMergeMode = MathUtils.MergeArrayMode.ADD_MULTIPLIER;
+	public MathUtils.MergeArrayMode finalMergeMode = MathUtils.MergeArrayMode.SUBTRACT_MULTIPLIER_LIMIT;
 	public float 	graphMergeModeMul = 0.5f;
+	public bool 	graphMergeLimitLand = true;
 
 	public int 		meshResolutionX = 75;
 	public int 		meshResolutionZ = 75;
@@ -65,6 +73,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(0f, 10f)] public int	blurRadius = 3;
 	[Range(0f, 10f)] public int blurIterations = 4;
 	[Range(0f, 5f)]  public int	blurSolidification = 2;
+	[Range(0, 1000)] public int 	blurPower = 50;
 
 	[Range(-200, 100)]public int contrastPercent = 0;
 
@@ -127,16 +136,24 @@ public class ProceduralMapGenerator : MonoBehaviour {
 				useFixedPerlinOffset, perlinOffsetX, perlinOffsetZ
 			)
 		);
+
+		SetNoiseValuesArray (
+			utils.GetUtilsMath ().AssignProjection (
+				GetActiveValuesArray (), 
+				perlinProjection, 
+				projectionActivationLand ? Constants.TERRAINSET_STANDARD.terrainTypes [0].rangeMaxHeight : projectionActivation,
+				Constants.TERRAINSET_STANDARD.terrainTypes[3].rangeMaxHeight
+			)
+		);
+
+
 		RenderValuesArray ();
 	}
 
 
 	public void GenerateMesh() {
 		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (
-//			finalValuesArray != null ? finalValuesArray : GetActiveValuesArray (), 
 			GetActiveValuesArray ()
-//			mapSizeX/meshResolutionX, 
-//			mapSizeZ/meshResolutionZ
 		);
 		renderer.RenderMesh (
 			meshWrapper.GenerateMesh (), 
@@ -159,7 +176,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	private void ConvertGraphVerticesToValues() {
 		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphNodesToValueMap (
-			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector, keyPoisSizeMul
+			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector, keyPoisSizeMul, graphNodesBoundBox
 		);
 
 		SetGraphValuesArray (graphValuesAsArray);
@@ -173,7 +190,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 			graphResolutionVector,
 			edgeThicknessMul
 		);
-
+			
 		SetGraphValuesArray (
 			utils.GetUtilsMath ().MergeArrays (
 				graphValuesArray, 
@@ -193,6 +210,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		SetActiveValuesArray (
 			utils.GetGaussianBlur ().CreateGaussianBlur (
 				GetActiveValuesArray (), 
+				blurPower,
 				blurRadius, 
 				blurIterations, 
 				blurSolidification
@@ -274,8 +292,10 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		SetFinalValuesArray (utils.GetUtilsMath ().MergeArrays (
 			noiseValuesArray, graphValuesArray,
 			0f, 1f,
-			graphMergeMode,
-			graphMergeModeMul
+			finalMergeMode,
+			graphMergeModeMul,
+			graphMergeLimitLand,
+			Constants.TERRAINSET_STANDARD.terrainTypes[0].rangeMaxHeight
 		));
 //		SetFinalValuesArray (new float[mapResolutionX, mapResolutionZ]);
 
