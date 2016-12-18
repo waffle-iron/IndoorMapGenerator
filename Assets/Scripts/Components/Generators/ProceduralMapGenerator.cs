@@ -73,7 +73,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	[Range(0f, 10f)] public int	blurRadius = 3;
 	[Range(0f, 10f)] public int blurIterations = 4;
 	[Range(0f, 5f)]  public int	blurSolidification = 2;
-	[Range(0, 1000)] public int 	blurPower = 50;
+	[Range(0, 1000)] public int blurPower = 50;
 
 	[Range(-200, 100)]public int contrastPercent = 0;
 

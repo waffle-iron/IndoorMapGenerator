@@ -25,19 +25,19 @@ public class Constants
 
 	public static Color SHORE_COLOR_LOW = new Color (Mathf.InverseLerp (0, 255, 255), Mathf.InverseLerp (0, 255, 245), Mathf.InverseLerp (0, 255, 150)); 
 	public static Color SHORE_COLOR_HIGH = new Color (Mathf.InverseLerp (0, 255, 255), Mathf.InverseLerp (0, 255, 185), Mathf.InverseLerp (0, 255, 127)); 
-	public static float SHORE_RANGE_MAX_HEIGHT = 0.25f;
+	public static float SHORE_RANGE_MAX_HEIGHT = 0.30f;
 
 	public static Color GRASS_COLOR_LOW = new Color (Mathf.InverseLerp (0, 255, 234), Mathf.InverseLerp (0, 255, 255), Mathf.InverseLerp (0, 255, 139));
 	public static Color GRASS_COLOR_HIGH = new Color (Mathf.InverseLerp (0, 255, 137), Mathf.InverseLerp (0, 255, 207), Mathf.InverseLerp (0, 255, 94));
-	public static float GRASS_RANGE_MAX_HEIGHT = 0.45f;
+	public static float GRASS_RANGE_MAX_HEIGHT = 0.49f;
 
 	public static Color BOREAL_COLOR_LOW = new Color (Mathf.InverseLerp (0, 255, 95), Mathf.InverseLerp (0, 255, 161), Mathf.InverseLerp (0, 255, 76));
 	public static Color BOREAL_COLOR_HIGH = new Color (Mathf.InverseLerp (0, 255, 142), Mathf.InverseLerp (0, 255, 163), Mathf.InverseLerp (0, 255, 137));
-	public static float BOREAL_RANGE_MAX_HEIGHT = 0.60f;
+	public static float BOREAL_RANGE_MAX_HEIGHT = 0.80f;
 
 	public static Color MOUNTAINS_COLOR_LOW = new Color (Mathf.InverseLerp (0, 255, 163), Mathf.InverseLerp (0, 255, 141), Mathf.InverseLerp (0, 255, 137));
 	public static Color MOUNTAINS_COLOR_HIGH = new Color (Mathf.InverseLerp (0, 255, 137), Mathf.InverseLerp (0, 255, 147), Mathf.InverseLerp (0, 255, 163));
-	public static float MOUNTAINS_RANGE_MAX_HEIGHT = 0.85f;
+	public static float MOUNTAINS_RANGE_MAX_HEIGHT = 0.90f;
 
 	public static Color TOP_COLOR_LOW = new Color (Mathf.InverseLerp (0, 255, 250), Mathf.InverseLerp (0, 255, 255), Mathf.InverseLerp (0, 255, 245));
 	public static Color TOP_COLOR_HIGH = Color.white;
