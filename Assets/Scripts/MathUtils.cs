@@ -94,23 +94,25 @@ public class MathUtils {
 			List<Vector3> linePointWithThickess = new List<Vector3> ();
 			for (int l = 0; l < line.Length; l++) {
 
-				linePointWithThickess.Clear ();
-				linePointWithThickess.AddRange (
-					MidPointCircle3dLinear (
-						(int)line[l].x, (int)line[l].z,
-						circleRadius,
-						0, 0,
-						(int)valuesResolutions.x -1, 
-						Mathf.InverseLerp (0f, valuesResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
-						//						line[l].y,
-						(int)valuesResolutions.z -1,
-						false
-					)
-				);
+//				linePointWithThickess.Clear ();
+//				linePointWithThickess.AddRange (
+//					MidPointCircle3dLinear (
+//						(int)line[l].x, (int)line[l].z,
+//						circleRadius,
+//						0, 0,
+//						(int)valuesResolutions.x -1, 
+//						Mathf.InverseLerp (0f, valuesResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
+//						//						line[l].y,
+//						(int)valuesResolutions.z -1,
+//						false
+//					)
+//				);
 
-				for (int t = 0; t < linePointWithThickess.Count; ++t) {
-					valueMap [(int)linePointWithThickess [t].x, (int)linePointWithThickess [t].z] += linePointWithThickess [t].y;
-				}
+//				for (int t = 0; t < linePointWithThickess.Count; ++t) {
+//					valueMap [(int)linePointWithThickess [t].x, (int)linePointWithThickess [t].z] += linePointWithThickess [t].y;
+//				}
+
+				valueMap [(int)line [l].x, (int)line [l].z] = line [l].y;
 
 			}
 		}
@@ -142,33 +144,28 @@ public class MathUtils {
 
 
 			if (boundingBoxStyle == BoundingBoxStyle.CIRCLE) {
-//				nodesBoundingBoxValues.Add (new Vector3 (valX, graphNodesPositions [i].y, valZ));
 				nodesBoundingBoxValues.Clear ();
-				nodesBoundingBoxValues.AddRange (
-					MidPointCircle3dLinear (
-						(int)valX, (int)valZ,
-						(int)(Mathf.Min (valuesResolution.x / graphResolutions.x, valuesResolution.z / graphResolutions.z) * sizeMultiplier / 2),
-						0,
-						0f,
-						(int)valuesResolution.x - 1,
-						Mathf.InverseLerp (0f, valuesResolution.y, graphNodesPositions [i].y),
-						(int)valuesResolution.z - 1,
-						false
-					)
-				);
-
 //				nodesBoundingBoxValues.AddRange (
-//					 (
+//					MidPointCircle3dLinear (
 //						(int)valX, (int)valZ,
-//						(int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * sizeMultiplier / 2),
+//						(int)(Mathf.Min (valuesResolution.x / graphResolutions.x, valuesResolution.z / graphResolutions.z) * sizeMultiplier / 2),
 //						0,
 //						0f,
-//						(int)mapResolutions.x - 1,
-//						Mathf.InverseLerp (0f, mapResolutions.y, graphNodesPositions [i].y),
-//						(int)mapResolutions.z - 1,
+//						(int)valuesResolution.x - 1,
+//						Mathf.InverseLerp (0f, valuesResolution.y, graphNodesPositions [i].y),
+//						(int)valuesResolution.z - 1,
 //						false
 //					)
 //				);
+				nodesBoundingBoxValues.AddRange (
+					MidPointCircle3d (
+						(int)valX, (int)valZ, 
+						Mathf.InverseLerp (0f, valuesResolution.y, graphNodesPositions[i].y),  //todo: 0f and 1f as Constants
+						5, 0, 
+						(int)valuesResolution.x - 1, 
+						(int)valuesResolution.z - 1
+					)
+				);
 
 			} else if (boundingBoxStyle == BoundingBoxStyle.SQUARE) {
 								
