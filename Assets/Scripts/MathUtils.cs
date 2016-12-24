@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Collections.Specialized;
 using UnityEngine.Networking.Match;
 using System.Security.Policy;
+using UnityStandardAssets.Effects;
 
 public class MathUtils {
 
@@ -65,19 +66,11 @@ public class MathUtils {
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
 		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
-		int circleRadius = (int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 2);
-//		int iterationStep = (int)Mathf.Max (1, circleRadius/100f);
-		int iterationStep = 1;
-
-		Vector3 startpos = new Vector3 ();
-		Vector3 endpos = new Vector3 ();
-		Vector3[] line;
 
 		//iterate over every graph node
 		for (int i = 0; i < edgesStartEndPositions.GetLength (0); ++i) {
-
-			startpos = edgesStartEndPositions [i, 0];
-			endpos = edgesStartEndPositions [i, 1];
+			Vector3 startpos = edgesStartEndPositions [i, 0];
+			Vector3 endpos = edgesStartEndPositions [i, 1];
 
 			startpos.x = startpos.x * graphEntitiesDistanceX;
 			startpos.z = startpos.z * graphEntitiesDistanceZ;
@@ -91,58 +84,35 @@ public class MathUtils {
 			endpos.x += graphEntitiesDistanceX / 2f;
 			endpos.z += graphEntitiesDistanceZ / 2f;
 
-//			line = BresenhamAlgorithm3DIntLinear (startpos, endpos, 0, 0f, mapResolutions.y);
-//			List<Vector3> linePointWithThickess = new List<Vector3> ();
 
-			int startPosThicknessX = (int)(startpos.x - circleRadius);
-			startpos.x = startPosThicknessX;
-			int endPosThicknessX = (int)(endpos.x - circleRadius);
-			endpos.x = endPosThicknessX;
-			float minY, maxY;
+			//create a line 
+			Vector3[] line = BresenhamAlgorithm3DIntLinear (startpos, endpos, 0, 0f, mapResolutions.y);
+			int circleRadius = (int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 2);
+			int iterationSteps = (int)Math.Max (1f, circleRadius / 100f);
 
-			for (int thicknessUnit = 0; thicknessUnit < circleRadius; thicknessUnit += iterationStep) {
-				if (startPosThicknessX >= 0 && startPosThicknessX < mapResolutions.x && endPosThicknessX >= 0 && endPosThicknessX < mapResolutions.x) {
-					line = BresenhamAlgorithm3DIntLinear (startpos, endpos, 1, 0f, mapResolutions.y); //todo: check all occurences of that function (it has weird parameter order)
-					minY = Math.Min(startpos.y, endpos.y);
-					maxY = Math.Max(startpos.y, endpos.y);
-					for (int t = 0; t < line.Length; ++t) {
-						valueMap [(int)line [t].x, (int)line [t].z] = Mathf.Lerp(minY, maxY, line [t].y);
-					}
+			//iterate over every line (create thickness)
+			List<Vector3> linePointWithThickess = new List<Vector3> ();
+			for (int l = 0; l < line.Length; l++) {
+
+				linePointWithThickess.Clear ();
+				linePointWithThickess.AddRange (
+					MidPointCircle3dLinear (
+						(int)line[l].x, (int)line[l].z,
+						circleRadius,
+						0, 0,
+						(int)mapResolutions.x -1, 
+						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
+						//						line[l].y,
+						(int)mapResolutions.z -1,
+						false
+					)
+				);
+
+				for (int t = 0; t < linePointWithThickess.Count; ++t) {
+					valueMap [(int)linePointWithThickess [t].x, (int)linePointWithThickess [t].z] += linePointWithThickess [t].y;
 				}
-				startpos.x += iterationStep;
-				endpos.x += iterationStep;
-			}
 
-//			for (int l = 0; l < line.Length; l += 1) {
-//				linePointWithThickess.Clear ();
-//
-////				linePointWithThickess.AddRange (
-////					MidPointCircle3dLinear (
-////						(int)line[l].x, (int)line[l].z,
-////						circleRadius,
-////						0, 0,
-////						(int)mapResolutions.x -1, 
-////						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
-//////						line[l].y,
-////						(int)mapResolutions.z -1,
-////						false
-////					)
-////				);
-////				linePointWithThickess.AddRange (
-////					MidPointSquare3d (
-////						(int)line[l].x, (int)line[l].z,
-//////						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y),
-////						line[l].y,
-////						circleRadius,
-////						0, 
-////						(int)mapResolutions.x,
-////						(int)mapResolutions.z
-////					)	
-////				);
-//				for (int t = 0; t < linePointWithThickess.Count; ++t) {
-//					valueMap [(int)linePointWithThickess [t].x, (int)linePointWithThickess [t].z] += linePointWithThickess [t].y;
-//				}
-//			}
+			}
 		}
 
 		return valueMap;

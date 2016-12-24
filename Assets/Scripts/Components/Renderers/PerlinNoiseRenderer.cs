@@ -4,6 +4,7 @@ using System;
 using System.Xml.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using UnityEditor;
 
 [ExecuteInEditMode]
 public class PerlinNoiseRenderer : MonoBehaviour {
@@ -85,7 +86,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 
 		for (int m = 0; m < graphMarkersPositions.Length; ++m) {
 			view.AddGraphMarker (
-				AlignToResolutons (graphMarkersPositions[m], mapResolutions, graphResolutions), 
+				AlignGraphEntityToResolutons (graphMarkersPositions[m], mapResolutions, graphResolutions), 
 				new Vector3(mapResolutions.x/(graphResolutions.x * 1.5f), mapResolutions.y / 1.5f, mapResolutions.z/(graphResolutions.z * 1.5f)),
 				true
 			);
@@ -97,7 +98,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		float nodeScaleValue = Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z);
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {
 			view.AddGraphNode (
-				AlignToResolutons (graphKeyPoisPositions [p], mapResolutions, graphResolutions),
+				AlignGraphEntityToResolutons (graphKeyPoisPositions [p], mapResolutions, graphResolutions),
 				new Vector3(nodeScaleValue, nodeScaleValue, nodeScaleValue),
 				true
 			);
@@ -106,8 +107,8 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		
 	public void RenderGraphEdge(Vector3 positionA, Vector3 positionB, Vector3 mapResolutions, Vector3 graphResolutions) {
 
-		positionA = AlignToResolutons (positionA, mapResolutions, graphResolutions);
-		positionB = AlignToResolutons (positionB, mapResolutions, graphResolutions);
+		positionA = AlignGraphEntityToResolutons (positionA, mapResolutions, graphResolutions);
+		positionB = AlignGraphEntityToResolutons (positionB, mapResolutions, graphResolutions);
 
 		Vector3 deltaPosition = positionB - positionA;
 		deltaPosition.x /= 2f;
@@ -140,14 +141,18 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		for (int z = mapDimensionZ-1; z >= 0; --z) {
 			for(int x = mapDimensionX-1; x >= 0; --x) {
 
-				for (int l = 0; l < terrainSet.terrainTypes.Length; ++l) {
+				for (int l = 0; l < terrainSet.terrainTypes.Length; ++l) { //todo: rewrite it to NOT use FOR and IF inside (perf overhead)
 					if (Mathf.InverseLerp (rangeMin, rangeMax, valuesArray [x, z]) < terrainSet.terrainTypes [l].rangeMaxHeight) {
-						valueTextureColorMap [((mapDimensionX) * (mapDimensionZ)) - 1 - z * (mapDimensionX) - x] = Color.Lerp (
-							terrainSet.terrainTypes[l].rangeMinColour, 
-							terrainSet.terrainTypes[l].rangeMaxColour,
-							Mathf.InverseLerp (
-								l-1>=0f? terrainSet.terrainTypes[l-1].rangeMaxHeight : 0f, terrainSet.terrainTypes[l].rangeMaxHeight, valuesArray [x, z])
-						);
+						valueTextureColorMap [((mapDimensionX) * (mapDimensionZ)) - 1 - z * (mapDimensionX) - x] = 
+							Color.Lerp (
+								terrainSet.terrainTypes [l].rangeMinColour, 
+								terrainSet.terrainTypes [l].rangeMaxColour,
+								Mathf.InverseLerp (
+									(l - 1) >= 0f ? terrainSet.terrainTypes [l - 1].rangeMaxHeight : 0f,  	//float a
+									terrainSet.terrainTypes [l].rangeMaxHeight, 							//float b
+									valuesArray [x, z]														//float value
+								)
+							);
 						break;
 					}
 				}
@@ -188,7 +193,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		return valueTexture;
 	}
 
-	private Vector3 AlignToResolutons(Vector3 value, Vector3 mapResolutions, Vector3 graphResolutions) {
+	public Vector3 AlignGraphEntityToResolutons(Vector3 value, Vector3 mapResolutions, Vector3 graphResolutions) {
 		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
 		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
 
@@ -202,6 +207,34 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 		value.z += graphEntitiesDistanceZ / 2f;
 
 		return value;
+	}
+
+	public Vector3 AlignToResolutions(Vector3 value, int valueArrayDimX, int valueArrayDimZ, Vector3 mapResolutions) {
+
+		value.x = Mathf.Lerp (
+			-mapResolutions.x/2f, 
+			mapResolutions.x/2f, 
+			Mathf.InverseLerp (0f, valueArrayDimX, value.x)
+		);
+
+		value.z = Mathf.Lerp (
+			-mapResolutions.z/2f, 
+			mapResolutions.z/2f, 
+			Mathf.InverseLerp (0f, valueArrayDimZ, value.z)
+		);
+		value.y = Mathf.Lerp (0f, mapResolutions.y, value.y);
+
+//		value.x -= mapResolutions.x / 2f;
+//		value.z -= mapResolutions.z / 2f; 
+
+		//todo: 0f and 1fs as Contants.NoiseMapValueRangeMin and (...)Max instead.
+
+
+		return value;
+	}
+
+	public void DestroyGraph() {
+		view.ClearGraph ();
 	}
 
 }

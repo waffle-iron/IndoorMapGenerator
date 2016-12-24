@@ -101,6 +101,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private ComputationUtils 		utils;
 	private new PerlinNoiseRenderer renderer;
 
+	public GameObject graphFloorPrefab;
 
 
 	void Start () {
@@ -152,14 +153,58 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 
 	public void GenerateMesh() {
-		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (
-			GetActiveValuesArray ()
-		);
-		renderer.RenderMesh (
-			meshWrapper.GenerateMesh (), 
-			GetActiveValuesArray (),
-			new Vector3 (mapSizeX/perlinResolutionX, mapSizeY, mapSizeZ/perlinResolutionZ)
-		);
+//		meshWrapper = utils.GetUtilsGFX ().GenerateMesh (
+//			GetActiveValuesArray ()
+//		);
+//		renderer.RenderMesh (
+//			meshWrapper.GenerateMesh (), 
+//			GetActiveValuesArray (),
+//			new Vector3 (mapSizeX/perlinResolutionX, mapSizeY, mapSizeZ/perlinResolutionZ)
+//		);
+
+		GameObject mapGraphAssetsHolder = new GameObject ("graph stuff");
+
+//		float offX = graphValuesArray.GetLength (0) / (float)noiseValuesArray.GetLength (0);
+//		float offZ = graphValuesArray.GetLength (1) / (float)noiseValuesArray.GetLength (1);
+//
+//
+//		for (int x = 0; x < GetActiveValuesArray ().GetLength (0); x++) {
+//			for (int z = 0; z < GetActiveValuesArray ().GetLength (1); z++) {
+////				if (GetActiveValuesArray ()[x,z] >= 0f && GetActiveValuesArray ()[x,z] <= 0.15f) {
+//				if (graphValuesArray [x,z] >= 0.20f && graphValuesArray [x,z] <= 1f) {
+//					GameObject graphFloor = Instantiate (graphFloorPrefab);
+////					renderer.AlignToResolutons (new Vector3 (x, GetActiveValuesArray () [x, z], z));
+//					graphFloor.transform.parent = mapGraphAssetsHolder.transform;
+////					graphFloor.transform.position = new Vector3(x, , z);
+//					graphFloor.transform.position = renderer.AlignToResolutions ( //todo: remove it from presenter and restrict to PRIVATE (or not?)
+//						new Vector3 (x, GetActiveValuesArray () [x, z], z),
+//						GetActiveValuesArray ().GetLength (0),
+//						GetActiveValuesArray ().GetLength (1),
+//						mapResolutionVector
+//					);
+//				}
+//			}
+//		}
+
+		for (int x = 0; x < graphValuesArray.GetLength (0); x=+5) {
+			for (int z = 0; z < graphValuesArray.GetLength (1); z=+5) {
+//				if (GetActiveValuesArray ()[x,z] >= 0f && GetActiveValuesArray ()[x,z] <= 0.15f) {
+				if (graphValuesArray [x,z] >= 0.20f && graphValuesArray [x,z] <= 1f) {
+					GameObject graphFloor = Instantiate (graphFloorPrefab);
+//					renderer.AlignToResolutons (new Vector3 (x, GetActiveValuesArray () [x, z], z));
+					graphFloor.transform.parent = mapGraphAssetsHolder.transform;
+//					graphFloor.transform.position = new Vector3(x, , z);
+					graphFloor.transform.position = renderer.AlignToResolutions ( //todo: remove it from presenter and restrict to PRIVATE (or not?)
+						new Vector3 (x, graphValuesArray [x, z], z),
+						graphValuesArray.GetLength (0),
+						graphValuesArray.GetLength (1),
+						mapResolutionVector
+					);
+				}
+			}
+		}
+
+
 	}
 
 	public void GenerateTestCrossValuesMap() {
@@ -171,7 +216,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void ConvertGraphToValues() {
 		ConvertGraphVerticesToValues ();
-		ConvertGraphEdgesToValues ();
+//		ConvertGraphEdgesToValues ();
 	}
 
 	private void ConvertGraphVerticesToValues() {
@@ -299,6 +344,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		));
 //		SetFinalValuesArray (new float[mapResolutionX, mapResolutionZ]);
 
+		renderer.DestroyGraph ();
 		RenderValuesArray ();
 	}
 
