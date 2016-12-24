@@ -16,87 +16,92 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 //	public MapOutputObject mapOutputObject;
 
-	public int 		mapSizeX = 150;
-	public int 		mapSizeZ = 150;
-	public int 		mapSizeY = 15;
+	public int 			mapSizeX = 150;
+	public int 			mapSizeZ = 150;
+	public int 			mapSizeY = 15;
 
-	public int 		perlinResolutionX = 50;
-	public int		perlinResolutionZ = 50;
+	public int 			perlinResolutionX = 50;
+	public int			perlinResolutionZ = 50;
 
-	public float	perlinScaleX = 1;
-	public float 	perlinScaleZ = 1;
+	public float		perlinScaleX = 1;
+	public float 		perlinScaleZ = 1;
 
-	public float	perlinOffsetX = 0;
-	public float	perlinOffsetZ = 0;
-	public bool 	useFixedPerlinOffset = false;
+	public float		perlinOffsetX = 0;
+	public float		perlinOffsetZ = 0;
+	public bool 		useFixedPerlinOffset = false;
 
-	public int 		perlinLayers = 3;
-	public float	perlinFauxRange = 1f;
-	[Range(0,1)] public float perlinPersistence = 0.5f;
-	[Range(1, 10)] public float perlinLacunarity = 1.5f;
+	public int 			perlinLayers = 3;
+	public float		perlinFauxRange = 1f;
+	[Range(0,1)] 
+	public float 		perlinPersistence = 0.5f;
+	[Range(1, 10)] 
+	public float 		perlinLacunarity = 1.5f;
 
 	public MathUtils.PerlinProjectionFunction perlinProjection = MathUtils.PerlinProjectionFunction.QUADRATIC;
-	public float 	projectionActivation;
-	public bool 	projectionActivationLand = true;
-	public float 	projectionDeactivation;
+	public float 		projectionActivation;
+	public bool 		projectionActivationLand = true;
+	public float 		projectionDeactivation;
 
 
 //	public int 		perlinResolutionX = 10;
 //	public int 		perlinResolutionZ = 10; //reincorporate this (to make low poly look)
-	public int 		graphResolutionX = 20;
-	public int 		graphResolutionZ = 20;
-	private int 	graphResolutionXZ;
-	public int 		graphResolutionY = 5;
+	public int 			graphResolutionX = 20;
+	public int 			graphResolutionZ = 20;
+	private int 		graphResolutionXZ;
+	public int 			graphResolutionY = 5;
 
 	public MathUtils.BoundingBoxStyle graphNodesBoundBox = MathUtils.BoundingBoxStyle.CIRCLE;
 	public MathUtils.MergeArrayMode graphMergeMode = MathUtils.MergeArrayMode.ADD_MULTIPLIER;
 	public MathUtils.MergeArrayMode finalMergeMode = MathUtils.MergeArrayMode.SUBTRACT_MULTIPLIER_LIMIT;
-	public float 	graphMergeModeMul = 0.5f;
-	public bool 	graphMergeLimitLand = true;
+	public float 		graphMergeModeMul = 0.5f;
+	public bool 		graphMergeLimitLand = true;
 
-	public int 		meshResolutionX = 75;
-	public int 		meshResolutionZ = 75;
+	public int 			meshResolutionX = 75;
+	public int 			meshResolutionZ = 75;
 
-	public float	edgeThicknessMul = 1f;
+	public float		edgeThicknessMul = 1f;
 
-	public int 		keyPoisPerc = 5;
-	public int 		keyPoisRandomOffsetPerc = 0;
-	private int 	keyPoisCount;
-	public float 	keyPoisSizeMul = 1;
-	public int 		keyPoisSizeRandomOffsetPerc = 0;
-	public int		keyPoisConnectionsPerc = 100;
+	public int 			keyPoisPerc = 5;
+	public int 			keyPoisRandomOffsetPerc = 0;
+	private int 		keyPoisCount;
+	public float 		keyPoisSizeMul = 1;
+	public int 			keyPoisSizeRandomOffsetPerc = 0;
+	public int			keyPoisConnectionsPerc = 100;
 
-	public int 		nonKeyPoisPerc = 8;
+	public int 			nonKeyPoisPerc = 8;
 
 	public Constants.TextureType textureRenderType = Constants.TextureType.TEXTURE_MAP_STANDARD;
 
-	[Range(0f, 10f)] public int	blurRadius = 3;
-	[Range(0f, 10f)] public int blurIterations = 4;
-	[Range(0f, 5f)]  public int	blurSolidification = 2;
-	[Range(0, 1000)] public int blurPower = 50;
+	[Range(0f, 10f)] 
+	public int			blurRadius = 3;
+	[Range(0f, 10f)] 
+	public int 			blurIterations = 4;
+	[Range(0f, 5f)]  
+	public int			blurSolidification = 2;
+	[Range(0, 1000)] 
+	public int 			blurPower = 50;
+	[Range(-200, 100)]
+	public int 			contrastPercent = 0;
 
-	[Range(-200, 100)]public int contrastPercent = 0;
+	public String 		seedValue;
+	public String 		mapSignature;
 
-	public String 	seedValue;
-	public String 	mapSignature;
-
-
-	//this all should be in some model class (Repository pattern?) !!!!!!!!!!!!!!!!!
-	private float[,] noiseValuesArray;
-	private float[,] graphValuesArray;
-	private float[,] finalValuesArray;
-	private int activeValuesArray = 0;
-	private Graph 	graph = new Graph();
+	private float[,] 	noiseValuesArray; //this all should be in some model class (Repository pattern?) !!!!!!!!!!!!!!!!!
+	private float[,] 	graphValuesArray;
+	private float[,] 	finalValuesArray;
+	private int 		activeValuesArray = 0;
+	private Graph 		graph = new Graph();
 	private MeshWrapper meshWrapper = new MeshWrapper ();
 
 
-	private Vector3 mapResolutionVector;
-	private Vector3 graphResolutionVector;
+	private Vector3 	mapResolutionVector;
+	private Vector3 	graphResolutionVector;
+	private Vector3 	valuesResolutionVector;
 
 //	private Vector3[] graphNodesPositions;
 
 
-	private float	keyPoisSize;
+	private float		keyPoisSize;
 
 	private ComputationUtils 		utils;
 	private new PerlinNoiseRenderer renderer;
@@ -216,12 +221,12 @@ public class ProceduralMapGenerator : MonoBehaviour {
 
 	public void ConvertGraphToValues() {
 		ConvertGraphVerticesToValues ();
-//		ConvertGraphEdgesToValues ();
+		ConvertGraphEdgesToValues ();
 	}
 
 	private void ConvertGraphVerticesToValues() {
 		float[,] graphValuesAsArray = utils.GetUtilsMath ().ConvertGraphNodesToValueMap (
-			graph.GetAllVerticesPositions (), mapResolutionVector, graphResolutionVector, keyPoisSizeMul, graphNodesBoundBox
+			graph.GetAllVerticesPositions (), new Vector3(perlinResolutionX, mapSizeY, perlinResolutionZ), graphResolutionVector, keyPoisSizeMul, graphNodesBoundBox
 		);
 
 		SetGraphValuesArray (graphValuesAsArray);
@@ -231,7 +236,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	private void ConvertGraphEdgesToValues() {
 		float[,] graphEdgeValuesAsArray = utils.GetUtilsMath ().ConvertGraphEdgesToValueMap (
 			graph.GetEdgesStartEndPositions (),
-			mapResolutionVector,
+			new Vector3(perlinResolutionX, mapSizeY, perlinResolutionZ),
 			graphResolutionVector,
 			edgeThicknessMul
 		);
@@ -381,7 +386,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 	}
 
 	public void RenderGraphValuesArray() {
-		renderer.RenderValuesArray (graphValuesArray);
+		renderer.RenderValuesArray (graphValuesArray, mapSizeX / (float)perlinResolutionX, mapSizeZ / (float)perlinResolutionZ);
 	}
 
 	public void RenderFinalValuesArray() {
@@ -438,6 +443,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		mapResolutionVector.x = mapSizeX;
 		mapResolutionVector.y = mapSizeY;
 		mapResolutionVector.z = mapSizeZ;
+
 	}
 
 }

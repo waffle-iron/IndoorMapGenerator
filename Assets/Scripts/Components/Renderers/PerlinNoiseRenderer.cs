@@ -94,6 +94,7 @@ public class PerlinNoiseRenderer : MonoBehaviour {
 	}
 
 	public void RenderGraphKeyPois(Vector3[] graphKeyPoisPositions, Vector3 mapResolutions, Vector3 graphResolutions) {
+		ValidateGraphView ();
 		view.DestroyGraphNodes ();
 		float nodeScaleValue = Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z);
 		for (int p = 0; p < graphKeyPoisPositions.Length; ++p) {

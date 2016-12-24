@@ -61,11 +61,11 @@ public class MathUtils {
 //		return valueMap;
 //	
 
-	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 mapResolutions, Vector3 graphResolutions, float edgeSizeMultiplier) {
-		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+	public float[,] ConvertGraphEdgesToValueMap(Vector3[,] edgesStartEndPositions, Vector3 valuesResolutions, Vector3 graphResolutions, float edgeSizeMultiplier) {
+		float graphEntitiesDistanceX = valuesResolutions.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = valuesResolutions.z / (float)graphResolutions.z;
 
-		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
+		float[,] valueMap = new float[(int)valuesResolutions.x, (int)valuesResolutions.z];
 
 		//iterate over every graph node
 		for (int i = 0; i < edgesStartEndPositions.GetLength (0); ++i) {
@@ -86,8 +86,8 @@ public class MathUtils {
 
 
 			//create a line 
-			Vector3[] line = BresenhamAlgorithm3DIntLinear (startpos, endpos, 0, 0f, mapResolutions.y);
-			int circleRadius = (int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 2);
+			Vector3[] line = BresenhamAlgorithm3DIntLinear (startpos, endpos, 0, 0f, valuesResolutions.y);
+			int circleRadius = (int)(Mathf.Min (valuesResolutions.x / graphResolutions.x, valuesResolutions.z / graphResolutions.z) * edgeSizeMultiplier / 2);
 			int iterationSteps = (int)Math.Max (1f, circleRadius / 100f);
 
 			//iterate over every line (create thickness)
@@ -100,10 +100,10 @@ public class MathUtils {
 						(int)line[l].x, (int)line[l].z,
 						circleRadius,
 						0, 0,
-						(int)mapResolutions.x -1, 
-						Mathf.InverseLerp (0f, mapResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
+						(int)valuesResolutions.x -1, 
+						Mathf.InverseLerp (0f, valuesResolutions.y, line[l].y * (1 + edgeSizeMultiplier/3f)),
 						//						line[l].y,
-						(int)mapResolutions.z -1,
+						(int)valuesResolutions.z -1,
 						false
 					)
 				);
@@ -118,15 +118,15 @@ public class MathUtils {
 		return valueMap;
 	}
 
-	public float[,] ConvertGraphNodesToValueMap(Vector3[] graphNodesPositions, Vector3 mapResolutions, Vector3 graphResolutions, float sizeMultiplier, BoundingBoxStyle boundingBoxStyle = BoundingBoxStyle.CIRCLE) {
+	public float[,] ConvertGraphNodesToValueMap(Vector3[] graphNodesPositions, Vector3 valuesResolution, Vector3 graphResolutions, float sizeMultiplier, BoundingBoxStyle boundingBoxStyle = BoundingBoxStyle.CIRCLE) {
 
-		float graphEntitiesDistanceX = mapResolutions.x / (float)graphResolutions.x;
-		float graphEntitiesDistanceZ = mapResolutions.z / (float)graphResolutions.z;
+		float graphEntitiesDistanceX = valuesResolution.x / (float)graphResolutions.x;
+		float graphEntitiesDistanceZ = valuesResolution.z / (float)graphResolutions.z;
 
 		float[] ranges = FindRangesMinMax (graphNodesPositions);
 		Debug.Log (ranges [0] + "|" + ranges [1] + "|" + ranges [2] + "|" + ranges [3]);
 
-		float[,] valueMap = new float[(int)mapResolutions.x, (int)mapResolutions.z];
+		float[,] valueMap = new float[(int)valuesResolution.x, (int)valuesResolution.z];
 
 
 		float valX = 0;
@@ -147,12 +147,12 @@ public class MathUtils {
 				nodesBoundingBoxValues.AddRange (
 					MidPointCircle3dLinear (
 						(int)valX, (int)valZ,
-						(int)(Mathf.Min (mapResolutions.x / graphResolutions.x, mapResolutions.z / graphResolutions.z) * sizeMultiplier / 2),
+						(int)(Mathf.Min (valuesResolution.x / graphResolutions.x, valuesResolution.z / graphResolutions.z) * sizeMultiplier / 2),
 						0,
 						0f,
-						(int)mapResolutions.x - 1,
-						Mathf.InverseLerp (0f, mapResolutions.y, graphNodesPositions [i].y),
-						(int)mapResolutions.z - 1,
+						(int)valuesResolution.x - 1,
+						Mathf.InverseLerp (0f, valuesResolution.y, graphNodesPositions [i].y),
+						(int)valuesResolution.z - 1,
 						false
 					)
 				);
