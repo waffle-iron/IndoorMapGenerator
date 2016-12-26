@@ -88,6 +88,10 @@ public class ProceduralMapGeneratorEditor : Editor {
 			generator.GenerateMesh ();
 		}
 
+		if (GUILayout.Button("Spawn Props")) {
+			generator.SpawnProps ();
+		}
+
 		GUILayout.Space (20);
 
 
