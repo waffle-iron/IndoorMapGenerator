@@ -185,7 +185,7 @@ public class ProceduralMapGenerator : MonoBehaviour {
 		renderer.RenderMesh (
 			meshWrapper.GenerateMesh (), 
 			GetActiveValuesArray (),
-			new Vector3 (mapSizeX/perlinResolutionX, mapSizeY, mapSizeZ/perlinResolutionZ)
+			new Vector3 (mapSizeX/(float)perlinResolutionX, mapSizeY, mapSizeZ/(float)perlinResolutionZ)
 		);
 	}
 
